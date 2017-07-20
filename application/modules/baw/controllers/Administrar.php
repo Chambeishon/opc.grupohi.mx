@@ -1,18 +1,18 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-//session_start(); 
+//session_start();
 class Administrar extends MX_Controller
 {
-    
+
     public function __construct()
     {
         parent::__construct();
-        $this->load->library('template');  
-		$this->load->library('menu'); 
-		$this->load->model('administrar_model');  
-    }	
-	
+        $this->load->library('template');
+		$this->load->library('menu');
+		$this->load->model('administrar_model');
+    }
+
 	public function index()
-    { 
+    {
 		if($this->session->userdata('id')):
      		$session_data = $this->session->userdata();
      		$data['usuario'] = $session_data['username'];
@@ -22,14 +22,14 @@ class Administrar extends MX_Controller
 			$data["menu_baw"] = $this->menu->crea_menu_baw($data['idperfil'],$data['iduser']);
 			$data['css'] = '';
 			$data['js'] = '<script src="'.base_url('assets/js/baw.js').'"></script>';
-			
+
 			$data['tipos'] = $this->administrar_model->desplega_resumen($data['iduser']);
 			$this->template->load('template','administrar',$data);
 		else:
 			redirect('login/index', 'refresh');
-		endif;  	      
+		endif;
     }
-	
+
 	public function registrados()
 	{
 		if($this->session->userdata('id')):
@@ -54,15 +54,15 @@ class Administrar extends MX_Controller
 				//$datasource[]=array_map('utf8_encode', $resultado);
 				$datasource[]=($resultado);
 			endforeach;
-				
+
 			$data["datasource"]=json_encode($datasource);
 			$this->template->load('template','registrados',$data);
 
 		else:
 			redirect('login/index', 'refresh');
-		endif;  
+		endif;
 	}
-	
+
 	public function solicitudes_atendidas($solicitud,$accion)
 	{
 		if($this->session->userdata('id')):
@@ -74,11 +74,11 @@ class Administrar extends MX_Controller
 			$data["menu_baw"] = $this->menu->crea_menu_baw($data['idperfil'],$data['iduser']);
 			$data['css'] = '';
 			$data['js'] = '<script src="'.base_url('assets/js/baw.js').'"></script>';
-			
+
 			$data["tipos"]=$this->administrar_model->desplega_tipos_solicitud();
 			$data["preguntas"]=$this->administrar_model->desplega_preguntas($solicitud);
 			$data["informacion"]=$this->administrar_model->desplega_solicitud_informacion($solicitud);
-			$data["archivos"]=$this->administrar_model->desplega_archivos($solicitud);			
+			$data["archivos"]=$this->administrar_model->desplega_archivos($solicitud);
 			$data["accion"]=$accion;
 			$data["anterior"]='';
 			$data["siguiente"]='';
@@ -100,13 +100,13 @@ class Administrar extends MX_Controller
 				$data["titulo"]="SOLICITUDES ATENDIENDOSE";
 				$data["solicitudes"]=$this->administrar_model->desplega_solicitud_cancelar($solicitud);
 			endif;
-			
+
 			$this->template->load('template','solicitudes_atendidas',$data);
 		else:
 			redirect('login/index', 'refresh');
-		endif;  
+		endif;
 	}
-	
+
 	public function solicitudes_descartadas($solicitud)
 	{
 		if($this->session->userdata('id')):
@@ -117,18 +117,18 @@ class Administrar extends MX_Controller
 			$data["menu"] = $this->menu->crea_menu($data['idperfil']);
 			$data["menu_baw"] = $this->menu->crea_menu_baw($data['idperfil'],$data['iduser']);
 			$data['css'] = '';
-			
-			$result=$this->administrar_model->descartar_solicitud($solicitud);			
+
+			$result=$this->administrar_model->descartar_solicitud($solicitud);
 			$data["result"]=$result[0]["mensaje"];
 			$data["aceptar"]=base_url('baw/administrar/registrados');
 			$data["error"]=base_url('baw/administrar/registrados');
-			
+
 			$this->template->load('template','mensaje_accion',$data);
 		else:
 			redirect('login/index', 'refresh');
-		endif;  
+		endif;
 	}
-	
+
 	public function responder_solicitud()
 	{
 		if($this->session->userdata('id')):
@@ -138,23 +138,23 @@ class Administrar extends MX_Controller
 			$data['idperfil'] = $session_data['idperfil'];
 			$data["menu"] = $this->menu->crea_menu($data['idperfil']);
 			$data["menu_baw"] = $this->menu->crea_menu_baw($data['idperfil'],$data['iduser']);
-			$data['css'] = '';			
-			$data['css'] .= '<link href="'.base_url('assets/css/summernote.css').'" rel="stylesheet">';			
+			$data['css'] = '';
+			$data['css'] .= '<link href="'.base_url('assets/css/summernote.css').'" rel="stylesheet">';
 			$data['css'] .= '<link href="'.base_url('assets/css/summernote-bs3.css').'" rel="stylesheet">';
-			
+
 			$data['js'] = '<script src="'.base_url('assets/js/baw.js').'"></script>';
 			$data['js'] .= '<script src="'.base_url('assets/js/baw_editor.js').'"></script>';
 			$data['js'] .= '<script src="'.base_url('assets/js/summernote.min.js').'"></script> ';
-			
+
 			$idsolicitud=$this->input->post('idsolicitud');
 			$data["accion"]=$this->input->post('accion');
 			$data["solicitudes"]=$this->administrar_model->informacion_solicitud($idsolicitud);
 			$this->template->load('template','responder_solicitud',$data);
 		else:
 			redirect('login/index', 'refresh');
-		endif;  	 
+		endif;
 	}
-	
+
 	/*public function respuesta()
 	{
 		if($this->session->userdata('id')):
@@ -164,14 +164,14 @@ class Administrar extends MX_Controller
 			$data['idperfil'] = $session_data['idperfil'];
 			$data["menu"] = $this->menu->crea_menu($data['idperfil']);
 			$data["menu_baw"] = $this->menu->crea_menu_baw($data['idperfil'],$data['iduser']);
-			$data['css'] = '';		
-			$data['js'] = '';			
+			$data['css'] = '';
+			$data['js'] = '';
 
 			$solicitud=$this->input->post('solicitud');
 			$respuesta=$this->input->post('respuesta');
 			$respuesta=strtr(mb_strtoupper($respuesta,'ISO-8859-1'),"àèìòùáéíóúçñäëïöü","ÀÈÌÒÙÁÉÍÓÚÇÑÄËÏÖÜ");
 			$result=$this->administrar_model->agrega_respuesta($solicitud,$data['usuario'],$respuesta);
-						
+
 			if($result[0]["mensaje"]==0):
 				echo "<div class='alert alert-danger'>
 						<h5>Ocurri&oacute; un error durante la acci&oacute;n</h5>
@@ -182,26 +182,26 @@ class Administrar extends MX_Controller
 						<h5>La acci&oacute;n se realiz&oacute; con &eacute;xito</h5>
 						<a href='".base_url('baw/administrar/index')."' class='btn btn-success'>Aceptar</a>
 					</div>";
-					
+
 			$data["respuesta_correo"]=$this->administrar_model->respuesta_correo($solicitud);
-				
+
 				foreach($data["respuesta_correo"] as $respuesta_c):
 					$this->load->library('My_PHPMailer');
 					$mail = new PHPMailer();
-					$mail->IsSMTP(); 
-					$mail->SMTPAuth   = true; 
-					$mail->Host       = "172.20.74.2";   
-					$mail->Port       = 25;              
-					$mail->Username   = "scaf"; 
+					$mail->IsSMTP();
+					$mail->SMTPAuth   = true;
+					$mail->Host       = "172.20.74.2";
+					$mail->Port       = 25;
+					$mail->Username   = "scaf";
 					$mail->Password   = "GpoHermesInfra";
 					$mail->From = $respuesta_c->contacto;
-					$mail->FromName = $respuesta_c->nombre;				
+					$mail->FromName = $respuesta_c->nombre;
 					$mail->Subject    = "Respuesta de Solicitud de Informacion(TICKET #".$respuesta_c->folio.")";
 					$mail->AddAddress($respuesta_c->mail_solicitante);
 					$mail->AddBCC("khernandezz@grupohi.mx");
 					$mail->AddBCC('jccarrillo@grupohi.mx');
 					$mail->AddBCC('oaguayo@grupohi.mx');
-					 
+
 					 //Cuerpo del mensaje
 					$cuerpo='
 <HTML><HEAD><META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1"></HEAD><BODY>
@@ -261,8 +261,8 @@ $respuesta_c->respuesta
 </tr>
 </table>
 <br>
-<span>Este correo es informativo, favor de no responder a 
-esta direcci&oacute;n de correo, ya que no se encuentra habilitada 
+<span>Este correo es informativo, favor de no responder a
+esta direcci&oacute;n de correo, ya que no se encuentra habilitada
 para recibir mensajes.
 <br>
 Si requiere mayor informaci&oacute;n sobre el contenido visite
@@ -281,17 +281,17 @@ p&aacute;gina<br>
 					$mail->Body = utf8_decode($cuerpo);
 					$mail->Send();
 				endforeach;
-				
+
             endif;
-			
-			
+
+
 		else:
 			redirect('login/index', 'refresh');
-		endif; 		
+		endif;
 	}*/
-	
+
 	private function set_upload_options()
-	{   
+	{
 		$config = array();
 		$config['upload_path'] = './documents/baw/';
 		$config['allowed_types'] = 'txt|pdf|xls|ppt|zip|rar|jpeg|jpg|xml|xsl|doc|docx|xlsx|word|xl';
@@ -299,7 +299,7 @@ p&aacute;gina<br>
 		$config['overwrite']     = FALSE;
 		return $config;
 	}
-	
+
 	public function respuesta()
 	{
 		if($this->session->userdata('id')):
@@ -309,75 +309,106 @@ p&aacute;gina<br>
 			$data['idperfil'] = $session_data['idperfil'];
 			$data["menu"] = $this->menu->crea_menu($data['idperfil']);
 			$data["menu_baw"] = $this->menu->crea_menu_baw($data['idperfil'],$data['iduser']);
-			$data['css'] = '';		
-			$data['js'] = '';			
+			$data['css'] = '';
+			$data['js'] = '';
 
 			$solicitud=$this->input->post('solicitud');
 			$respuesta=$this->input->post('respuesta');
-			
 			$respuesta=strtr(mb_strtoupper($respuesta,'ISO-8859-1'),"àèìòùáéíóúçñäëïöü","ÀÈÌÒÙÁÉÍÓÚÇÑÄËÏÖÜ");
-			$result=$this->administrar_model->agrega_respuesta($solicitud,$data['usuario'],$respuesta);
-			$data["mensaje"]='';			
-			if($result[0]["mensaje"]==0):
-				$data["mensaje"].="<div class='alert alert-danger'>
-						<h5>Ocurri&oacute; un error durante la acci&oacute;n</h5>
-						<a href='".base_url('baw/administrar/solicitudes_atendidas/').$solicitud."' class='btn btn-danger'>Intentar nuevamente</a>
-					</div>";
+			$accion =$this->input->post('accion');
+
+			if(empty($respuesta) || empty(trim($respuesta)) || empty(strip_tags($respuesta))):
+					$data["mensaje"].="<div class='alert alert-danger'>
+							<h5>Ocurri&oacute; un error durante la acci&oacute;n</h5>
+							<br>El mensaje contiene caracteres no v&aacute;lidos<br>
+							<a href='".base_url('baw/administrar/solicitudes_atendidas/').'/'. $solicitud."' class='btn btn-danger'>Intentar nuevamente</a>
+						</div>";
 			else:
-				$this->load->library('My_PHPMailer');
-				$mail = new PHPMailer();
-				$mail->IsSMTP(); 
-				$mail->SMTPAuth   = true; 
-				$mail->Host       = "172.20.74.6";   
-				$mail->Port       = 25;              
-				$mail->Username   = "scaf"; 
-				$mail->Password   = "GpoHermesInfra";
-					
-				$idrespuesta = $result[0]["mensaje"];
-				$this->load->library('upload');
-				$files = $_FILES;
-				$cpt = count($_FILES['userfile']['name']);
-				echo 'NUMERO DE ARCHIVOS ='.$cpt;
-				if(isset($_FILES['userfile']) && count($_FILES['userfile']['error']) == 1 && $_FILES['userfile']['error'][0] > 0):
-					$data["mensaje"].='';
+				if(!empty($accion) && $accion == 2):
+					$result[0]["mensaje"]= 1;
+					$this->administrar_model->reenviar_respuesta($solicitud,$data['usuario'],$respuesta);
 				else:
-					for($i=0; $i<$cpt; $i++):
-						$_FILES['userfile']['name']= $files['userfile']['name'][$i];
-						$_FILES['userfile']['type']= $files['userfile']['type'][$i];
-						$_FILES['userfile']['tmp_name']= $files['userfile']['tmp_name'][$i];
-						$_FILES['userfile']['error']= $files['userfile']['error'][$i];
-						$_FILES['userfile']['size']= $files['userfile']['size'][$i];    
-						$this->upload->initialize($this->set_upload_options());
-						if($this->upload->do_upload()):
-							$datos = array('upload_data' => $this->upload->data());
-							$file = $datos["upload_data"]["file_name"];	
-							$upload = $this->administrar_model->agrega_respuesta_documento($idrespuesta,$file);
-							$data["mensaje"].="<div class='alert alert-success'>
-							<h5>El archivo ".$file." fue subido con &eacute;xito</h5></div>";
-							$mail->AddAttachment('./documents/baw/'.$file);
-						else:
-							$data["mensaje"].="<div class='alert alert-danger'>
-							<h5>El archivo ".$file." no pudo ser subido</h5></div>";
-						endif;
-					endfor;
+					$result=$this->administrar_model->agrega_respuesta($solicitud,$data['usuario'],$respuesta);
 				endif;
-				$data["mensaje"].="<div class='alert alert-success'>
-						<h5>La acci&oacute;n se realiz&oacute; con &eacute;xito</h5>
-						<a href='".base_url('baw/administrar/index')."' class='btn btn-success'>Aceptar</a>
-					</div>";
-					
-			$data["respuesta_correo"]=$this->administrar_model->respuesta_correo($solicitud);
-				
-				foreach($data["respuesta_correo"] as $respuesta_c):
-					$mail->From = $respuesta_c->contacto;
-					$mail->FromName = $respuesta_c->nombre;				
-					$mail->Subject    = "Respuesta de Solicitud de Informacion(TICKET #".$respuesta_c->folio.")";
-					$mail->AddAddress($respuesta_c->mail_solicitante);
-					$mail->AddBCC("khernandezz@grupohi.mx");
-					$mail->AddBCC('oaguayo@grupohi.mx');
-					 
-					 //Cuerpo del mensaje
-					$cuerpo='
+
+				$data["mensaje"]='';
+				if($result[0]["mensaje"]==0):
+					$data["mensaje"].="<div class='alert alert-danger'>
+							<h5>Ocurri&oacute; un error durante la acci&oacute;n</h5>
+							<a href='".base_url('baw/administrar/solicitudes_atendidas/').'/'. $solicitud."' class='btn btn-danger'>Intentar nuevamente</a>
+						</div>";
+				else:
+					$this->load->library('My_PHPMailer');
+					$mail = new PHPMailer();
+					$mail->IsSMTP();
+					$mail->SMTPAuth   = true;
+					$mail->Host       = "172.20.74.6";
+					$mail->Port       = 25;
+					$mail->Username   = "scaf";
+					$mail->Password   = "GpoHermesInfra";
+
+					$idrespuesta = $result[0]["mensaje"];
+					$this->load->library('upload');
+					$files = $_FILES;
+					$cpt = count($_FILES['userfile']['name']);
+					echo 'NUMERO DE ARCHIVOS ='.$cpt;
+					if(isset($_FILES['userfile']) && count($_FILES['userfile']['error']) == 1 && $_FILES['userfile']['error'][0] > 0):
+						$data["mensaje"].='';
+					else:
+						for($i=0; $i<$cpt; $i++):
+							$_FILES['userfile']['name']= $files['userfile']['name'][$i];
+							$_FILES['userfile']['type']= $files['userfile']['type'][$i];
+							$_FILES['userfile']['tmp_name']= $files['userfile']['tmp_name'][$i];
+							$_FILES['userfile']['error']= $files['userfile']['error'][$i];
+							$_FILES['userfile']['size']= $files['userfile']['size'][$i];
+							$this->upload->initialize($this->set_upload_options());
+							if($this->upload->do_upload()):
+								$datos = array('upload_data' => $this->upload->data());
+								$file = $datos["upload_data"]["file_name"];
+								$upload = $this->administrar_model->agrega_respuesta_documento($idrespuesta,$file);
+								$data["mensaje"].="<div class='alert alert-success'>
+								<h5>El archivo ".$file." fue subido con &eacute;xito</h5></div>";
+								$mail->AddAttachment('./documents/baw/'.$file);
+							else:
+								$data["mensaje"].="<div class='alert alert-danger'>
+								<h5>El archivo ".$file." no pudo ser subido</h5></div>";
+							endif;
+						endfor;
+					endif;
+					$data["mensaje"].="<div class='alert alert-success'>
+							<h5>La acci&oacute;n se realiz&oacute; con &eacute;xito</h5>
+							<a href='".base_url('baw/administrar/index')."' class='btn btn-success'>Aceptar</a>
+						</div>";
+
+				$data["respuesta_correo"]=$this->administrar_model->respuesta_correo($solicitud);
+					foreach($data["respuesta_correo"] as $respuesta_c):
+						$mail->From = $respuesta_c->contacto;
+						$mail->FromName = $respuesta_c->nombre;
+						$mail->Subject    = "Respuesta de Solicitud de Informacion(TICKET #".$respuesta_c->folio.")";
+						$mail->AddAddress($respuesta_c->mail_solicitante);
+
+						$correos = $this->administrar_model->obtener_correos($respuesta_c->idproyecto);
+						if (!empty($correos)):
+							if (!empty($correos['bbc'])):
+								foreach (explode(";", $correos['bbc']) as $correo):
+									$mail->AddBCC($correo);
+								endforeach;
+							endif;
+							if (!empty($correos['cc'])):
+								foreach (explode(";", $correos['cc']) as $correo):
+									$mail->AddCC($correo);
+								endforeach;
+							endif;
+							if (!empty($correos['cco'])):
+								foreach (explode(";", $correos['cco']) as $correo):
+									$mail->AddCCO($correo);
+								endforeach;
+							endif;
+						endif;
+						die;
+
+						 //Cuerpo del mensaje
+						$cuerpo='
 <HTML><HEAD><META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1"></HEAD><BODY>
 <style>
 #cuerpo{
@@ -448,8 +479,8 @@ utf8_decode($respuesta_c->respuesta)
 <br>
 </fieldset>
 <br>
-<span>Este correo es informativo, favor de no responder a 
-esta direcci&oacute;n de correo, ya que no se encuentra habilitada 
+<span>Este correo es informativo, favor de no responder a
+esta direcci&oacute;n de correo, ya que no se encuentra habilitada
 para recibir mensajes.
 <br>
 Si requiere mayor informaci&oacute;n sobre el contenido visite
@@ -464,19 +495,20 @@ p&aacute;gina<br>
 </i>
 </div>
 </BODY></HTML>';
-					$mail->IsHTML(true);
-					$mail->Body = $cuerpo;
-					$mail->Send();
-				endforeach;
-				
+						$mail->IsHTML(true);
+						$mail->Body = $cuerpo;
+						$mail->Send();
+					endforeach;
+				endif;
+
             endif;
 			$this->template->load('template','responder_solicitud_mensaje',$data);
-			
+
 		else:
 			redirect('login/index', 'refresh');
-		endif;		
+		endif;
 	}
-	
+
 	public function atendiendose()
 	{
 		if($this->session->userdata('id')):
@@ -501,15 +533,15 @@ p&aacute;gina<br>
 				//$datasource[]=array_map('utf8_encode', $resultado);
 				$datasource[]=($resultado);
 			endforeach;
-				
+
 			$data["datasource"]=json_encode($datasource);
 			$this->template->load('template','atendiendose',$data);
 
 		else:
 			redirect('login/index', 'refresh');
-		endif;  
+		endif;
 	}
-	
+
 	public function atendidos()
 	{
 		if($this->session->userdata('id')):
@@ -519,7 +551,7 @@ p&aacute;gina<br>
 			$data['idperfil'] = $session_data['idperfil'];
 			$data["menu"] = $this->menu->crea_menu($data['idperfil']);
 			$data["menu_baw"] = $this->menu->crea_menu_baw($data['idperfil'],$data['iduser']);
-			$data['css'] = '';		
+			$data['css'] = '';
 			$data['js'] = '<script src="'.base_url('assets/js/baw.js').'"></script>';
 			$data['js'] .= '<script src="'.base_url('assets/js/jquery-ui.min.js').'"></script> ';
 			$data['js'] .= '<script src="'.base_url('assets/js/modernizr.min.js').'"></script> ';
@@ -534,15 +566,15 @@ p&aacute;gina<br>
 				//$datasource[]=array_map('utf8_encode', $resultado);
 				$datasource[]=($resultado);
 			endforeach;
-				
+
 			$data["datasource"]=json_encode($datasource);
 			$this->template->load('template','atendidos',$data);
 
 		else:
 			redirect('login/index', 'refresh');
-		endif;  
+		endif;
 	}
-	
+
 	public function modificar_solicitud()
 	{
 		$solicitud=$this->input->get('solicitud');
@@ -554,9 +586,9 @@ p&aacute;gina<br>
 			echo '{"msg":"ko"}';
 		else:
 			echo '{"msg":"'.$new.'"}';
-		endif;	
+		endif;
 	}
-	
+
 	public function solicitudes_atendidas_descartadas($solicitud)
 	{
 		if($this->session->userdata('id')):
@@ -567,18 +599,18 @@ p&aacute;gina<br>
 			$data["menu"] = $this->menu->crea_menu($data['idperfil']);
 			$data["menu_baw"] = $this->menu->crea_menu_baw($data['idperfil'],$data['iduser']);
 			$data['css'] = '';
-			
-			$result=$this->administrar_model->descartar_solicitud_atendida($solicitud);	
+
+			$result=$this->administrar_model->descartar_solicitud_atendida($solicitud);
 			$data["result"]=$result[0]["mensaje"];
 			$data["aceptar"]=base_url('baw/administrar/atendiendose');
-			$data["error"]=base_url('baw/administrar/atendiendose');		
-			
+			$data["error"]=base_url('baw/administrar/atendiendose');
+
 			$this->template->load('template','mensaje_accion',$data);
 		else:
 			redirect('login/index', 'refresh');
-		endif;  		
+		endif;
 	}
-	
+
 	public function solicitar_datos($solicitud,$accion)
 	{
 		if($this->session->userdata('id')):
@@ -588,23 +620,23 @@ p&aacute;gina<br>
 			$data['idperfil'] = $session_data['idperfil'];
 			$data["menu"] = $this->menu->crea_menu($data['idperfil']);
 			$data["menu_baw"] = $this->menu->crea_menu_baw($data['idperfil'],$data['iduser']);
-			$data['css'] = '<link href="'.base_url('assets/css/summernote.css').'" rel="stylesheet">';			
+			$data['css'] = '<link href="'.base_url('assets/css/summernote.css').'" rel="stylesheet">';
 			$data['css'] .= '<link href="'.base_url('assets/css/summernote-bs3.css').'" rel="stylesheet">';
-			$data['js'] = '<script src="'.base_url('assets/js/baw.js').'"></script>';	
+			$data['js'] = '<script src="'.base_url('assets/js/baw.js').'"></script>';
 			$data['js'] .= '<script src="'.base_url('assets/js/baw_editor.js').'"></script>';
 			$data['js'] .= '<script src="'.base_url('assets/js/summernote.min.js').'"></script> ';
-			
+
 			//CONEXION A INTRANET
 			$connect = mysqli_connect('172.20.74.92', 'intranet_ghi','Int_GHi14','igh');
-			if ($connect) 
-			{ 
+			if ($connect)
+			{
 				$result=mysqli_query($connect,"SELECT idusuario,concat_ws(' ',nombre,apaterno,amaterno)as nombre,correo FROM usuario where usuario_estado = 2 and correo<>'' order by nombre,apaterno,amaterno ASC");
 				$row=mysqli_num_rows($result);
 				$datasource = array();
 				for($j=0;$j<$row;$j++)
 				{
 					$datasource[]=mysqli_fetch_array($result);
-					
+
 				}
 				$data["datasource"]=$datasource;
 			}
@@ -615,9 +647,9 @@ p&aacute;gina<br>
 			$this->template->load('template','solicitar_datos',$data);
 		else:
 			redirect('login/index', 'refresh');
-		endif;  	
+		endif;
 	}
-	
+
 	public function enviar_datos()
 	{
 		if($this->session->userdata('id')):
@@ -628,29 +660,29 @@ p&aacute;gina<br>
 			$data["menu"] = $this->menu->crea_menu($data['idperfil']);
 			$data["menu_baw"] = $this->menu->crea_menu_baw($data['idperfil'],$data['iduser']);
 			$data['css'] = '';
-			$data['js'] = '<script src="'.base_url('assets/js/baw.js').'"></script>';					
-			
+			$data['js'] = '<script src="'.base_url('assets/js/baw.js').'"></script>';
+
 			$conteo = $this->input->post('conteo');
 			$tema=$this->input->post('tema');
 			$comentario=$this->input->post('comentario');
 			$solicitud=$this->input->post('solicitud');
 			$id=$this->input->post('id');
-			$Usuarios='';			
+			$Usuarios='';
 			$usuario_enviar='';
-			
+
 			for($i=1;$i<=$conteo;$i++):
 				if($this->input->post('usuario'.$i)!=''):
 					$usuario = ($this->input->post('usuario'.$i)=='')?0:$this->input->post('usuario'.$i);
-					
+
 					$Usuarios.= $usuario.';';
 					if($i==$conteo):$coma=',';else:$coma=',';endif;
-					$usuario_enviar .= $usuario.$coma;					
+					$usuario_enviar .= $usuario.$coma;
 				endif;
-			endfor;		
-			
+			endfor;
+
 			$data["mensaje"]='';
-			$tema = strtr(mb_strtoupper($tema,'ISO-8859-1'),"àèìòùáéíóúçñäëïöü","ÀÈÌÒÙÁÉÍÓÚÇÑÄËÏÖÜ");
-			$comentario = strtr(mb_strtoupper($comentario,'ISO-8859-1'),"àèìòùáéíóúçñäëïöü","ÀÈÌÒÙÁÉÍÓÚÇÑÄËÏÖÜ");
+			$tema = strtr(mb_strtoupper($tema, 'ISO-8859-1'),"àèìòùáéíóúçñäëïöü","ÀÈÌÒÙÁÉÍÓÚÇÑÄËÏÖÜ");
+			$comentario = strtr(mb_strtoupper($comentario, 'ISO-8859-1'),"àèìòùáéíóúçñäëïöü","ÀÈÌÒÙÁÉÍÓÚÇÑÄËÏÖÜ");
 			$result=$this->administrar_model->enviar_datos($solicitud,$data["usuario"],$tema,$comentario,$usuario_enviar);
 			$new = $result[0]["mensaje"];
 			if($new=="0"):
@@ -660,22 +692,22 @@ p&aacute;gina<br>
 						<a href='".base_url('baw/informacion/informacion_responder/'.$idrespuesta)."' class='btn btn-danger'>Intentar nuevamente</a>
 					</div>";
 			else:
-				//echo '{"msg":"ok"}';				
+				//echo '{"msg":"ok"}';
 				//ENVIO DE CORREO
 				$informacion=$this->administrar_model->consulta_solicitud_datos($solicitud);
 				foreach($informacion as $info):
 					$this->load->library('My_PHPMailer');
 					$mail = new PHPMailer();
-					$mail->IsSMTP(); 
-					$mail->SMTPAuth   = true; 
-					$mail->Host       = "172.20.74.6";   
-					$mail->Port       = 25;              
-					$mail->Username   = "scaf"; 
+					$mail->IsSMTP();
+					$mail->SMTPAuth   = true;
+					$mail->Host       = "172.20.74.6";
+					$mail->Port       = 25;
+					$mail->Username   = "scaf";
 					$mail->Password   = 'GpoHermesInfra';
 					$mail->From = 'sao@grupohi.mx';
-					$mail->FromName = "Bitácora de Atención Web";				
+					$mail->FromName = "Bitï¿½cora de Atenciï¿½n Web";
 					$mail->Subject    = $tema;
-					
+
 					//DOCUMENTOS DE SOLICITUD
 				$idrespuesta_datos = $new;
 				$this->load->library('upload');
@@ -686,16 +718,16 @@ p&aacute;gina<br>
 				else:
 					$data["mensaje"].="<div class='alert alert-success'>Se han adjuntado los siguientes documentos:</div>";
 					for($i=0; $i<$cpt; $i++):
-						echo $i; 
+						echo $i;
 						$_FILES['userfile']['name']= $files['userfile']['name'][$i];
 						$_FILES['userfile']['type']= $files['userfile']['type'][$i];
 						$_FILES['userfile']['tmp_name']= $files['userfile']['tmp_name'][$i];
 						$_FILES['userfile']['error']= $files['userfile']['error'][$i];
-						$_FILES['userfile']['size']= $files['userfile']['size'][$i];    
+						$_FILES['userfile']['size']= $files['userfile']['size'][$i];
 						$this->upload->initialize($this->set_upload_options());
 						if($this->upload->do_upload()):
 							$datos = array('upload_data' => $this->upload->data());
-							$file = $datos["upload_data"]["file_name"];	
+							$file = $datos["upload_data"]["file_name"];
 							$upload = $this->administrar_model->solicitud_comentario_documento($idrespuesta_datos,$file);
 							$data["mensaje"].="<div class='alert alert-success'>
 							<h5>El archivo ".$file." fue adjuntado con &eacute;xito</h5></div>";
@@ -706,26 +738,26 @@ p&aacute;gina<br>
 						endif;
 					endfor;
 				endif;
-				
+
 				$data["mensaje"].="<div class='alert alert-success'>
 						<h5>La solicitud de informaci&oacute;n fue enviada con &eacute;xito a los siguientes destinatarios:</h5>";
 				for($k=1;$k<=$conteo;$k++):
-						if($this->input->post('correo'.$k)!=''):							
+						if($this->input->post('correo'.$k)!=''):
 							$data["mensaje"].=$this->input->post('correo'.$k).'<br>';
 						endif;
-					endfor;		
+					endfor;
 				$data["mensaje"].="<br><a href='".base_url('baw/administrar/solicitudes_atendidas/'.$id)."/0' class='btn btn-success'>Aceptar</a>
 					</div>";
-					
-					
+
+
 					for($k=1;$k<=$conteo;$k++):
-						if($this->input->post('correo'.$k)!=''):							
+						if($this->input->post('correo'.$k)!=''):
 							$mail->AddAddress($this->input->post('correo'.$k));
 						endif;
 					endfor;
 					$mail->AddBCC('khernandezz@grupohi.mx');
 					$mail->AddBCC('oaguayo@grupohi.mx');
-					 
+
 					 //Cuerpo del mensaje
 					$cuerpo='
 <HTML><HEAD><META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1"></HEAD><BODY>
@@ -784,7 +816,7 @@ $comentario
 </fieldset>
 <br>
 Se le recuerda que usted debe responder esta solicitud
-desde el m&oacute;dulo de Atenci&oacute;n a 
+desde el m&oacute;dulo de Atenci&oacute;n a
 usuarios ubicado en la siguiente direcci&oacute;n:
 <a href="http://opc.grupohi.mx/baw/informacion/index">
 Responder</a><br><br>
@@ -800,15 +832,15 @@ SAO.- Grupo Hermes Infraestructura. </strong>.
 					$mail->Body = $cuerpo;
 					$mail->Send();
 				endforeach;
-			endif;			
+			endif;
 			$this->template->load('template','administrar_enviar_datos',$data);;
 		else:
 			redirect('login/index', 'refresh');
-		endif;  
-		
-		
+		endif;
+
+
 	}
-	
+
 	public function consulta($solicitud)
 	{
 		if($this->session->userdata('id')):
@@ -820,11 +852,11 @@ SAO.- Grupo Hermes Infraestructura. </strong>.
 			$data["menu_baw"] = $this->menu->crea_menu_baw($data['idperfil'],$data['iduser']);
 			$data['css'] = '';
 			$data['js'] = '';
-			
+
 			$data["solicitudes"] = $this->administrar_model->desplega_consulta_solicitud($solicitud);
-			$data["preguntas"]=$this->administrar_model->desplega_preguntas($solicitud);			
+			$data["preguntas"]=$this->administrar_model->desplega_preguntas($solicitud);
 			$data["respuesta"]=$this->administrar_model->desplega_respuesta($solicitud);
-			
+
 			$data["anterior"]='';
 			$data["siguiente"]='';
 			//Inicio de etiquetas
@@ -837,26 +869,26 @@ SAO.- Grupo Hermes Infraestructura. </strong>.
 					endif;
 				endforeach;
 				//Fin de etiquetas
-				
+
 			$this->template->load('template','consulta',$data);
 		else:
 			redirect('login/index', 'refresh');
-		endif; 		
+		endif;
 	}
-	
+
 	public function cerrar_tema ()
 	{
 		$solicitud=$this->input->get('solicitud');
-		$result=$this->administrar_model->cerrar_tema($solicitud);			
-						
+		$result=$this->administrar_model->cerrar_tema($solicitud);
+
 		$new = $result[0]["mensaje"];
 		if($new=="Error"):
 			echo '{"msg":"ko"}';
 		else:
 			echo '{"msg":"ok"}';
-		endif;  
+		endif;
 	}
-	
+
 }
 /*
 *end modules/login/controllers/index.php

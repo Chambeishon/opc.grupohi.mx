@@ -2,6 +2,22 @@
 	<h5><b>
     <img src="<?=base_url('assets/img/1399336774_View_Details.png')?>"> <a class="bom-menu" href="<?=base_url('baw/home/index')?>">BIT&Aacute;CORA DE ATENCI&Oacute;N WEB / </a> <a class="bom-menu" href="<?=base_url('baw/administrar/index')?>">ADMINISTRAR / </a><a class="bom-menu" href="<?=base_url('baw/administrar/atendidos')?>">SOLICITUDES ATENDIDAS / CONSULTA</a></b></h5>
 </div>
+<?php
+	foreach($solicitudes as $solicitud):
+		if (empty(trim($solicitud->respuesta)) || empty(trim(strip_tags($solicitud->respuesta)))):
+			echo '
+		<form action="'. base_url('baw/administrar/responder_solicitud') .'" class="form-horizontal" role="form" method="post" accept-charset="utf-8">
+		<div class="row" align="center">
+			<div class="alert alert-danger">
+				<h4>La respuesta se encuentra vacia</h4>
+				<input type="hidden" id="idsolicitud" name="idsolicitud" value="'. $solicitud->idsolicitud .'"/>
+        <input type="hidden" id="accion" name="accion" value="2"/>
+				<input type="submit" value="Volver a responder solicitud" class="btn btn-danger">
+			</div>
+		</div>
+	</form>';
+		endif;
+	endforeach; ?>
 <?=form_open('',array('class'=>'form-horizontal','role'=>'form'));?>
 <?php foreach($solicitudes as $solicitud):?>
 <div class="row">
@@ -70,7 +86,7 @@
             <div class="form-group">
             	<?php if(sizeof($preguntas)==0):?>
                 	<div class="col-sm-12"><label class="control-label">No se ha hecho solicitud de informaci&oacute;m</label></div>
-                <?php endif;?>      	
+                <?php endif;?>
             	<?php foreach($preguntas as $pregunta):?>
                 	<div class="col-sm-12"><label class="control-label">Tema: </label> <?=$pregunta->tema?> <?=$pregunta->fecha_solicitud?> | <?=$pregunta->hora_s?>
                     <!--<?=$pregunta->boton?>-->
@@ -80,7 +96,7 @@
                     <div class="col-sm-12"><?=$pregunta->link?></div>
                     <?php $respuestas=$this->administrar_model->desplega_respuesta($pregunta->idsolicitud_datos);?>
                     <hr>
-                    <?php foreach($respuestas as $respuesta):?> 
+                    <?php foreach($respuestas as $respuesta):?>
                         <!-- Modal -->
                         <div class="modal fade" id="myModal<?=$respuesta["idsolicitud_datos"]?>" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                           <div class="modal-dialog">
@@ -90,8 +106,8 @@
                                 <h4 class="modal-title" id="myModalLabel">TEMA <?=$respuesta["tema"]?></h4>
                               </div>
                               <div class="modal-body">
-                                <?php foreach($respuestas as $respuesta2):?> 
-									<?=$respuesta2["titulo"]?> 
+                                <?php foreach($respuestas as $respuesta2):?>
+									<?=$respuesta2["titulo"]?>
                                     <br>
 									<?=$respuesta2["respuesta"]?>
                                     <hr>
@@ -103,8 +119,8 @@
                             </div>
                           </div>
                         </div>
-                    <?php endforeach;?>   
-                <?php endforeach?>        				
+                    <?php endforeach;?>
+                <?php endforeach?>
           	</div>
         </div>
     </div>
@@ -116,7 +132,6 @@
 </div>
 <br>
 <div class="row" align="center">
-<a href="<?=base_url('baw/administrar/atendidos')?>" class="btn btn-success">Aceptar</a>   
+<a href="<?=base_url('baw/administrar/atendidos')?>" class="btn btn-success">Aceptar</a>
 </div>
 <?=form_close();?>
-

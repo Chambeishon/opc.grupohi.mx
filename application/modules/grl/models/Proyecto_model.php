@@ -7,7 +7,7 @@ class Proyecto_model extends CI_Model
         parent::__construct();   
     }
     
-	
+	 
     public function desplega()
     {
 		$query = $this->db->query("SELECT * FROM vw_grl_proyecto ORDER BY nombre_proyecto");

@@ -4,6 +4,11 @@
 </div>
 <div class="row" align="center">
     <div class="col-md-2">
+        <a href="<?=base_url('doc/reportes_ejecutivos/index');?>" class="bom-menu">
+            <i class="fa fa-gear fa-5x"></i><h6><strong>REPORTES EJECUTIVOS</strong></h6>
+        </a>
+    </div>
+    <div class="col-md-2">
     	<a href="<?=base_url('doc/categoria/index');?>" class="bom-menu">
         	<i class="fa fa-gear fa-5x"></i><h6><strong>CATEGOR&Iacute;AS</strong></h6>
         </a>

@@ -2,7 +2,6 @@
 //session_start(); 
 class Proyecto extends MX_Controller
 {
-    
     public function __construct()
     {
         parent::__construct();
@@ -12,7 +11,7 @@ class Proyecto extends MX_Controller
     }
     
     public function index()
-    { 
+    {
 		if($this->session->userdata('id')):
      		$session_data = $this->session->userdata();
      		$data['usuario'] = $session_data['username'];
