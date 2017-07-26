@@ -5,9 +5,10 @@ class Reportes_ejecutivos extends MX_Controller
 	public function __construct()
 	{
 		parent::__construct();
-		$this->load->library('template');  
-		$this->load->library('menu'); 
-		$this->load->model('reportes_ejecutivos_model');  
+		$this->load->library('template');
+		$this->load->library('menu');
+		$this->load->model('reportes_ejecutivos_model');
+		$this->load->model('programacion_model');
 	}
 
 	public function index()
@@ -21,28 +22,20 @@ class Reportes_ejecutivos extends MX_Controller
 			$data['idperfil'] = $session_data['idperfil'];
 			$data["menu"] = $this->menu->crea_menu($data['idperfil']);
 			$data['css'] = '';
-			$data['js'] = '<script src="'.base_url('assets/js/jquery-ui.min.js').'"></script>
-<script type="text/javascript">
-$(".box").slice(1).hide();
-$(function() {
-	$(".proyectos").change(function() {
-		$(".box").hide();
-		id = $(this).val();
-		$("#proyecto_"+ id).show();
-	});
-});
-</script>';
+			$data['js'] = '<script src="'.base_url('assets/js/jquery-ui.min.js').'"></script>';
+			$data['js'] .= '<script src="'.base_url('assets/js/doc-reportes-ejecutivos-config.js').'"></script>';
+
 			$data['campos'] = $this->session->flashdata('campos') ? $this->session->flashdata('campos') : array('tipo' => false, 'rango' => false, 'fecha' => false);
 			$data["mensaje"].= $this->session->flashdata('mensaje') ? $this->session->flashdata('mensaje') : '';
-			$proyectos = $this->reportes_ejecutivos_model->obtener_proyectos();
+			$proyectos = $this->programacion_model->desplegar_contratos_activos($data['iduser']);
 
 			foreach ($proyectos as $p)
 			{
-				$data['proyectos'][$p['idproyecto']] = array(
-					'nombre' => $p['nombre_proyecto'],
+				$data['proyectos'][$p->idproyecto] = array(
+					'nombre' => $p->nombre_proyecto,
 					'params' => array(
-						'1' => $this->reportes_ejecutivos_model->obtener_parametros_todos(1, $p['idproyecto']),
-						'2' => $this->reportes_ejecutivos_model->obtener_parametros_todos(2, $p['idproyecto']),
+						'1' => $this->reportes_ejecutivos_model->obtener_parametros_todos(1, $p->idproyecto),
+						'2' => $this->reportes_ejecutivos_model->obtener_parametros_todos(2, $p->idproyecto),
 					),
 				);
 			}
@@ -67,50 +60,83 @@ $(function() {
 	{
 		if($this->session->userdata('id')):
 			$session_data = $this->session->userdata();
-			$data = $this->input->get();
-// echo '<pre>';var_dump($data);die;
-			if (empty($data['tipo'])):
-				$this->session->set_flashdata('mensaje', "<div class='alert alert-danger'>
-						<h5>Ocurri&oacute; un error durante la acci&oacute;n</h5>
-						<br>El campo \"N&uacute;mero\" no puede quedar vac&iacute;o<br>
-					</div>");
-				$this->session->set_flashdata('campos', $data);
+			$data = $this->input->post();
+			$send = array(
+				'error' => false,
+				'msg' => "",
+				'data' => "",
+			);
+			$periodos = array(
+				'1' => 'D&iacute;as',
+				'2' => 'Semanas',
+				'3' => 'Meses'
+			);
+
+			// Filtra el array de rangos, aceptando "0" como respuesta válida
+			$data['rangos'] = array_filter($data['rangos'], 'strlen');
+
+			// Revisa si los rangos se encuentran vacios
+			if (empty($data['rangos'])):
+				$send['error'] = true;
+				$send['msg'] = "Los campos de rango no pueden estar vacios.";
+
 			else:
-				$data['rangos']['de'] = array_filter($data['rangos']['de'], function($var) {
-					return ($var==="0" || $var);
-				});
-				$data['rangos']['a'] = array_filter($data['rangos']['a'], function($var) {
-					return ($var==="0" || $var);
-				});
 
-				$guardar = array();
+				$guardar = array(
+					'tipo' => $data['tipo'],
+					'rango_inicial' => $data['rangos']['de'],
+					'rango_final' => $data['rangos']['a'],
+					'periodo' => $data['periodo'],
+					'iduser' => $session_data['id'],
+					'idproyecto' => $data['idproyecto']
+				);
 
-				foreach ($data['rangos']['de'] as $key => $value):
-					$guardar[] = array(
-						'tipo' => $data['tipo'],
-						'rango_inicial' => $data['rangos']['de'][$key],
-						'rango_final' => $data['rangos']['a'][$key],
-						'periodo' => $data['periodo'],
-						'iduser' => $session_data['id'],
-						'idproyecto' => $data['idproyecto']
-					);
-				endforeach;
+				// Guarda el rango en la db
+				$id = $this->reportes_ejecutivos_model->agregar_parametros($guardar);
 
-				$this->reportes_ejecutivos_model->agregar_parametros($guardar);
-				$this->session->set_flashdata('mensaje', "<div class='alert alert-success'>
-								<h5>El par&aacute;metro fu&eacute; creado con &eacute;xito</h5></div>");
+				// Regresa una nueva fila
+				$send['msg'] = "El parámetro fué agregado con éxito";
+				$send['data'] = '<tr>
+									<th scope="row">'. $data['rangos']['de'] .' - '. $data['rangos']['a'] .'</th>
+									<td>'. $periodos[$data['periodo']] .'</td>
+									<td><a href="'. base_url('doc/reportes_ejecutivos/eliminar/'. $id) .'" class="eliminar_rango">Eliminar</a></td>
+								</tr>';
 			endif;
 
-			redirect('doc/reportes_ejecutivos/index', 'refresh');
+			echo json_encode($send);
 		else:
 			redirect('login/index', 'refresh');
 		endif;
 	}
 
-	public function modificar($idparametro_reporte = 0)
+	public function eliminar($idreporte_ejecutivo = 0)
 	{
 		if($this->session->userdata('id')):
-			if (!$idparametro_reporte):
+			$send = array(
+				'error' => false,
+				'msg' => ""
+			);
+
+			if (!$idreporte_ejecutivo):
+				$send['error'] = true;
+
+				$send['msg'] = "El ID del parámetro está vacío o no es válido";
+
+			else:
+				$this->reportes_ejecutivos_model->eliminar_parametro($idreporte_ejecutivo);
+				$send['msg'] = "El parámetro fué eliminado con éxito";
+			endif;
+
+			echo json_encode($send);
+		else:
+			redirect('login/index', 'refresh');
+		endif;
+	}
+
+	public function modificar($idreporte_ejecutivo = 0)
+	{
+		if($this->session->userdata('id')):
+			if (!$idreporte_ejecutivo):
 				$this->session->set_flashdata('mensaje', "<div class='alert alert-danger'>
 						<h5>Ocurri&oacute; un error durante la acci&oacute;n</h5>
 						<br>El ID del par&aacute;metro est&aacute; vac&iacute;o o no es v&aacute;lido<br>
@@ -119,7 +145,7 @@ $(function() {
 			else:
 				if ($this->input->get('tipo')):
 					$data = $this->input->get();
-					$this->reportes_ejecutivos_model->modificar_parametro($idparametro_reporte, $data);
+					$this->reportes_ejecutivos_model->modificar_parametro($idreporte_ejecutivo, $data);
 					$this->session->set_flashdata('mensaje', "<div class='alert alert-success'>
 								<h5>El par&aacute;metro fu&eacute; modificado con &eacute;xito</h5></div>");
 					return redirect('doc/reportes_ejecutivos/index', 'refresh');
@@ -130,7 +156,7 @@ $(function() {
 					$data['iduser'] = $session_data['id'];
 					$data['idperfil'] = $session_data['idperfil'];
 					$data["menu"] = $this->menu->crea_menu($data['idperfil']);
-					$data['idparametro_reporte'] = $idparametro_reporte;
+					$data['idreporte_ejecutivo'] = $idreporte_ejecutivo;
 					$data['periodos'] = array(
 						'1' => 'D&iacute;as',
 						'2' => 'Semanas',
@@ -140,7 +166,7 @@ $(function() {
 						'1' => 'Fecha vencida',
 						'2' => 'Fecha por vencer'
 					);
-					$parametro = $this->reportes_ejecutivos_model->obtener_parametro($idparametro_reporte);
+					$parametro = $this->reportes_ejecutivos_model->obtener_parametro($idreporte_ejecutivo);
 					$data['tipo'] = $parametro[0]['tipo'];
 					$data['rango'] = $parametro[0]['rango'];
 					$data['fecha'] = $parametro[0]['fecha'];
@@ -148,27 +174,6 @@ $(function() {
 					$this->template->load('template','reportes_ejecutivos_modificar',$data);
 				endif;
 			endif;
-		else:
-			redirect('login/index', 'refresh');
-		endif;
-	}
-
-	public function eliminar($idparametro_reporte = 0)
-	{
-		if($this->session->userdata('id')):
-			if (!$idparametro_reporte):
-				$this->session->set_flashdata('mensaje', "<div class='alert alert-danger'>
-						<h5>Ocurri&oacute; un error durante la acci&oacute;n</h5>
-						<br>El ID del par&aacute;metro est&aacute; vac&iacute;o o no es v&aacute;lido<br>
-					</div>");
-				return redirect('doc/reportes_ejecutivos/index', 'refresh');
-			else:
-				$this->reportes_ejecutivos_model->eliminar_parametro($idparametro_reporte);
-				$this->session->set_flashdata('mensaje', "<div class='alert alert-success'>
-							<h5>El par&aacute;metro fu&eacute; eliminado con &eacute;xito</h5></div>");
-				return redirect('doc/reportes_ejecutivos/index', 'refresh');
-			endif;
-
 		else:
 			redirect('login/index', 'refresh');
 		endif;

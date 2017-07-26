@@ -1,4 +1,4 @@
-﻿<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 class Reporte extends MX_Controller
 {
@@ -8,13 +8,16 @@ class Reporte extends MX_Controller
 		parent::__construct();
 		$this->load->model('reportes_ejecutivos_model');
 		$this->load->model('reporte_model');
+		$this->load->model('programacion_model');
+		$this->load->model('dashboard_model');
 		$this->load->library('template');
 		$this->load->library('menu');
 	}
 
 	public function index()
 	{
-		if($this->session->userdata('id')):
+		if($this->session->userdata('id'))
+		{
 			$session_data = $this->session->userdata();
 			$data['js'] = '';
 			$data['usuario'] = $session_data['username'];
@@ -22,218 +25,99 @@ class Reporte extends MX_Controller
 			$data['idperfil'] = $session_data['idperfil'];
 			$data["menu"] = $this->menu->crea_menu($data['idperfil']);
 
-			$fecha = new DateTime();
-			$hoy = $fecha->format('Y-m-d');
-			$proyectos = $this->reporte_model->obtener_proyectos();
-			$categorias = array();
+			$proyectosRaw = $this->dashboard_model->desplegar_proyectos($data['iduser']);
+			$datos = $categorias = array();
+
+			foreach ($proyectosRaw as $p)
+			{
+				$max_rango = $this->reporte_model->obtener_max_rango($p['idproyecto']);
+
+				$proyectos = $this->dashboard_model->desplegar_proyectos_fecha($data['iduser'], $max_rango[0]['fecha_fin'], $max_rango[1]['fecha_fin']);
+			}
 
 			foreach ($proyectos as $p)
 			{
 				$max_rango = $this->reporte_model->obtener_max_rango($p['idproyecto']);
 
-				$total = $this->reporte_model->obtener_cantidad_categorias("AND fecha BETWEEN CONVERT(datetime,'". $max_rango[0]['fecha_ini'] ."')
-AND CONVERT(datetime,'". $max_rango[1]['fecha_fin'] ."')", $p['idproyecto']);
-
-				if (empty($total))
+				if (!$max_rango[0]['fecha_fin'])
 					continue;
 
-				$proyectos_data[$p['idproyecto']] = array(
-					'nombre' => $p['nombre_proyecto'],
-					'data' => array()
-				);
+				$vencer = $this->dashboard_model->desplegar_contratos($data['iduser'], $p['idproyecto'], $max_rango[1]['fecha_ini'], $max_rango[1]['fecha_fin']);
+				$vencidas = $this->dashboard_model->desplegar_contratos($data['iduser'], $p['idproyecto'], $max_rango[0]['fecha_fin'], $max_rango[0]['fecha_ini']);
+				$datos_vencidas[$p['idproyecto']] = $this->_generarDatos($p['idproyecto'], $data['iduser'], $vencidas, $max_rango[0]['fecha_fin'], $max_rango[0]['fecha_ini']);
+				$datos_vencer[$p['idproyecto']] = $this->_generarDatos($p['idproyecto'], $data['iduser'], $vencer, $max_rango[1]['fecha_ini'], $max_rango[1]['fecha_fin']);
 
-				if (!empty($total))
-					foreach ($total as $tot)
-					{
-						$proyectos_data[$p['idproyecto']]['data'][$tot['cat_categoria']] = array(
-							'nombre' => $tot['cat_categoria'],
-							'idproyecto' => $p['idproyecto'],
-							'idcontrato' => $p['idcontrato'],
-							'idcat_categoria' => $tot['idcat_categoria'],
-							'y' => $tot['y'],
-							'customLegend' => '<h6>'. $tot['cat_categoria'] .'</h6><br>Total de actividades: <b>'. $tot['y'] .'</b><br> <b>0</b> vencidas',
-							'enableLegend' => false
-						);
-
-						if (!in_array($tot['cat_categoria']))
-							$categorias[] = $tot['cat_categoria'];
-					}
-
-				$vencidas = $this->reporte_model->obtener_cantidad_categorias("AND fecha BETWEEN CONVERT(datetime,'". $max_rango[0]['fecha_ini'] ."')
-AND CONVERT(datetime,'". $max_rango[0]['fecha_fin'] ."')", $p['idproyecto']);
-
-				if (!empty($vencidas))
-					foreach ($vencidas as $v)
-					{
-						$proyectos_data[$p['idproyecto']]['data'][$v['cat_categoria']]['vencidas'] = $v['y'];
-						$proyectos_data[$p['idproyecto']]['data'][$v['cat_categoria']]['customLegend'] = str_replace('<b>0</b> vencidas', '<br>Actividades vencidas:'. $v['y'], $proyectos_data[$p['idproyecto']]['data'][$v['cat_categoria']]['customLegend']);
-					}
-
-				$proyectos_data[$p['idproyecto']]['data'] = array_values($proyectos_data[$p['idproyecto']]['data']);
+				$datos_vencidas[$p['idproyecto']]['nombre'] = $datos_vencer[$p['idproyecto']]['nombre'] = $p['nombre_proyecto'];
 			}
 
 			$grafica = '';
-			foreach ($proyectos_data as $k => $p)
+			foreach ($datos_vencer as $k => $p)
+			{
+				foreach ($p['categorias'] as $c)
+				{
+					$sub = array();
+					foreach ($c['subcategorias'] as $sub_c)
+						$sub[] = $sub_c['idcat_subcategoria'];
+
+					$d[] = array(
+						'nombre' => $c['cat_categoria'],
+						'y' => $c['y'],
+						'customLegend' => 'Actividades vencidas: <b>'. $datos_vencidas[$k]['categorias'][$c['idcat_categoria']]['y']  . '</b><br>Actividades por vencer: <b>'. $c['y'] .'</b>',
+						'idproyecto' => $k,
+						'idcat_categoria' => $c['idcat_categoria'],
+						'subcategorias' => $sub,
+					);
+				}
+
 				$grafica .= '
-	generar_grafica($("#proyecto_'. $k .'"), "'. $p['nombre'] .'", '. json_encode($categorias) .', '. json_encode($p['data']) .', function(){
+
+	generar_grafica($("#proyecto_'. $k .'"), "'. $p['nombre'] .'", [], '. json_encode($d) .', function(){
 		generar_subgraficas(this.point.options);
 	});
 ';
+			}
 
-			$data['proyectos'] = $proyectos_data;
+			$data['proyectos'] = $datos_vencer;
 			$data['mes'] = $mes;
 			$data['js'] .= '<script src="'.base_url('assets/js/highcharts.js').'"></script>';
 			$data['js'] .= '<script src="'.base_url('assets/js/highcharts-more.js').'"></script>';
 			$data['js'] .= '<script src="'.base_url('assets/js/scrollreveal.min.js').'"></script>';
+			$data['js'] .= '<script src="'.base_url('assets/js/doc-reportes-ejecutivos.js').'"></script>';
 			$data['js'] .= '
 <script>
 $(function() {
-'. $grafica;
-
-			$data['js'] .= '
-
-	var loading = $("<i />", {
-		"class": "fa fa-spinner fa-spin fa-2x",
-		text: "",
-	});
-
-	function generar_subgraficas(options)
-	{
-		var sub_vencidas =  $("#show_proyecto_"+ options.idproyecto).find(".mostrar_vencidas").html(loading),
-			sub_vencer = $("#show_proyecto_"+ options.idproyecto).find(".mostrar_vencer").html(loading);
-			$(".mostrar_lista").empty().html(" ");
-
-		$("html, body").animate({
-			scrollTop: sub_vencidas.offset().top
-		}, 1000);
-
-		$.ajax({
-			url: "'. base_url('doc/reporte/sub_categorias') .'",
-			data: options,
-			cache: false,
-			type: "GET",
-			success: function(data) {
-				data = JSON.parse(data),
-				legend = [];
-				$.each(data, function(key, item){
-					mostrar = (key == 1 ? sub_vencidas : sub_vencer);
-					titulo = (key == 1 ? " vencidas" : " por vencer");
-					mostrar.html();
-					generar_grafica(mostrar, options.nombre + titulo, false, item, function(){
-						generar_lista(this.point.options);
-					});
-				});
-			},
-			error: function(xhr) {}
-		});
-	}
-	function generar_lista(options)
-	{
-		divTable = $("#proyecto_lista_"+ options.idproyecto).empty();
-		tabla = $(".lista").clone();
-
-		// $("html, body").animate({
-		// 	scrollTop: divTable.offset().top
-		// }, 1000);
-
-		$.ajax({
-			url: "'. base_url('doc/reporte/sub_lista') .'",
-			data: options,
-			cache: false,
-			type: "GET",
-			success: function(data) {
-				console.log(data);
-				tabla.removeClass("hidden");
-				tabla.children("tbody").prepend(data);
-				divTable.html(tabla);
-			},
-			error: function(xhr) {}
-		});
-	}
-
-	function generar_grafica(jObject, titulo, legend, data, callback)
-	{
-		jObject.highcharts({
-			chart: {
-				type: "pie"
-			},
-			title: {
-				text: titulo
-			},
-			credits: {
-				enabled: false
-			},
-			plotOptions: {
-				pie: {
-					allowPointSelect: true,
-					cursor: "pointer",
-					showInLegend: true,
-					dataLabels: {
-						enabled: true,
-						formatter: function(){
-							return this.point.customLegend ? this.point.customLegend : this.point.nombre +":"+ this.point.y;
-						}
-					}
-				}
-			},
-			tooltip: {
-				formatter: function() {
-					return (this.point.customLegend ? this.point.customLegend : "Número de actividades para <b>" + this.point.nombre + "</b> es <b>" + this.y + "</b>");
-				}
-			},
-			legend: {
-				align: "left",
-				layout: "vertical",
-				verticalAlign: "top",
-				x: 0,
-				y: 20,
-				enabled: legend,
-				labelFormatter: function() {
-					return this.options.nombre;
-				}
-			},
-			xAxis: {
-				categories: legend,
-			},
-			series: [{
-				data: data,
-				type: "pie",
-				point:{
-					events:{
-						click: function (event) {
-							callback.call(event);
-						}
-					}
-				}
-			}]
-		});
-	}
-	window.sr = ScrollReveal();
-	sr.reveal(document.querySelectorAll(".box"));
-
+'. $grafica . '
 });
 </script>';
 
 			$this->template->load('template','reporte',$data);
 
-		else:
+		}
+		else{
 			redirect('login/index', 'refresh');
-		endif;
+		}
 	}
 
 	public function sub_categorias()
 	{
+		$data = array();
+		$session_data = $this->session->userdata();
+		$data['usuario'] = $session_data['username'];
+		$data['iduser'] = $session_data['id'];
 		$idproyecto = $this->input->get('idproyecto');
 		$idcat_categoria = $this->input->get('idcat_categoria');
+		$subcategorias = $this->input->get('subcategorias');
+
 		$parametros = $this->reportes_ejecutivos_model->obtener_parametros_todos(0, $idproyecto);
-		$fecha = new DateTime();
-		$hoy = $fecha->format('Y-m-d');
+
 		$periodos = array(
 			'3' => 'month',
 			'2' => 'week',
 			'1' => 'day'
 		);
-		$data = array();
+		$send = $vencidas = $vencer = array();
+		$colores = array('#514F78', '#42A07B', '#9B5E4A', '#72727F', '#1F949A', '#82914E', '#86777F', '#42A07B', '#FDD089', '#FF7F79', '#A0446E', '#251535', '#F3E796', '#95C471', '#35729E', '#251735', '#DDDF0D', '#55BF3B', '#DF5353', '#7798BF', '#aaeeee', '#ff0066', '#eeaaee',
+		'#55BF3B', '#DF5353', '#7798BF', '#aaeeee');
 
 		foreach ($parametros as $k => $p)
 		{
@@ -241,65 +125,107 @@ $(function() {
 			// '2' => 'Fecha por vencer'
 			if ($p['tipo'] == 1)
 			{
-				$rango_vencidas = $this->reporte_model->obtener_rango_negativo($p['idreporte_ejecutivo'], $p['tipo']);
+				$rango_vencidas = $this->reporte_model->obtener_rango_negativo($p["idreporte_ejecutivo"], $p['tipo']);
 
-				$vencidas = $this->reporte_model->obtener_cantidad_categorias("AND fecha BETWEEN CONVERT(datetime,'". $rango_vencidas[0]['fecha_fin'] ."')
-AND CONVERT(datetime,'". $rango_vencidas[0]['fecha_ini'] ."') AND c.idcat_categoria = ". $idcat_categoria, $idproyecto);
+				$total = $this->dashboard_model->desplegar_contratos($data['iduser'], $idproyecto, $rango_vencidas[0]['fecha_fin'], $rango_vencidas[0]['fecha_ini']);
 
-				if (!empty($vencidas))
-					$data[$p['tipo']][] = array(
-						'customLegend' =>  "Actividades vencidas: " . $vencidas[0]['y'] .'<br> Fecha: '. $rango_vencidas[0]['fecha_fin'] .' al '. $rango_vencidas[0]['fecha_ini'],
-						'idproyecto' => $idproyecto,
-						'idcat_categoria' => $idcat_categoria,
-						'y' => $vencidas[0]['y'],
-						'fecha_ini' => $rango_vencidas[0]['fecha_ini'],
-						'fecha_fin' => $rango_vencidas[0]['fecha_fin'],
-						'tipo' => $p['tipo'],
-					);
+				$vencidas[$p["idreporte_ejecutivo"]] =  $this->_generarDatos($idproyecto, $data['iduser'], $total, $rango_vencidas[0]['fecha_fin'], $rango_vencidas[0]['fecha_ini']);
 			}
 
 			elseif ($p['tipo'] == 2)
 			{
 				$rango_vencer = $this->reporte_model->obtener_rango($p['idreporte_ejecutivo'], $p['tipo']);
 
-				$vencer = $this->reporte_model->obtener_cantidad_categorias("AND fecha BETWEEN CONVERT(datetime,'". $rango_vencer[0]['fecha_ini'] ."')
-AND CONVERT(datetime,'". $rango_vencer[0]['fecha_fin'] ."') AND c.idcat_categoria = ". $idcat_categoria, $idproyecto);
+				$total = $this->dashboard_model->desplegar_contratos($data['iduser'], $idproyecto, $rango_vencer[0]['fecha_ini'], $rango_vencer[0]['fecha_fin']);
 
-				if (!empty($vencer))
-					$data[$p['tipo']][] = array(
-						'customLegend' => "Actividades por vencer: ". $vencer[0]['y'] .'<br>Fecha: '. $rango_vencer[0]['fecha_ini'] .' al '. $rango_vencer[0]['fecha_fin'],
-						'idproyecto' => $idproyecto,
-						'idcat_categoria' => $idcat_categoria,
-						'y' => $vencer[0]['y'],
-						'fecha_ini' => $rango_vencer[0]['fecha_ini'],
-						'fecha_fin' => $rango_vencer[0]['fecha_fin'],
-						'tipo' => $p['tipo'],
-					);
+				$vencer[$p["idreporte_ejecutivo"]] =  $this->_generarDatos($idproyecto, $data['iduser'], $total, $rango_vencer[0]['fecha_ini'], $rango_vencer[0]['fecha_fin']);
+
 			}
 
 		}
-		echo json_encode($data);
+
+		foreach ($vencidas as $rangoid => $v)
+		{
+			$rango = $this->reporte_model->obtener_rango_negativo($rangoid, 1);
+			$rando = mt_rand(0, count($colores) - 1);
+
+			$v['categorias'][$idcat_categoria]['customLegend'] = "Vencidas <b>". $v['categorias'][$idcat_categoria]['y'] ."</b><br>del ". $rango[0]['fecha_fin'] ." al ". $rango[0]['fecha_ini'];
+			$v['categorias'][$idcat_categoria]['nombre'] = $v['categorias'][$idcat_categoria]['cat_categoria'];
+			$v['categorias'][$idcat_categoria]['color'] = $colores[$rando];
+			$v['categorias'][$idcat_categoria]['fecha_ini'] = $rango[0]['fecha_fin'];
+			$v['categorias'][$idcat_categoria]['fecha_fin'] = $rango[0]['fecha_ini'];
+			$v['categorias'][$idcat_categoria]['idcat_categoria'] = $idcat_categoria;
+			$v['categorias'][$idcat_categoria]['idproyecto'] = $idproyecto;
+			$send['vencidas'][] = $v['categorias'][$idcat_categoria];
+			unset($colores[$rando]);
+		}
+
+		foreach ($vencer as $rangoid => $v)
+		{
+			$rango = $this->reporte_model->obtener_rango($rangoid, 2);
+			$rando = mt_rand(0, count($colores) - 1);
+
+			$v['categorias'][$idcat_categoria]['customLegend'] = "Por vencer <b>". $v['categorias'][$idcat_categoria]['y'] ."</b><br>del <br>". $rango[0]['fecha_ini'] ." al ". $rango[0]['fecha_fin'];
+			$v['categorias'][$idcat_categoria]['color'] = $colores[$rando];
+			$v['categorias'][$idcat_categoria]['nombre'] = $v['categorias'][$idcat_categoria]['cat_categoria'];
+			$v['categorias'][$idcat_categoria]['fecha_ini'] = $rango[0]['fecha_ini'];
+			$v['categorias'][$idcat_categoria]['fecha_fin'] = $rango[0]['fecha_fin'];
+			$v['categorias'][$idcat_categoria]['idcat_categoria'] = $idcat_categoria;
+			$v['categorias'][$idcat_categoria]['idproyecto'] = $idproyecto;
+			$send['vencer'][] = $v['categorias'][$idcat_categoria];
+			unset($colores[$rando]);
+		}
+
+		echo json_encode($send);
 	}
 
 	public function sub_lista()
 	{
-		$data =  $this->input->get();
-// echo '<pre>';var_dump($data);
-// 		$string = $data['tipo'] == 1 ? "AND fecha BETWEEN CONVERT(datetime,'". $data['fecha_fin'] ."')
-// AND CONVERT(datetime,'". $data['fecha_ini'] ."')" : "AND fecha BETWEEN CONVERT(datetime,'". $data['fecha_ini'] ."')
-// AND CONVERT(datetime,'". $data['fecha_fin'] ."')";
+		$data = array();
+		$session_data = $this->session->userdata();
+		$data['usuario'] = $session_data['username'];
+		$data['iduser'] = $session_data['id'];
+		$datos = $this->input->post();
+		$lista = array();
 
-		$contrato = $this->reporte_model->obtener_contrato($data['fecha_ini'], $data['fecha_fin'], $data['idproyecto'], $data['idcat_categoria']);
-echo '<pre>';var_dump($lista);
-		foreach ($lista as $l)
-		 {
-			echo '<tr>
-<th scope="row">'. $l['idactividad'] .'</th>
-<td>'. $l['nombre_actividad'] .'</td>
-<td>'. $l['descripcion_actividad'] .' </td>
-<td>'. $l['fecha'] .'</td>
-<td>'. $l['estado_actividad']  .'</td>
+		foreach ($datos['subcategorias'] as $d)
+					if (!empty($d['actividades']))
+						foreach ($d['actividades'] as $a)
+							echo '<tr style="color:'. $a['color'] .'">
+<th scope="row"><a class="abrir-programacion" idprogramacion="'. $a['idprogramacion'] .'">P-'. $a['idprogramacion'] .'</a></th>
+<td>'. $a['nombre_actividad'] .'</td>
+<td>'. $a['descripcion_actividad'] .' </td>
+<td>'. $a['fecha'] .'</td>
+<td>'. $a['estado_actividad']  .'</td>
 </tr>';
+	}
+
+	protected function _generarDatos($idproyecto = 0, $iduser = 0, $total = array(), $fecha_ini = '', $fecha_fin = '')
+	{
+		$datos = array();
+
+		foreach ($total as $t)
+		{
+			foreach ($this->dashboard_model->desplegar_categorias($iduser, $t['idcontrato'], $fecha_ini, $fecha_fin) as $c)
+			{
+				$datos['categorias'][$c['idcat_categoria']] = $c;
+				$datos['categorias'][$c['idcat_categoria']]['y'] = 0;
+
+				$sub = $this->dashboard_model->desplegar_subcategorias($iduser, $c['idcontrato'], $c['idcat_categoria'], $fecha_ini, $fecha_fin);
+
+				foreach ($sub as $s)
+					$datos['categorias'][$c['idcat_categoria']]['subcategorias'][$s['idcat_subcategoria']] = $s;
+
+					foreach ($s as $ss)
+					{
+						$a = $this->dashboard_model->desplegar_actividades($iduser, $t['idcontrato'], $c['idcat_categoria'] , $s['idcat_subcategoria'] , $fecha_ini, $fecha_fin);
+
+						$datos['categorias'][$c['idcat_categoria']]['subcategorias'][$s['idcat_subcategoria']]['actividades'] = !empty($a) ? $a : array();
+						$datos['categorias'][$c['idcat_categoria']]['subcategorias'][$s['idcat_subcategoria']]['y']  = count($a);
+						$datos['categorias'][$c['idcat_categoria']]['y']  = count($a);
+					}
+			}
 		}
+		return $datos;
 	}
 }

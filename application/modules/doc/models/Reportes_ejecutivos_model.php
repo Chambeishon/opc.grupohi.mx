@@ -3,7 +3,7 @@
 class Reportes_ejecutivos_model extends CI_Model
 {
 	public function __construct()
-	{ 
+	{
 		parent::__construct();
 	}
 
@@ -19,26 +19,26 @@ class Reportes_ejecutivos_model extends CI_Model
 		$this->db->from("doc_reportes_ejecutivos");
 
 		if ($tipo)
-			$this->db->where("tipo",$tipo);
+			$this->db->where("tipo", $tipo);
 
 		if ($idproyecto)
-			$this->db->where("idproyecto",$idproyecto);
+			$this->db->where("idproyecto", $idproyecto);
 
 		$query = $this->db->get();
-	
+
 		return $query->result_array();
 	}
 
-	public function obtener_parametro($idparametro_reporte)
+	public function obtener_parametro($idreporte_ejecutivo)
 	{
 		$this->db->select("*");
 		$this->db->from("doc_reportes_ejecutivos");
-		$this->db->where("idparametro_reporte", $idparametro_reporte);
+		$this->db->where("idreporte_ejecutivo", $idreporte_ejecutivo);
 
-		$query = $this->db->get(); 	
+		$query = $this->db->get();
 		return $query->result_array();
 	}
- 
+
 	public function agregar_parametro($tipo, $rango, $fecha)
 	{
 		$query = $this->db->query("EXEC sp_doc_agregar_reporte_parametro $tipo,$rango,$fecha");
@@ -47,18 +47,20 @@ class Reportes_ejecutivos_model extends CI_Model
 
 	public function agregar_parametros($data)
 	{
-		$this->db->insert_batch("doc_reportes_ejecutivos", $data); 
+		$this->db->insert("doc_reportes_ejecutivos", $data);
+		$last_id = $this->db->insert_id();
+		return $last_id;
 	}
 
-	public function modificar_parametro($idparametro_reporte, $data)
+	public function modificar_parametro($idreporte_ejecutivo, $data)
 	{
-		$this->db->where("idparametro_reporte", $idparametro_reporte);
+		$this->db->where("idreporte_ejecutivo", $idreporte_ejecutivo);
 		$this->db->update("doc_reportes_ejecutivos", $data);
 		return true;
 	}
 
-	public function eliminar_parametro($idparametro_reporte)
+	public function eliminar_parametro($idreporte_ejecutivo)
 	{
-		$this->db->delete("doc_reportes_ejecutivos", array('idparametro_reporte' => $idparametro_reporte)); 
+		$this->db->delete("doc_reportes_ejecutivos", array('idreporte_ejecutivo' => $idreporte_ejecutivo));
 	}
 }

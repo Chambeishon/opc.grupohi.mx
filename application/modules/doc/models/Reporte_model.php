@@ -52,7 +52,7 @@ group by tipo
 	public function obtener_cantidad_categorias($fecha = '', $idproyecto = 0)
 	{
 		$query = $this->db->query("
-SELECT        COUNT(a.idcat_categoria) AS y, a.idcat_categoria, c.cat_categoria, a.idcontrato
+SELECT        COUNT(a.idcat_categoria) AS y, a.idcat_categoria, c.cat_categoria
 FROM            [opi].[dbo].[doc_programacion_actividad] AS pa LEFT OUTER JOIN
                          [opi].[dbo].[doc_actividad] AS a ON pa.idactividad = a.idactividad LEFT OUTER JOIN
                          [opi].[dbo].[doc_cat_categoria] AS c ON a.idcat_categoria = c.idcat_categoria LEFT OUTER JOIN
@@ -60,7 +60,8 @@ FROM            [opi].[dbo].[doc_programacion_actividad] AS pa LEFT OUTER JOIN
                          [opi].[dbo].[grl_proyecto] AS p ON co.idproyecto = p.idproyecto LEFT OUTER JOIN
                          [opi].[dbo].[doc_cat_estado_actividad] ON pa.idestado_actividad = [opi].[dbo].[doc_cat_estado_actividad].[idestado_actividad]
 WHERE co.idproyecto = ". $idproyecto ."
-". $fecha ." GROUP BY a.idcat_categoria, cat_categoria, a.idcontrato");
+AND pa.idestado_actividad IN (2,3,4,5)
+". $fecha ." GROUP BY a.idcat_categoria, cat_categoria");
 
 		return $query ? $query->result_array() : array();
 	}
@@ -101,10 +102,27 @@ AND tipo = ". $tipo ."
 		return $query ? $query->result_array() : array();
 	}
 
-	public function obtener_lista($fecha_inicio, $fecha_fin, $idproyecto = 0, $idcat_categoria = 0)
+	public function obtener_lista($fecha_ini, $fecha_fin, $idproyecto = 0, $idcat_categoria = 0, $tipo = 0)
 	{
-		$query = $this->db->query("EXEC sp_doc_desplegar_dashboard 134,2,$idproyecto,0,0,0,'$fecha_inicio','$fecha_fin'");
-        return $query->result_array();
+		$string = $tipo == 1 ? "BETWEEN CONVERT(datetime, '". $fecha_fin ."') AND CONVERT(datetime,'". $fecha_ini ."')" : "BETWEEN CONVERT(datetime, '". $fecha_ini ."') AND CONVERT(datetime,'". $fecha_fin ."')";
+
+		$query = $this->db->query("
+SELECT co.idproyecto, p.nombre_proyecto, co.idcontrato, co.numero_contrato, a.idcat_categoria, c.cat_categoria, a.idcat_subcategoria, s.cat_subcategoria, a.idactividad,
+	a.nombre_actividad, a.descripcion_actividad, a.documento_contractual, a.empresa_responsable, a.persona_responsable, a.referencia_documental,
+	a.detalle_referencia, a.observacion, pa.idprogramacion, pa.fecha, pa.idestado_actividad, co.idcat_estado,
+	dbo.doc_cat_estado_actividad.descripcion_dashboard AS estado_actividad, co.descripcion_contrato, co.fecha_inicio, co.fecha_fin, p.clave, CONVERT(char(10),
+	pa.timestamp, 126) AS timestamp
+FROM dbo.doc_programacion_actividad AS pa
+LEFT OUTER JOIN dbo.doc_actividad AS a ON pa.idactividad = a.idactividad
+LEFT OUTER JOIN dbo.doc_cat_categoria AS c ON a.idcat_categoria = c.idcat_categoria
+LEFT OUTER JOIN dbo.doc_cat_subcategoria AS s ON a.idcat_subcategoria = s.idcat_subcategoria
+LEFT OUTER JOIN dbo.doc_contrato AS co ON a.idcontrato = co.idcontrato
+LEFT OUTER JOIN dbo.grl_proyecto AS p ON co.idproyecto = p.idproyecto
+LEFT OUTER JOIN dbo.doc_cat_estado_actividad ON pa.idestado_actividad = dbo.doc_cat_estado_actividad.idestado_actividad
+WHERE co.idproyecto = ". $idproyecto ."
+AND pa.idestado_actividad NOT IN (1,6)
+AND a.idcat_categoria = ". $idcat_categoria ."
+AND pa.fecha ". $string);
 
 		return $query ? $query->result_array() : array();
 	}
