@@ -66,6 +66,18 @@ AND pa.idestado_actividad IN (2,3,4,5)
 		return $query ? $query->result_array() : array();
 	}
 
+	public function obtener_datos($idproyecto = 0, $string = '')
+	{
+		$query = $this->db->query("
+SELECT idactividad, nombre_actividad, descripcion_actividad, documento_contractual, empresa_responsable, persona_responsable, referencia_documental, detalle_referencia,
+		observacion, idprogramacion, fecha, idestado_actividad, idcat_categoria, cat_categoria, idproyecto, idcat_subcategoria, nombre_proyecto, estado_actividad
+FROM vw_doc_programacion
+WHERE idproyecto = ". $idproyecto ."
+AND idestado_actividad NOT IN(1,6)
+AND ". $string);
+		return $query ? $query->result_array() : array();
+	}
+
 	public function obtener_reporte($idproyecto, $fecha_inicio, $fecha_fin)
 	{
 		$query = $this->db->query("SELECT * FROM vw_doc_programacion WHERE idproyecto=". $idproyecto);
@@ -81,7 +93,7 @@ AND pa.idestado_actividad IN (2,3,4,5)
 	public function obtener_rango($idreporte_ejecutivo = 0, $tipo = 0)
 	{
 		$query = $this->db->query("
-SELECT fecha_ini, fecha_fin
+SELECT fecha_ini, fecha_fin, rango_inicial, rango_final, periodo_raw
 FROM vw_doc_rangos_reportes_ejecutivos
 WHERE  idreporte_ejecutivo = ". $idreporte_ejecutivo ."
 AND tipo = ". $tipo ."
@@ -93,7 +105,7 @@ AND tipo = ". $tipo ."
 	public function obtener_rango_negativo($idreporte_ejecutivo = 0, $tipo = 0)
 	{
 		$query = $this->db->query("
-SELECT fecha_ini, fecha_fin
+SELECT fecha_ini, fecha_fin, rango_inicial, rango_final, periodo_raw
 FROM vw_doc_rangos_reportes_ejecutivos_negativos
 WHERE  idreporte_ejecutivo = ". $idreporte_ejecutivo ."
 AND tipo = ". $tipo ."

@@ -11,26 +11,27 @@ function generar_subgraficas(options)
 		$(".mostrar_lista").empty().html(" ");
 
 	$("html, body").animate({
-		scrollTop: sub_vencidas.offset().top
+		scrollTop: $("#show_proyecto_"+ options.idproyecto).offset().top
 	}, 1000);
-
-	toServer = {
-		"idcat_categoria" : options.idcat_categoria,
-		"idproyecto" : options.idproyecto,
-		"subcategorias": options.subcategorias
-	};
 
 	$.ajax({
 		url: base_url + "doc/reporte/sub_categorias",
-		data: toServer,
+		data: options,
 		cache: false,
 		type: "GET",
 		success: function(data) {
 			data = JSON.parse(data),
 			legend = [];
-			$.each(data, function(key, item){
+
+			$.each(data, function(key, item){		
+				
 				mostrar = (key == "vencidas" ? sub_vencidas : sub_vencer);
 				titulo = (key == "vencidas" ? " vencidas" : " por vencer");
+				$("#show_proyecto_"+ options.idproyecto).css({
+					"border-style": "solid",
+					"border-color": options.color,
+					"border-width": "1px"
+				});
 				mostrar.html();
 				generar_grafica(mostrar, options.nombre + titulo, false, item, function(){
 					generar_lista(this.point.options);
@@ -45,9 +46,9 @@ function generar_lista(options)
 {
 	divTable = $("#proyecto_lista_"+ options.idproyecto).empty();
 	tabla = $(".lista").clone();
-
+	
 	$("html, body").animate({
-		scrollTop: divTable.offset().top
+		scrollTop: $("#show_proyecto_"+ options.idproyecto).find(".mostrar_vencidas").offset().top
 	}, 1000);
 
 	$.ajax({
@@ -56,18 +57,28 @@ function generar_lista(options)
 		cache: false,
 		type: "POST",
 		success: function(data) {
-
 			tabla.removeClass("hidden");
 			tabla.children("tbody").prepend(data);
 			divTable.html(tabla);
+				divTable.css({
+		"border-color": options.color,
+		"border-style": "solid",
+		"border-width": "1px"		
+	});
 		},
 		error: function(xhr) {}
 	});
 }
 
-function generar_grafica(jObject, titulo, legend, data, callback)
+function generar_grafica(jObject, titulo, legend, datos, callback)
 {
-	data.nombre = data.cat_categoria;
+	Highcharts.setOptions({
+		lang:{
+			noData: "No existen datos para mostrar"
+		}
+	});
+	var jData;
+	jData = datos;
 	jObject.highcharts({
 		chart: {
 			type: "pie"
@@ -81,6 +92,7 @@ function generar_grafica(jObject, titulo, legend, data, callback)
 		plotOptions: {
 			pie: {
 				allowPointSelect: true,
+				size: "50%",
 				cursor: "pointer",
 				showInLegend: true,
 				dataLabels: {
@@ -93,7 +105,7 @@ function generar_grafica(jObject, titulo, legend, data, callback)
 		},
 		tooltip: {
 			formatter: function() {
-				return (this.point.customLegend ? this.point.customLegend : "Número de actividades para <b>" + this.point.nombre + "</b> es <b>" + this.y + "</b>");
+				return (this.point.customTooltip ? this.point.customTooltip : "Número de actividades para <b>" + this.point.nombre + "</b> es <b>" + this.y + "</b>");
 			}
 		},
 		legend: {
@@ -111,7 +123,7 @@ function generar_grafica(jObject, titulo, legend, data, callback)
 			categories: legend,
 		},
 		series: [{
-			data: data,
+			data: jData,
 			type: "pie",
 			point:{
 				events:{
@@ -122,6 +134,7 @@ function generar_grafica(jObject, titulo, legend, data, callback)
 			}
 		}]
 	});
+	jData = [];
 }
 window.sr = ScrollReveal();
 sr.reveal(document.querySelectorAll(".box"));

@@ -15,7 +15,6 @@
 		</select>
 	</div>
 </div>
-<div class="row msg_view"></div>
 <?php foreach ($proyectos as $id => $proyecto):?>
 <div class="row box" id="proyecto_<?=$id?>">
 	<br>
@@ -81,6 +80,7 @@
 </div>
 <?php endforeach;?>
 <div class="row">
+	<div class="row msg_view"></div>
 	<div class="panel panel-warning">
 		<div class="panel-body">Favor de llenar los rangos de manera consecutiva. 0 indica la fecha a partir de Hoy</div>
 	</div>

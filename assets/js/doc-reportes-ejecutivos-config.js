@@ -6,15 +6,16 @@ $(function() {
 		$("#proyecto_"+ id).show();
 	});
 
-	$(".eliminar_rango").on("click", function(event) {
+	$(".eliminar_rango").one("click", function(event) {
 		event.preventDefault();
 		if( !confirm("confirmar eliminación")) {
 			return false;
 		}
 		$view = $(".msg_view");
 		$div = $("<div/>", {
-			class: "alert",
+			class: "alert"
 		});
+		$div.hide().appendTo($view);
 		$a = $(this);
 		$.ajax({
 			url: $a.attr("href"),
@@ -37,15 +38,18 @@ $(function() {
 			},
 			error: function(xhr) {}
 		});
+
+		return false;
 	});
 
 	$(".guardar_rango").on("submit", function(event) {
 		event.preventDefault();
 		$form = $(this);
+		$form.prop("disabled", true);
 		formValues = $form.serialize();
 		$view = $(".msg_view");
 		$div = $("<div/>", {
-			class: "alert",
+			class: "alert"
 		});
 		$div.hide().appendTo($view);
 		tipo = $form.find("input[name='tipo']").val();
@@ -67,7 +71,9 @@ $(function() {
 				$div.fadeIn();
 
 				setTimeout(function(){
-					$div.fadeOut();
+					$div.fadeOut("slow", function(){
+						$form.prop("disabled", false);
+					});
 					$view.empty();
 				}, 5000);
 

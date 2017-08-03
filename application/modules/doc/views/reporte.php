@@ -8,13 +8,13 @@
 
 <div class="row" id="cuerpo">
 <?php foreach ($proyectos as $k => $p):?>
-	<div class="row box" id="show_proyecto_<?=$k?>">
+	<div class="row box panel panel-default" id="show_proyecto_<?=$k?>">
 		<div class="col-md-12" id="proyecto_<?=$k?>"></div>
 		<div class="col-md-6 mostrar_vencidas"></div>
 		<div class="col-md-6 mostrar_vencer"></div>
 	</div>
 	<div class="row mostrar_lista" id="proyecto_lista_<?=$k?>"></div>
-	<hr>
+	<br>
 <?php endforeach;?>
 </div>
 <table class="table table-striped lista hidden">
