@@ -82,6 +82,7 @@ class Administrar extends MX_Controller
 			$data["accion"]=$accion;
 			$data["anterior"]='';
 			$data["siguiente"]='';
+
 			if($accion==1):
 				$data["titulo"]="SOLICITUDES REGISTRADAS";
 				$data["solicitudes"]=$this->administrar_model->desplega_solicitud($solicitud);
@@ -169,7 +170,7 @@ class Administrar extends MX_Controller
 
 			$solicitud=$this->input->post('solicitud');
 			$respuesta=$this->input->post('respuesta');
-			$respuesta=strtr(mb_strtoupper($respuesta,'ISO-8859-1'),"àèìòùáéíóúçñäëïöü","ÀÈÌÒÙÁÉÍÓÚÇÑÄËÏÖÜ");
+			$respuesta=strtr(mb_strtoupper($respuesta,'ISO-8859-1'),"Ã Ã¨Ã¬Ã²Ã¹Ã¡Ã©Ã­Ã³ÃºÃ§Ã±Ã¤Ã«Ã¯Ã¶Ã¼","Ã€ÃˆÃŒÃ’Ã™ÃÃ‰ÃÃ“ÃšÃ‡Ã‘Ã„Ã‹ÃÃ–Ãœ");
 			$result=$this->administrar_model->agrega_respuesta($solicitud,$data['usuario'],$respuesta);
 
 			if($result[0]["mensaje"]==0):
@@ -314,7 +315,7 @@ p&aacute;gina<br>
 
 			$solicitud=$this->input->post('solicitud');
 			$respuesta=$this->input->post('respuesta');
-			$respuesta=strtr(mb_strtoupper($respuesta,'ISO-8859-1'),"àèìòùáéíóúçñäëïöü","ÀÈÌÒÙÁÉÍÓÚÇÑÄËÏÖÜ");
+			$respuesta=strtr(mb_strtoupper($respuesta,'ISO-8859-1'),"Ã Ã¨Ã¬Ã²Ã¹Ã¡Ã©Ã­Ã³ÃºÃ§Ã±Ã¤Ã«Ã¯Ã¶Ã¼","Ã€ÃˆÃŒÃ’Ã™ÃÃ‰ÃÃ“ÃšÃ‡Ã‘Ã„Ã‹ÃÃ–Ãœ");
 			$accion =$this->input->post('accion');
 
 			if(empty($respuesta) || empty(trim($respuesta)) || empty(strip_tags($respuesta))):
@@ -381,31 +382,17 @@ p&aacute;gina<br>
 						</div>";
 
 				$data["respuesta_correo"]=$this->administrar_model->respuesta_correo($solicitud);
+
 					foreach($data["respuesta_correo"] as $respuesta_c):
 						$mail->From = $respuesta_c->contacto;
 						$mail->FromName = $respuesta_c->nombre;
 						$mail->Subject    = "Respuesta de Solicitud de Informacion(TICKET #".$respuesta_c->folio.")";
 						$mail->AddAddress($respuesta_c->mail_solicitante);
+						$mail->AddBCC("khernandezz@grupohi.mx");
+						$mail->AddBCC('oaguayo@grupohi.mx');
+						$mail->AddBCC('lahernandezg@grupohi.mx');
 
-						$correos = $this->administrar_model->obtener_correos($respuesta_c->idproyecto);
-						if (!empty($correos)):
-							if (!empty($correos['bbc'])):
-								foreach (explode(";", $correos['bbc']) as $correo):
-									$mail->AddBCC($correo);
-								endforeach;
-							endif;
-							if (!empty($correos['cc'])):
-								foreach (explode(";", $correos['cc']) as $correo):
-									$mail->AddCC($correo);
-								endforeach;
-							endif;
-							if (!empty($correos['cco'])):
-								foreach (explode(";", $correos['cco']) as $correo):
-									$mail->AddCCO($correo);
-								endforeach;
-							endif;
-						endif;
-						die;
+
 
 						 //Cuerpo del mensaje
 						$cuerpo='
@@ -681,8 +668,8 @@ p&aacute;gina<br>
 			endfor;
 
 			$data["mensaje"]='';
-			$tema = strtr(mb_strtoupper($tema, 'ISO-8859-1'),"àèìòùáéíóúçñäëïöü","ÀÈÌÒÙÁÉÍÓÚÇÑÄËÏÖÜ");
-			$comentario = strtr(mb_strtoupper($comentario, 'ISO-8859-1'),"àèìòùáéíóúçñäëïöü","ÀÈÌÒÙÁÉÍÓÚÇÑÄËÏÖÜ");
+			$tema = strtr(mb_strtoupper($tema, 'ISO-8859-1'),"Ã Ã¨Ã¬Ã²Ã¹Ã¡Ã©Ã­Ã³ÃºÃ§Ã±Ã¤Ã«Ã¯Ã¶Ã¼","Ã€ÃˆÃŒÃ’Ã™ÃÃ‰ÃÃ“ÃšÃ‡Ã‘Ã„Ã‹ÃÃ–Ãœ");
+			$comentario = strtr(mb_strtoupper($comentario, 'ISO-8859-1'),"Ã Ã¨Ã¬Ã²Ã¹Ã¡Ã©Ã­Ã³ÃºÃ§Ã±Ã¤Ã«Ã¯Ã¶Ã¼","Ã€ÃˆÃŒÃ’Ã™ÃÃ‰ÃÃ“ÃšÃ‡Ã‘Ã„Ã‹ÃÃ–Ãœ");
 			$result=$this->administrar_model->enviar_datos($solicitud,$data["usuario"],$tema,$comentario,$usuario_enviar);
 			$new = $result[0]["mensaje"];
 			if($new=="0"):
@@ -705,7 +692,7 @@ p&aacute;gina<br>
 					$mail->Username   = "scaf";
 					$mail->Password   = 'GpoHermesInfra';
 					$mail->From = 'sao@grupohi.mx';
-					$mail->FromName = "Bitï¿½cora de Atenciï¿½n Web";
+					$mail->FromName = "BitÃ¡cora de AtenciÃ³n Web";
 					$mail->Subject    = $tema;
 
 					//DOCUMENTOS DE SOLICITUD
@@ -857,6 +844,17 @@ SAO.- Grupo Hermes Infraestructura. </strong>.
 			$data["preguntas"]=$this->administrar_model->desplega_preguntas($solicitud);
 			$data["respuesta"]=$this->administrar_model->desplega_respuesta($solicitud);
 
+                        if(!empty($data['solicitudes']))
+                        {
+                            $dom = new DOMDocument();
+                            foreach ($data['solicitudes'] as $k => $v)
+                            {
+                                $dom->loadHTML(mb_convert_encoding($v->respuesta, 'HTML-ENTITIES', 'UTF-8'));
+                                $v->respuesta = strip_tags($dom->saveHTML(), '<br><a><p><span><ul><li><h1><h2><h3><b><img><ol><i><hr>');
+                                $data['solicitudes'][$k]->respuesta = $v->respuesta;
+                            }
+                        }
+
 			$data["anterior"]='';
 			$data["siguiente"]='';
 			//Inicio de etiquetas
@@ -888,7 +886,6 @@ SAO.- Grupo Hermes Infraestructura. </strong>.
 			echo '{"msg":"ok"}';
 		endif;
 	}
-
 }
 /*
 *end modules/login/controllers/index.php
