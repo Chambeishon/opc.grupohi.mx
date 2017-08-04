@@ -32,10 +32,10 @@ var postForm = function() {
                 <div class="col-sm-11">
                 	<textarea name="respuesta" id="summernote"></textarea>
                     <!--<div class="required">Escribe el texto</div>-->
-									<?php
-										//Checar si venimos de una respuesta vacia, update
-										echo '<input type="hidden" name="accion" value="'. ($accion == 2 ? $accion : 0) .'"/>';
-									?>
+                    <?php
+                            //Checar si venimos de una respuesta vacia, update
+                            echo '<input type="hidden" name="accion" value="'. ($accion == 2 ? $accion : 0) .'"/>';
+                    ?>
                 </div>
               </div>
               <div class="form-group">
@@ -51,7 +51,7 @@ var postForm = function() {
     <br>
     <div class="row" align="center">
         <div class="col-md-12">
-            <a href="<?=base_url('baw/administrar/solicitudes_atendidas')?>/<?=$solicitud->idsolicitud?>/0" class="btn btn-warning cancelar-state">Cancelar</a>
+            <a href="<?=base_url('baw/administrar/'. ($accion == 2 ? 'consulta' : 'solicitudes_atendidas'))?>/<?=$solicitud->idsolicitud?>/0" class="btn btn-warning cancelar-state">Cancelar</a>
             <!--<button id="btn_respuesta" type="button" class="btn btn-success">Enviar Respuesta</button>-->
             <button type="submit" class="btn btn-success loading-state">Enviar Respuesta</button>
             <!--<input type="submit" class="btn btn-success" value="Enviar Respuesta">-->

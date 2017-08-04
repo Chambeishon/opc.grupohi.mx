@@ -257,7 +257,7 @@ ORDER BY 3 DESC, 2 DESC");
 	public function obtener_correos($idproyecto)
 	{
 		$query=$this->db->query("SELECT * FROM baw_correos WHERE idproyecto=".$idproyecto);
-		return $query->result_array();	
+		return $query->result_array();
 	}
 
 	public function informacion_solicitud_atendida($solicitud)

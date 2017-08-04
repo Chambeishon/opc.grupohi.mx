@@ -85,7 +85,7 @@
             <h5><strong>SOLICITUD DE INFORMACI&Oacute;N</strong></h5>
             <div class="form-group">
             	<?php if(sizeof($preguntas)==0):?>
-                	<div class="col-sm-12"><label class="control-label">No se ha hecho solicitud de informaci&oacute;m</label></div>
+                	<div class="col-sm-12"><label class="control-label">No se ha hecho solicitud de informaci&oacute;n</label></div>
                 <?php endif;?>
             	<?php foreach($preguntas as $pregunta):?>
                 	<div class="col-sm-12"><label class="control-label">Tema: </label> <?=$pregunta->tema?> <?=$pregunta->fecha_solicitud?> | <?=$pregunta->hora_s?>
