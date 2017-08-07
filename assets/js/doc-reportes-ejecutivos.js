@@ -23,10 +23,10 @@ function generar_subgraficas(options)
 			data = JSON.parse(data),
 			legend = [];
 
-			$.each(data, function(key, item){		
-				
-				mostrar = (key == "vencidas" ? sub_vencidas : sub_vencer);
-				titulo = (key == "vencidas" ? " vencidas" : " por vencer");
+			$.each(data, function(key, item){
+
+				mostrar = (key === "vencidas" ? sub_vencidas : sub_vencer);
+				titulo = (key === "vencidas" ? " vencidas" : " por vencer");
 				$("#show_proyecto_"+ options.idproyecto).css({
 					"border-style": "solid",
 					"border-color": options.color,
@@ -46,7 +46,7 @@ function generar_lista(options)
 {
 	divTable = $("#proyecto_lista_"+ options.idproyecto).empty();
 	tabla = $(".lista").clone();
-	
+
 	$("html, body").animate({
 		scrollTop: $("#show_proyecto_"+ options.idproyecto).find(".mostrar_vencidas").offset().top
 	}, 1000);
@@ -63,7 +63,7 @@ function generar_lista(options)
 				divTable.css({
 		"border-color": options.color,
 		"border-style": "solid",
-		"border-width": "1px"		
+		"border-width": "1px"
 	});
 		},
 		error: function(xhr) {}

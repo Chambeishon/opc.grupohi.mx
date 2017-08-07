@@ -141,8 +141,8 @@ $(function() {
 			'1' => 'días'
         );
         $send = $vencidas = $vencer = array();
-        $coloresVencer = array('#CFF09E', '#A8DBA8', '#79BD9A', '#3B8686', '#0B486B', '#88C425', '#519548', '#607848', '#789048');
-		$coloresVencidas = array('#DFCCCC', '#FFD3D3', '#FFA4A4', '#D17878', '#965959', '#D83018', '#F07848', '#FDAB64', '#FD9960');
+        $coloresVencer = array('#CFF09E', '#A8DBA8', '#79BD9A', '#3B8686', '#0B486B', '#88C425', '#519548', '#607848', '#789048', '#98C93C', '#0A7B74');
+		$coloresVencidas = array('#DFCCCC', '#FFD3D3', '#FFA4A4', '#D17878', '#965959', '#D83018', '#F07848', '#FDAB64', '#FD9960', '#9B0F2B', '#FE4E76');
 
 		// '1' => 'Fecha vencida',
 		// '2' => 'Fecha por vencer'
