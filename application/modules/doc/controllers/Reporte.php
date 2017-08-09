@@ -69,11 +69,12 @@ class Reporte extends MX_Controller
 				}
 			}
 
-            $grafica = '';
+            $grafica = $proyectoPag = '';
+            $show = array();
+            $limite = 5;
 
             foreach ($totales as $k => $t)
             {
-				$show = array();
 				foreach ($t['categorias'] as $cat_id => $cat)
 				{
 					$total = count($cat['vencidas']) + count($cat['vencer']);
@@ -95,23 +96,51 @@ class Reporte extends MX_Controller
 				}
 
                 $grafica .= '
-generar_grafica($("#proyecto_'. $k .'"), "'. $t['nombre'] .'", [], '. json_encode(array_values($show)) .', function(){
+generar_grafica($("#proyecto_'. $k .'"), {useHTML:true, text:"<div >'. $t['nombre'] .'</div>", style:{ "color": "#333333", "fontSize": "20px", "text-decoration": "underline"}}, [], '. json_encode(array_values($show)) .', function(){
 	this.point.options.color = this.point.color;
 	generar_subgraficas(this.point.options);
 });
 ';
             }
 
+            $items= count($totales);
+            if ($items > $limite)
+            {
+                $paginas = ceil($items / $limite);
+                $proyectoPag .= '
+$(".qwerty").hide();
+var cuerpo = $("#cuerpo");
+for(i = 0; i < '. $paginas .'; i++){
+    li = $("<li/>", {
+        html: "<a href=\'#\'>" + (i + 1) + \'</a>\',
+        \'class\': \'proyectoPaginacion\' + (i === 0 ? " active" : "")
+    });
+    li.data("pag", i);
+    li.data("limit", '. $limite .');
+    li.data("total", '. $items .');
+    li.insertBefore(cuerpo.find("li.proyectoNext"));
+}
+$(".qwerty").slice(0, '. $limite .').show();
+
+
+      ';
+            }
+
+            else{
+              $proyectoPag .= '$(".proPag").hide();';
+            }
+
             $data['proyectos'] = $totales;
             $data['js'] .= '<script src="'.base_url('assets/js/highcharts.js').'"></script>';
             $data['js'] .= '<script src="'.base_url('assets/js/highcharts-more.js').'"></script>';
 			$data['js'] .= '<script src="'.base_url('assets/js/highcharts-no-data-to-display.js').'"></script>';
-            $data['js'] .= '<script src="'.base_url('assets/js/scrollreveal.min.js').'"></script>';
+//            $data['js'] .= '<script src="'.base_url('assets/js/scrollreveal.min.js').'"></script>';
             $data['js'] .= '<script src="'.base_url('assets/js/doc-reportes-ejecutivos.js').'"></script>';
             $data['js'] .= '
 <script>
 $(function() {
 '. $grafica . '
+'. $proyectoPag .'
 });
 </script>';
 
@@ -141,7 +170,7 @@ $(function() {
 			'1' => 'días'
         );
         $send = $vencidas = $vencer = array();
-        $coloresVencer = array('#CFF09E', '#A8DBA8', '#79BD9A', '#3B8686', '#0B486B', '#88C425', '#519548', '#607848', '#789048', '#98C93C', '#0A7B74');
+        $coloresVencer = array('#789048',  '#A8DBA8', '#3B8686', '#0B486B', '#519548', '#79BD9A', '#607848', '#E3EDC4', '#CFF09E', '#88C425', '#0A7B74');
 		$coloresVencidas = array('#DFCCCC', '#FFD3D3', '#FFA4A4', '#D17878', '#965959', '#D83018', '#F07848', '#FDAB64', '#FD9960', '#9B0F2B', '#FE4E76');
 
 		// '1' => 'Fecha vencida',
@@ -174,13 +203,15 @@ $(function() {
 
 			$rando = mt_rand(0, count($coloresVencer) - 1);
 			$total = count($v['actividades']);
+            $stringActividades = $total > 1 ? 'actividades' : 'actividad';
 
 			$send['vencidas'][] = array(
 				'nombre' => $datos['nombre'],
-				'color' => $coloresVencidas[$rando],
+				'color' => array_pop($coloresVencidas),
 				'y' => $total,
-				'customLegend' => $datos['nombre'] .'<br><b>'. $total .'</b> '. ($v['rango']['rango_inicial'] .' a '. $v['rango']['rango_final']) .' '. $periodos[$v['rango']['periodo_raw']],
-				'customTooltip' => $datos['nombre'] ." Vencidas <b>". $total ."</b> periodo:<br>". $v['rango']['fecha_fin'] ." al ". $v['rango']['fecha_ini'],
+				'customLegend' => '<b>'. $total .'</b> '. $stringActividades .'<br>(de '. ($v['rango']['rango_inicial'] .' a '. $v['rango']['rango_final']) .' '. $periodos[$v['rango']['periodo_raw']] .')',
+				'customTooltip' => $datos['nombre'] ."<br>Vencidas <b>". $total ."</b> periodo:<br>". $v['rango']['fecha_fin'] ." al ". $v['rango']['fecha_ini'],
+                'tableHeader' => $datos['nombre'] .' VENCIDAS (DE '. ($v['rango']['rango_inicial'] .' A '. $v['rango']['rango_final']) .' '. $periodos[$v['rango']['periodo_raw']] .')',
 				'idproyecto' => $datos['idproyecto'],
 				'idcat_categoria' => $datos['idcat_categoria'],
 				'rango' => array(
@@ -199,13 +230,15 @@ $(function() {
 
 			$rando = mt_rand(0, count($coloresVencer) - 1);
 			$total = count($v['actividades']);
+            $stringActividades = $total > 1 ? 'actividades' : 'actividad';
 
 			$send['vencer'][] = array(
 				'nombre' => $datos['nombre'],
-				'color' => $coloresVencer[$rando],
+				'color' => array_pop($coloresVencer),
 				'y' => $total,
-				'customLegend' => $datos['nombre'] .'<br><b>'. $total .'</b>'. ($v['rango']['rango_inicial'] .' a '. $v['rango']['rango_final']) .' '. $periodos[$v['rango']['periodo_raw']],
-				'customTooltip' => $datos['nombre'] ." Vencidas <b>". $total ."</b> periodo:<br>". $v['rango']['fecha_ini'] ." al ". $v['rango']['fecha_fin'],
+				'customLegend' => '<b>'. $total .'</b> '. $stringActividades .'<br>(de '. ($v['rango']['rango_inicial'] .' a '. $v['rango']['rango_final']) .' '. $periodos[$v['rango']['periodo_raw']] .')',
+				'customTooltip' => $datos['nombre'] ."<br>Por vencer <b>". $total ."</b> periodo:<br>". $v['rango']['fecha_ini'] ." al ". $v['rango']['fecha_fin'],
+                'tableHeader' => $datos['nombre'] .' POR VENCER (DE '. ($v['rango']['rango_inicial'] .' A '. $v['rango']['rango_final']) .' '. $periodos[$v['rango']['periodo_raw']] .')',
 				'idproyecto' => $datos['idproyecto'],
 				'idcat_categoria' => $datos['idcat_categoria'],
 				'rango' => array(
@@ -231,18 +264,20 @@ $(function() {
 		$lista = $this->reporte_model->obtener_datos($datos['idproyecto'], ""
 			. "fecha BETWEEN '". $datos['rango'][0] ."' AND '". $datos['rango'][1] ."' AND idcat_categoria = ". $datos['idcat_categoria']);
 
+        $json = array();
+
 		foreach ($lista as $l)
 		{
-			echo '
-<tr>
-<th scope="row"><a class="abrir-programacion" idprogramacion="'. $l['idprogramacion'] .'">P-'. $l['idprogramacion'] .'</a></th>
-<td>'. $l['nombre_actividad'] .'</td>
-<td>'. $l['descripcion_actividad'] .' </td>
-<td>'. $l['fecha'] .'</td>
-<td>'. $l['estado_actividad']  .'</td>
-</tr>
-';
+            $json[] = array(
+                'link' => '<a class=\'abrir-programacion\' idprogramacion=\''. $l['idprogramacion'] .'\'>P-'. $l['idprogramacion'] .'</a>',
+                'nombre' => $l['nombre_actividad'],
+                'descripcion' => $l['descripcion_actividad'],
+                'fecha' => $l['fecha'],
+                'estado' => $l['estado_actividad']
+            );
 		}
+
+        echo json_encode($json);
 	}
 
 	protected function _generarDatos($idproyecto = 0, $iduser = 0, $total = array(), $fecha_ini = '', $fecha_fin = '')

@@ -6,8 +6,9 @@ $(function() {
 		$("#proyecto_"+ id).show();
 	});
 
-	$(".eliminar_rango").one("click", function(event) {
-		event.preventDefault();
+	$(document).on('click','.eliminar_rango',function(e){
+		e.preventDefault();
+
 		if( !confirm("confirmar eliminación")) {
 			return false;
 		}

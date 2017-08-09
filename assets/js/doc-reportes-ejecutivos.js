@@ -4,6 +4,290 @@ var loading = $("<i />", {
 	text: "",
 });
 
+//Paginación proyecto
+$(document).on('click','.proyectoPaginacion',function(e){
+    e.preventDefault();
+    _this = $(this);
+
+    if (_this.hasClass("active"))
+        return false;
+
+    pag = _this.data("pag");
+    limit = _this.data("limit");
+    ini = (limit * pag);
+    fin = ini + limit;
+
+    $(".qwerty").hide();
+    $(".qwerty").slice(ini, fin).show();
+    $(".proyectoPaginacion").removeClass("active");
+    _this.addClass("active");
+
+    $(".proyectoPrevious").data("pag", pag - 1);
+    $(".proyectoNext").data("pag", pag + 1);
+
+    if (fin < _this.data("total")){
+        $(".proyectoNext").removeClass("disabled");
+    }
+
+    else{
+        $(".proyectoNext").addClass("disabled");
+    }
+
+    if (ini > 0){
+        $(".proyectoPrevious").removeClass("disabled");
+    }
+
+    else{
+       $(".proyectoPrevious").addClass("disabled");
+    }
+
+    return false;
+});
+
+$(document).on('click','.proyectoPrevious',function(e){
+    e.preventDefault();
+    _this = $(this);
+
+    if (_this.hasClass("disabled"))
+        return false;
+
+    pag = _this.data("pag");
+
+    $(".proyectoPaginacion").each(function( index ) {
+        active = $(this);
+
+        if (active.data("pag") == _this.data("pag")){
+            limit = active.data("limit");
+            ini = (limit * pag);
+            fin = ini + limit;
+
+            $(".qwerty").hide();
+            $(".qwerty").slice(ini, fin).show();
+            active.addClass("active");
+            active.next().removeClass("active");
+
+            if (fin < active.data("total")){
+                $(".proyectoNext").removeClass("disabled");
+            }
+
+            else{
+                $(".proyectoNext").addClass("disabled");
+            }
+
+            if (ini > 0){
+                $(".proyectoPrevious").removeClass("disabled");
+            }
+
+            else{
+               $(".proyectoPrevious").addClass("disabled");
+            }
+        }
+    });
+});
+
+$(document).on('click','.proyectoNext',function(e){
+    e.preventDefault();
+    _this = $(this);
+
+    if (_this.hasClass("disabled"))
+        return false;
+
+    pag = _this.data("pag");
+
+    $(".proyectoPaginacion").each(function( index ) {
+        active = $(this);
+
+        if (active.data("pag") == _this.data("pag")){
+            limit = active.data("limit");
+            ini = (limit * pag);
+            fin = ini + limit;
+
+            $(".qwerty").hide();
+            $(".qwerty").slice(ini, fin).show();
+            active.prev().removeClass("active");
+            active.addClass("active");
+
+            if (fin < active.data("total")){
+                $(".proyectoNext").removeClass("disabled");
+            }
+
+            else{
+                $(".proyectoNext").addClass("disabled");
+            }
+
+            if (ini > 0){
+                $(".proyectoPrevious").removeClass("disabled");
+            }
+
+            else{
+               $(".proyectoPrevious").addClass("disabled");
+            }
+
+            return false;
+        }
+    });
+});
+
+//Paginación número
+$(document).on('click','.paginacion',function(e){
+    e.preventDefault();
+    _this = $(this);
+
+    if (_this.hasClass("active"))
+        return false;
+
+    lista = _this.closest(".lista");
+    lista.find("li.paginacion").removeClass("active");
+    _this.addClass("active");
+
+    $(".paginacion").each(function(i){
+        __this = $(this);
+        if(__this.data("pag") == _this.data("pag"))
+            __this.addClass("active");
+    });
+
+    tbody = lista.find("tbody");
+    next = lista.find("li.next");
+    prev = lista.find("li.previous");
+    datos = lista.data("pag");
+    pag = _this.data("pag");
+    sig = pag + 1;
+    atras = pag - 1;
+    ini = (datos.limit * pag);
+    fin = ini + datos.limit;
+
+    if (fin < datos.data.length){
+        next.removeClass("disabled");
+    }
+
+    else{
+        next.addClass("disabled");
+    }
+
+    if (ini > 0){
+        prev.removeClass("disabled");
+    }
+
+    else{
+        prev.addClass("disabled");
+    }
+
+    next.data("pag", sig);
+    prev.data("pag", atras);
+
+    var seccion = datos.data.slice(ini, fin);
+    tbody.empty();
+
+    $.each(seccion, function(i, v) {
+       tbody.append('<tr><th scope="row">'+ v.link +'</th><td>'+ v.nombre +'</td><td>'+ v.descripcion +' </td><td>'+ v.fecha +'</td><td>'+ v.estado +'</td></tr>');
+    });
+
+    return false;
+});
+
+
+//Paginación siguiente
+$(document).on('click','.next',function(e){
+    e.preventDefault();
+    _this = $(this);
+
+    if (_this.hasClass("disabled"))
+        return false;
+
+    lista = _this.closest(".lista");
+    tbody = lista.find("tbody");
+    next = lista.find("li.next");
+    prev = lista.find("li.previous");
+    datos = lista.data("pag");
+    pag = _this.data("pag");
+    sig = pag + 1;
+    ini = (datos.limit * sig);
+    fin = ini + datos.limit;
+
+    if (fin < datos.data.length){
+        next.removeClass("disabled");
+    }
+
+    else{
+        next.addClass("disabled");
+    }
+
+    if (ini > 0){
+        prev.removeClass("disabled");
+    }
+
+    else{
+        prev.addClass("disabled");
+    }
+
+    next.data("pag", sig);
+    prev.data("pag", pag);
+
+    currentActive = lista.find("li.active");
+    currentActive.removeClass("active");
+    currentActive.next().addClass("active");
+
+    var seccion = datos.data.slice(ini, fin);
+    tbody.empty();
+
+    $.each(seccion, function(i, v) {
+       tbody.append('<tr><th scope="row">'+ v.link +'</th><td>'+ v.nombre +'</td><td>'+ v.descripcion +' </td><td>'+ v.fecha +'</td><td>'+ v.estado +'</td></tr>');
+    });
+
+    return false;
+});
+
+//Paginación atrás
+$(document).on('click','.previous',function(e){
+    e.preventDefault();
+    _this = $(this);
+
+    if (_this.hasClass("disabled"))
+        return false;
+
+    lista = _this.closest(".lista");
+    tbody = lista.find("tbody");
+    next = lista.find("li.next");
+    prev = lista.find("li.previous");
+    datos = lista.data("pag");
+    pag = _this.data("pag");
+    atras = pag - 1;
+    ini = (datos.limit * pag);
+    fin = ini + datos.limit;
+
+    if (fin < datos.data.length){
+        next.removeClass("disabled");
+    }
+
+    else{
+        next.addClass("disabled");
+    }
+
+    if (ini > 0){
+        prev.removeClass("disabled");
+    }
+
+    else{
+        prev.addClass("disabled");
+    }
+
+    next.data("pag", pag);
+    prev.data("pag", atras);
+
+    currentActive = lista.find("li.active");
+    currentActive.removeClass("active");
+    currentActive.prev().addClass("active");
+
+    var seccion = datos.data.slice(ini, fin);
+    tbody.empty();
+
+    $.each(seccion, function(i, v) {
+       tbody.append('<tr><th scope="row">'+ v.link +'</th><td>'+ v.nombre +'</td><td>'+ v.descripcion +' </td><td>'+ v.fecha +'</td><td>'+ v.estado +'</td></tr>');
+    });
+
+    return false;
+});
+
 function generar_subgraficas(options)
 {
 	var sub_vencidas =  $("#show_proyecto_"+ options.idproyecto).find(".mostrar_vencidas").html(loading),
@@ -26,16 +310,17 @@ function generar_subgraficas(options)
 			$.each(data, function(key, item){
 
 				mostrar = (key === "vencidas" ? sub_vencidas : sub_vencer);
-				titulo = (key === "vencidas" ? " vencidas" : " por vencer");
+				titulo = (key === "vencidas" ? " - VENCIDAS" : " - POR VENCER");
+                noData = (key === "vencidas" ? "No hay tareas vencidas" : "No hay tareas por vencer");
 				$("#show_proyecto_"+ options.idproyecto).css({
 					"border-style": "solid",
 					"border-color": options.color,
 					"border-width": "1px"
 				});
 				mostrar.html();
-				generar_grafica(mostrar, options.nombre + titulo, false, item, function(){
+				generar_grafica(mostrar, {useHTML:false, text:options.nombre + titulo}, false, item, function(){
 					generar_lista(this.point.options);
-				});
+				}, noData);
 			});
 		},
 		error: function(xhr) {}
@@ -57,35 +342,63 @@ function generar_lista(options)
 		cache: false,
 		type: "POST",
 		success: function(data) {
+            data = JSON.parse(data);
+            limit = 10;
+
+            tabla.data("pag", {options:options, data:data, limit:limit});
 			tabla.removeClass("hidden");
-			tabla.children("tbody").prepend(data);
-			divTable.html(tabla);
-				divTable.css({
-		"border-color": options.color,
-		"border-style": "solid",
-		"border-width": "1px"
-	});
+            tabla.find("li.previous").addClass("disabled");
+
+            if (data.length > limit){
+                seccion = data.slice(0, limit);
+                paginas = Math.ceil(data.length / limit);
+                for(i = 0; i < paginas; i++){
+                    li = $("<li/>", {
+                        html: '<a href="#">'+ (i + 1) +'</a>',
+                        'class': 'paginacion' + (i === 0 ? " active" : "")
+                    });
+                    li.data("pag", i);
+                    li.insertBefore(tabla.find("li.next"));
+                }
+            }
+
+            else{
+                tabla.find("li.next").addClass("disabled hidden");
+                tabla.find("li.previous").addClass("hidden");
+                seccion = data;
+            }
+
+            $.each(seccion, function(i, v){
+                tabla.find("tbody").append('<tr><th scope="row">'+ v.link +'</th><td>'+ v.nombre +'</td><td>'+ v.descripcion +' </td><td>'+ v.fecha +'</td><td>'+ v.estado +'</td></tr>');
+            });
+
+            tabla.find(".panel-heading").text(options.tableHeader);
+			divTable.append(tabla);
+//            divTable.css({
+//                "border-color": options.color,
+//                "border-style": "solid",
+//                "border-width": "1px"
+//            });
 		},
 		error: function(xhr) {}
 	});
 }
 
-function generar_grafica(jObject, titulo, legend, datos, callback)
+function generar_grafica(jObject, titulo, legend, datos, callback, noData)
 {
-	Highcharts.setOptions({
-		lang:{
-			noData: "No existen datos para mostrar"
-		}
-	});
 	var jData;
 	jData = datos;
+    noData = noData ? noData : "No hay tareas disponibles";
+    Highcharts.setOptions({
+        lang:{
+            noData: '<span style="color:#333333;font-size:18px;">' + noData + '</span>'
+        }
+    });
 	jObject.highcharts({
 		chart: {
 			type: "pie"
 		},
-		title: {
-			text: titulo
-		},
+		title: titulo,
 		credits: {
 			enabled: false
 		},
@@ -136,8 +449,6 @@ function generar_grafica(jObject, titulo, legend, datos, callback)
 	});
 	jData = [];
 }
-window.sr = ScrollReveal();
-sr.reveal(document.querySelectorAll(".box"));
 
 $('body').on('click','.abrir-programacion', function(){
 

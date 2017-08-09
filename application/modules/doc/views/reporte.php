@@ -7,29 +7,64 @@
 </div>
 
 <div class="row" id="cuerpo">
+    <div class="row">
+        <nav aria-label="..." class="pull-right">
+          <ul class="pagination proPag">
+            <li class="proyectoPrevious" data-pag="0"><a href="#"><span aria-hidden="true">&larr;</span> Anterior</a></li>
+            <li class="proyectoNext" data-pag="0"><a href="#">Siguiente <span aria-hidden="true">&rarr;</span></a></li>
+          </ul>
+        </nav>
+    </div>
 <?php foreach ($proyectos as $k => $p):?>
+    <div class="qwerty">
 	<div class="row box panel panel-default" id="show_proyecto_<?=$k?>">
 		<div class="col-md-12" id="proyecto_<?=$k?>"></div>
 		<div class="col-md-6 mostrar_vencidas"></div>
 		<div class="col-md-6 mostrar_vencer"></div>
 	</div>
 	<div class="row mostrar_lista" id="proyecto_lista_<?=$k?>"></div>
+    </div>
 	<br>
 <?php endforeach;?>
+    <div class="row">
+        <nav aria-label="..." class="pull-right">
+          <ul class="pagination proPag">
+            <li class="proyectoPrevious" data-pag="0"><a href="#"><span aria-hidden="true">&larr;</span> Anterior</a></li>
+            <li class="proyectoNext" data-pag="0"><a href="#">Siguiente <span aria-hidden="true">&rarr;</span></a></li>
+          </ul>
+        </nav>
+    </div>
 </div>
-<table class="table table-striped lista hidden">
-	<thead>
-		<tr>
-			<th>#</th>
-			<th>Actividad</th>
-			<th>Descripci&oacute;n</th>
-			<th>Fecha L&iacute;mite</th>
-			<th>Estado</th>
-		</tr>
-	</thead>
-	<tbody>
-	</tbody>
-</table>
+<div class="col-md-12 panel panel-default lista hidden">
+  <div class="panel-heading text-center"></div>
+  <div class="panel-body">
+    <nav aria-label="...">
+      <ul class="pagination">
+        <li class="previous" data-pag="0"><a href="#"><span aria-hidden="true">&larr;</span> Anterior</a></li>
+        <li class="next" data-pag="0"><a href="#">Siguiente <span aria-hidden="true">&rarr;</span></a></li>
+      </ul>
+    </nav>
+    <table class="table table-striped tabla">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Actividad</th>
+                <th>Descripci&oacute;n</th>
+                <th>Fecha L&iacute;mite</th>
+                <th>Estado</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+    <nav aria-label="...">
+      <ul class="pagination">
+        <li class="previous" data-pag="0"><a href="#"><span aria-hidden="true">&larr;</span> Anterior</a></li>
+        <li class="next" data-pag="0"><a href="#">Siguiente <span aria-hidden="true">&rarr;</span></a></li>
+      </ul>
+    </nav>
+  </div>
+</div>
 
 <div class="modal fade" id="modal-detalle" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-dialog">
