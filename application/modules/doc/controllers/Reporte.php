@@ -25,6 +25,7 @@ class Reporte extends MX_Controller
             $data["menu"] = $this->menu->crea_menu($data['idperfil']);
 			$hoy = date("Y-m-d");
 			$totales = array();
+            $limite = 5;
 
             $proyectosRaw = $this->dashboard_model->desplegar_proyectos($data['iduser']);
 
@@ -71,7 +72,6 @@ class Reporte extends MX_Controller
 
             $grafica = $proyectoPag = '';
             $show = array();
-            $limite = 5;
 
             foreach ($totales as $k => $t)
             {
@@ -119,6 +119,8 @@ for(i = 0; i < '. $paginas .'; i++){
     li.data("limit", '. $limite .');
     li.data("total", '. $items .');
     li.insertBefore(cuerpo.find("li.proyectoNext"));
+    $(".proyectoPrevious").data("limit", '. $limite .');
+    $(".proyectoNext").data("limit", '. $limite .');
 }
 $(".qwerty").slice(0, '. $limite .').show();
 

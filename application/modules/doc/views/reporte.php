@@ -11,7 +11,7 @@
         <nav aria-label="..." class="pull-right">
           <ul class="pagination proPag">
             <li class="proyectoPrevious" data-pag="0"><a href="#"><span aria-hidden="true">&larr;</span> Anterior</a></li>
-            <li class="proyectoNext" data-pag="0"><a href="#">Siguiente <span aria-hidden="true">&rarr;</span></a></li>
+            <li class="proyectoNext" data-pag="1"><a href="#">Siguiente <span aria-hidden="true">&rarr;</span></a></li>
           </ul>
         </nav>
     </div>
@@ -30,7 +30,7 @@
         <nav aria-label="..." class="pull-right">
           <ul class="pagination proPag">
             <li class="proyectoPrevious" data-pag="0"><a href="#"><span aria-hidden="true">&larr;</span> Anterior</a></li>
-            <li class="proyectoNext" data-pag="0"><a href="#">Siguiente <span aria-hidden="true">&rarr;</span></a></li>
+            <li class="proyectoNext" data-pag="1"><a href="#">Siguiente <span aria-hidden="true">&rarr;</span></a></li>
           </ul>
         </nav>
     </div>

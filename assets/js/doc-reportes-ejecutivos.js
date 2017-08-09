@@ -56,33 +56,40 @@ $(document).on('click','.proyectoPrevious',function(e){
     $(".proyectoPaginacion").each(function( index ) {
         active = $(this);
 
-        if (active.data("pag") == _this.data("pag")){
-            limit = active.data("limit");
-            ini = (limit * pag);
-            fin = ini + limit;
-
-            $(".qwerty").hide();
-            $(".qwerty").slice(ini, fin).show();
+        if (active.data("pag") == pag){
             active.addClass("active");
             active.next().removeClass("active");
+            _this.data("pag", active.prev().data("pag"));
 
-            if (fin < active.data("total")){
-                $(".proyectoNext").removeClass("disabled");
-            }
-
-            else{
-                $(".proyectoNext").addClass("disabled");
-            }
-
-            if (ini > 0){
-                $(".proyectoPrevious").removeClass("disabled");
-            }
-
-            else{
-               $(".proyectoPrevious").addClass("disabled");
-            }
+            return false;
         }
     });
+
+    $(".proyectoPrevious").data("pag", pag - 1);
+    $(".proyectoNext").data("pag", pag + 1);
+
+    limit = _this.data("limit");
+    ini = (limit * pag);
+    fin = ini + limit;
+
+    $(".qwerty").hide();
+    $(".qwerty").slice(ini, fin).show();
+
+    if (fin < active.data("total")){
+        $(".proyectoNext").removeClass("disabled");
+    }
+
+    else{
+        $(".proyectoNext").addClass("disabled");
+    }
+
+    if (ini > 0){
+        $(".proyectoPrevious").removeClass("disabled");
+    }
+
+    else{
+       $(".proyectoPrevious").addClass("disabled");
+    }
 });
 
 $(document).on('click','.proyectoNext',function(e){
@@ -98,34 +105,42 @@ $(document).on('click','.proyectoNext',function(e){
         active = $(this);
 
         if (active.data("pag") == _this.data("pag")){
-            limit = active.data("limit");
-            ini = (limit * pag);
-            fin = ini + limit;
-
-            $(".qwerty").hide();
-            $(".qwerty").slice(ini, fin).show();
             active.prev().removeClass("active");
             active.addClass("active");
 
-            if (fin < active.data("total")){
-                $(".proyectoNext").removeClass("disabled");
-            }
-
-            else{
-                $(".proyectoNext").addClass("disabled");
-            }
-
-            if (ini > 0){
-                $(".proyectoPrevious").removeClass("disabled");
-            }
-
-            else{
-               $(".proyectoPrevious").addClass("disabled");
+            if (active.next().data("pag")){
+                _this.data("pag", active.next().data("pag"));
             }
 
             return false;
         }
     });
+
+    $(".proyectoPrevious").data("pag", pag - 1);
+    $(".proyectoNext").data("pag", pag + 1);
+
+    limit = _this.data("limit");
+    ini = (limit * pag);
+    fin = ini + limit;
+
+    $(".qwerty").hide();
+    $(".qwerty").slice(ini, fin).show();
+
+    if (fin < active.data("total")){
+        $(".proyectoNext").removeClass("disabled");
+    }
+
+    else{
+        $(".proyectoNext").addClass("disabled");
+    }
+
+    if (ini > 0){
+        $(".proyectoPrevious").removeClass("disabled");
+    }
+
+    else{
+       $(".proyectoPrevious").addClass("disabled");
+    }
 });
 
 //Paginación número
