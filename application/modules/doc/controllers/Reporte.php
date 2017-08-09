@@ -85,7 +85,7 @@ class Reporte extends MX_Controller
 						$cat_categoria[$cat_id] = $v['cat_categoria'];
 					}
 
-					$show[$cat_id] = array(
+					$show[$k][$cat_id] = array(
 						'nombre' => $cat_categoria[$cat_id],
 						'y' => $total,
 						'customLegend' => 'Actividades vencidas: <b>'. count($cat['vencidas'])  . '</b><br>Actividades por vencer: <b>'. count($cat['vencer']) .'</b>',
@@ -96,7 +96,7 @@ class Reporte extends MX_Controller
 				}
 
                 $grafica .= '
-generar_grafica($("#proyecto_'. $k .'"), {useHTML:true, text:"<div >'. $t['nombre'] .'</div>", style:{ "color": "#333333", "fontSize": "20px", "text-decoration": "underline"}}, [], '. json_encode(array_values($show)) .', function(){
+generar_grafica($("#proyecto_'. $k .'"), {useHTML:true, text:"<div >'. $t['nombre'] .'</div>", style:{ "color": "#333333", "fontSize": "20px", "text-decoration": "underline"}}, [], '. json_encode(array_values($show[$k])) .', function(){
 	this.point.options.color = this.point.color;
 	generar_subgraficas(this.point.options);
 });

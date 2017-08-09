@@ -1,7 +1,7 @@
 
 var loading = $("<i />", {
 	"class": "fa fa-spinner fa-spin fa-2x",
-	text: "",
+	text: ""
 });
 
 //Paginación proyecto
@@ -325,6 +325,10 @@ function generar_subgraficas(options)
 		},
 		error: function(xhr) {}
 	});
+
+    delete sub_vencidas;
+    delete sub_vencer;
+    delete options;
 }
 
 function generar_lista(options)
@@ -374,11 +378,11 @@ function generar_lista(options)
 
             tabla.find(".panel-heading").text(options.tableHeader);
 			divTable.append(tabla);
-//            divTable.css({
-//                "border-color": options.color,
-//                "border-style": "solid",
-//                "border-width": "1px"
-//            });
+            divTable.css({
+                "border-color": options.color,
+                "border-style": "solid",
+                "border-width": "1px"
+            });
 		},
 		error: function(xhr) {}
 	});
@@ -386,7 +390,8 @@ function generar_lista(options)
 
 function generar_grafica(jObject, titulo, legend, datos, callback, noData)
 {
-	var jData;
+	var jData = [],
+        oObject = jObject;
 	jData = datos;
     noData = noData ? noData : "No hay tareas disponibles";
     Highcharts.setOptions({
@@ -394,7 +399,7 @@ function generar_grafica(jObject, titulo, legend, datos, callback, noData)
             noData: '<span style="color:#333333;font-size:18px;">' + noData + '</span>'
         }
     });
-	jObject.highcharts({
+	oObject.highcharts({
 		chart: {
 			type: "pie"
 		},
@@ -447,7 +452,8 @@ function generar_grafica(jObject, titulo, legend, datos, callback, noData)
 			}
 		}]
 	});
-	jData = [];
+	delete jData;
+    delete oObject;
 }
 
 $('body').on('click','.abrir-programacion', function(){
