@@ -25,6 +25,12 @@ $(document).on('click','.proyectoPaginacion',function(e){
     $(".proyectoPrevious").data("pag", pag - 1);
     $(".proyectoNext").data("pag", pag + 1);
 
+    $(".proyectoPaginacion").each(function(i){
+        __this = $(this);
+        if(__this.data("pag") == _this.data("pag"))
+            __this.addClass("active");
+    });
+
     if (fin < _this.data("total")){
         $(".proyectoNext").removeClass("disabled");
     }
@@ -60,8 +66,6 @@ $(document).on('click','.proyectoPrevious',function(e){
             active.addClass("active");
             active.next().removeClass("active");
             _this.data("pag", active.prev().data("pag"));
-
-            return false;
         }
     });
 
@@ -111,8 +115,6 @@ $(document).on('click','.proyectoNext',function(e){
             if (active.next().data("pag")){
                 _this.data("pag", active.next().data("pag"));
             }
-
-            return false;
         }
     });
 
