@@ -17,8 +17,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 | environments.
 |
 */
-//$config['base_url']	= 'http://localhost/dev.opc.grupohi.mx/';
-$config['base_url']	= 'http://opc.grupohi.mx/';
+$config['base_url']	= 'http://localhost/opc.grupohi.mx/';
+//$config['base_url']	= 'http://opc.grupohi.mx/';
 
 
 /*
