@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<cfdi:Comprobante xmlns:cfdi="http://www.sat.gob.mx/cfd/3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sat.gob.mx/cfd/3 http://www.sat.gob.mx/sitio_internet/cfd/3/cfdv32.xsd" version="3.2" serie="LDI" folio="20823" fecha="2016-03-12T10:12:32" formaDePago="Pago en una sola exhibición" subTotal="38.79" TipoCambio="1.00" Moneda="MN" total="45.00" metodoDePago="EFECTIVO NORMAL" tipoDeComprobante="ingreso" LugarExpedicion="IRAPUATO, Guanajuato" noCertificado="00001000000304552880" certificado="MIIEwjCCA6qgAwIBAgIUMDAwMDEwMDAwMDAzMDQ1NTI4ODAwDQYJKoZIhvcNAQEFBQAwggGKMTgwNgYDVQQDDC9BLkMuIGRlbCBTZXJ2aWNpbyBkZSBBZG1pbmlzdHJhY2nDs24gVHJpYnV0YXJpYTEvMC0GA1UECgwmU2VydmljaW8gZGUgQWRtaW5pc3RyYWNpw7NuIFRyaWJ1dGFyaWExODA2BgNVBAsML0FkbWluaXN0cmFjacOzbiBkZSBTZWd1cmlkYWQgZGUgbGEgSW5mb3JtYWNpw7NuMR8wHQYJKoZIhvcNAQkBFhBhY29kc0BzYXQuZ29iLm14MSYwJAYDVQQJDB1Bdi4gSGlkYWxnbyA3NywgQ29sLiBHdWVycmVybzEOMAwGA1UEEQwFMDYzMDAxCzAJBgNVBAYTAk1YMRkwFwYDVQQIDBBEaXN0cml0byBGZWRlcmFsMRQwEgYDVQQHDAtDdWF1aHTDqW1vYzEVMBMGA1UELRMMU0FUOTcwNzAxTk4zMTUwMwYJKoZIhvcNAQkCDCZSZXNwb25zYWJsZTogQ2xhdWRpYSBDb3ZhcnJ1YmlhcyBPY2hvYTAeFw0xNDA2MjcyMzE1MDZaFw0xODA2MjcyMzE1MDZaMIIBDTE6MDgGA1UEAxMxSU5GUkFFU1RSVUNUVVJBIENPTkNFU0lPTkFEQSBERSBJUkFQVUFUTyBTQSBERSBDVjE6MDgGA1UEKRMxSU5GUkFFU1RSVUNUVVJBIENPTkNFU0lPTkFEQSBERSBJUkFQVUFUTyBTQSBERSBDVjE6MDgGA1UEChMxSU5GUkFFU1RSVUNUVVJBIENPTkNFU0lPTkFEQSBERSBJUkFQVUFUTyBTQSBERSBDVjElMCMGA1UELRMcSUNJMDcxMjIxMkoyIC8gTU9QTTYxMDgwNkpaOTEeMBwGA1UEBRMVIC8gTU9QTTYxMDgwNkhERlJSTjA2MRAwDgYDVQQLEwdSRUZPUk1BMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC4Szq7zn+fbkithPQHvbL08O12T44oX3nDHK/+nd0uJin1NdduchvFUwe/1k23wt03nHMKb5TWxLXYGrIY7X7X1iHxw3MYSf4cDocEDEDph9+o1LTuNsP5fQS2FntlkGUDX0goBnErDew3fUCnAJlGZw4/KDSyEfG08JlVu6Lz+QIDAQABox0wGzAMBgNVHRMBAf8EAjAAMAsGA1UdDwQEAwIGwDANBgkqhkiG9w0BAQUFAAOCAQEAGxGHwE2gTD8AOC1e7rT4o6G8uiyGLu72Ln4n3/Nr3uczuHy/Q6H/EINhYic1ZlqW25kWltlTsTVviyd40rKzJkLFjPaHLqTVDmJhtLOuyXlDmTC7S1/mU7lxiwFv3nSK1ZnexDcP34tszj31AvFsV9AhIFju7gXtGMffXgYu0e9kQXH5WmW3AQys7ePVqRwqnbVAidJhnZMPSVwgk6nA+tH7cjThm6PbdDqG3UT0ZlH9pwdC0ZGB54SJS0EXi9iF+rkKwprFGuv4fn8R8Ro+zi0lkEmFj4O59Jby6Uhv/khpc0dz3vGpHcq0pAvU0cHLL3VzwUbsR+3za+zuZq9bKQ==" sello="p2Iu90X4wInqyDWtxH6mFIvhWazXK8KP2GJb0LOc/IgxifYoiahGOk2bUal67adf2LctQsAWXvAwvnb09acmQxapoq/EefsZzWA6OBi9BZkMd2e1SUZKFdeU8zdzabwjS7Tq/+WOdiJE44AIdy0NZv2bDRgYGfJRc5zSsrFrL1U=">
+  <cfdi:Emisor rfc="ICI0712212J2" nombre="INFRAESTRUCTURA CONCESIONADA DE IRAPUATO S.A. de C.V.">
+    <cfdi:DomicilioFiscal calle="Paseo de la Reforma" noExterior="383" noInterior="Piso 8" colonia="Cuauhtemoc" localidad="México" municipio="Cuauhtemoc" estado="Distrito Federal" pais="México" codigoPostal="06500" />
+    <cfdi:ExpedidoEn calle="LIBRAMIENTO NORPONIENTE DE IRAPUATO" noExterior="KM 5+110" colonia="NO ESPECIFICADA" localidad="IRAPUATO" municipio="IRAPUATO" estado="Guanajuato" pais="México" codigoPostal="36621" />
+    <cfdi:RegimenFiscal Regimen="REGIMEN GENERAL DE LEY PERSONAS MORALES" />
+  </cfdi:Emisor>
+  <cfdi:Receptor rfc="IIC0602205G1" nombre="INTEGRA INGENIERIA Y CONSTRUCCION, S.A. DE C.V.">
+    <cfdi:Domicilio calle="RIO TUXPAN" noExterior="1099" colonia="LAS AGUILAS" localidad="ZAPOPAN" municipio="ZAPOPAN" estado="JALISCO" pais="MEXICO" codigoPostal="45080" />
+  </cfdi:Receptor>
+  <cfdi:Conceptos>
+    <cfdi:Concepto cantidad="1.00" unidad="No aplica" descripcion="PEAJES LIBRAMIENTO DE IRAPUATO" valorUnitario="38.79" importe="38.79" />
+  </cfdi:Conceptos>
+  <cfdi:Impuestos totalImpuestosTrasladados="6.21">
+    <cfdi:Traslados>
+      <cfdi:Traslado impuesto="IVA" tasa="16.00" importe="6.21" />
+    </cfdi:Traslados>
+  </cfdi:Impuestos>
+  <cfdi:Complemento>
+    <tfd:TimbreFiscalDigital xmlns:tfd="http://www.sat.gob.mx/TimbreFiscalDigital" xsi:schemaLocation="http://www.sat.gob.mx/TimbreFiscalDigital &#xD;&#xA;&#xD;&#xA;http://www.sat.gob.mx/sitio_internet/TimbreFiscalDigital/TimbreFiscalDigital.xsd" version="1.0" UUID="F7E328DC-7CC5-463E-93B9-9507C0F5ADE2" FechaTimbrado="2016-03-12T10:11:43" selloCFD="p2Iu90X4wInqyDWtxH6mFIvhWazXK8KP2GJb0LOc/IgxifYoiahGOk2bUal67adf2LctQsAWXvAwvnb09acmQxapoq/EefsZzWA6OBi9BZkMd2e1SUZKFdeU8zdzabwjS7Tq/+WOdiJE44AIdy0NZv2bDRgYGfJRc5zSsrFrL1U=" noCertificadoSAT="00001000000300392385" selloSAT="R6apqZkBVbWoX/1Ovy+NzJDimLNp0Qr/LmoUsd1D72wHhPI+k1+dYSwLwYafTFm+XkyrSKZW3FmxKL1Oyhk7fKsnvlWW59oVLu5gwIFfE1ye5YgOXOgG5eArU85QOop1nZhDUjQupF2lUVeB0y8tDQpX3TtJJmQgOI716T1+MCI=" />
+  </cfdi:Complemento>
+</cfdi:Comprobante>
