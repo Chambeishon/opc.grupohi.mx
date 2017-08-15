@@ -25,7 +25,7 @@ class Reporte extends MX_Controller
             $data["menu"] = $this->menu->crea_menu($data['idperfil']);
 			$hoy = date("Y-m-d");
 			$totales = array();
-            $limite = 5;
+            $limite = 1; // 5 default
 
             $proyectosRaw = $this->dashboard_model->desplegar_proyectos($data['iduser']);
 
@@ -113,7 +113,7 @@ var cuerpo = $("#cuerpo");
 for(i = 0; i < '. $paginas .'; i++){
     li = $("<li/>", {
         html: "<a href=\'#\'>" + (i + 1) + \'</a>\',
-        \'class\': \'proyectoPaginacion\' + (i === 0 ? " active" : "")
+        \'class\': \'ppag_\' + i + \' proyectoPaginacion\' + (i === 0 ? " active" : "")
     });
     li.data("pag", i);
     li.data("limit", '. $limite .');

@@ -64,9 +64,9 @@ $query_builder = TRUE;
 
 $db['default'] = array(
 	'dsn'	=> '',
-	'hostname' => '172.20.74.3\GHIAPP',
-	'username' => 'oaguayo',
-	'password' => '2014_opc7',
+	'hostname' => 'DESKTOP-4PMJHT7',
+	'username' => 'sa',
+	'password' => 'Hermestina',
 	'database' => 'opi',
 	'dbdriver' => 'sqlsrv',
 	'dbprefix' => '',
@@ -81,6 +81,6 @@ $db['default'] = array(
 	'compress' => FALSE,
 	'stricton' => FALSE,
 	'failover' => array(),
-	'save_queries' => TRUE
+	'save_queries' => FALSE
 );
 

@@ -27,7 +27,7 @@ $(document).on('click','.proyectoPaginacion',function(e){
 
     $(".proyectoPaginacion").each(function(i){
         __this = $(this);
-        if(__this.data("pag") == _this.data("pag"))
+        if(__this.data("pag") === _this.data("pag"))
             __this.addClass("active");
     });
 
@@ -62,7 +62,8 @@ $(document).on('click','.proyectoPrevious',function(e){
     $(".proyectoPaginacion").each(function( index ) {
         active = $(this);
 
-        if (active.data("pag") == pag){
+        if (active.data("pag") == pag)
+        {
             active.addClass("active");
             active.next().removeClass("active");
             _this.data("pag", active.prev().data("pag"));
@@ -104,13 +105,13 @@ $(document).on('click','.proyectoNext',function(e){
         return false;
 
     pag = _this.data("pag");
+    $(".proyectoPaginacion").removeClass("active");
+    $(".ppag_"+ pag).addClass("active");
 
     $(".proyectoPaginacion").each(function( index ) {
         active = $(this);
 
         if (active.data("pag") == _this.data("pag")){
-            active.prev().removeClass("active");
-            active.addClass("active");
 
             if (active.next().data("pag")){
                 _this.data("pag", active.next().data("pag"));
@@ -159,7 +160,7 @@ $(document).on('click','.paginacion',function(e){
 
     $(".paginacion").each(function(i){
         __this = $(this);
-        if(__this.data("pag") == _this.data("pag"))
+        if(__this.data("pag") === _this.data("pag"))
             __this.addClass("active");
     });
 
@@ -353,10 +354,6 @@ function generar_lista(options)
 	divTable = $("#proyecto_lista_"+ options.idproyecto).empty();
 	tabla = $(".lista").clone();
 
-	$("html, body").animate({
-		scrollTop: $("#show_proyecto_"+ options.idproyecto).find(".mostrar_vencidas").offset().top
-	}, 1000);
-
 	$.ajax({
 		url: base_url + 'doc/reporte/sub_lista',
 		data: options,
@@ -364,15 +361,15 @@ function generar_lista(options)
 		type: "POST",
 		success: function(data) {
             data = JSON.parse(data);
-            limit = 10;
+            var limite = 4; // 10 por default
 
-            tabla.data("pag", {options:options, data:data, limit:limit});
+            tabla.data("pag", {options:options, data:data, limit:limite});
 			tabla.removeClass("hidden");
             tabla.find("li.previous").addClass("disabled");
 
-            if (data.length > limit){
-                seccion = data.slice(0, limit);
-                paginas = Math.ceil(data.length / limit);
+            if (data.length > limite){
+                seccion = data.slice(0, limite);
+                paginas = Math.ceil(data.length / limite);
                 for(i = 0; i < paginas; i++){
                     li = $("<li/>", {
                         html: '<a href="#">'+ (i + 1) +'</a>',
@@ -400,6 +397,10 @@ function generar_lista(options)
                 "border-style": "solid",
                 "border-width": "1px"
             });
+
+            $("html, body").animate({
+                scrollTop: $("#show_proyecto_"+ options.idproyecto).find(".mostrar_vencidas").offset().top
+            }, 1000);
 		},
 		error: function(xhr) {}
 	});
