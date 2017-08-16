@@ -38,7 +38,7 @@
 <div class="col-md-12 panel panel-default lista hidden">
   <div class="panel-heading text-center"></div>
   <div class="panel-body">
-    <nav aria-label="...">
+    <nav aria-label="..." class="pull-right">
       <ul class="pagination">
         <li class="previous" data-pag="0"><a href="#"><span aria-hidden="true">&larr;</span> Anterior</a></li>
         <li class="next" data-pag="0"><a href="#">Siguiente <span aria-hidden="true">&rarr;</span></a></li>
@@ -57,7 +57,7 @@
         <tbody>
         </tbody>
     </table>
-    <nav aria-label="...">
+    <nav aria-label="..." class="pull-right">
       <ul class="pagination">
         <li class="previous" data-pag="0"><a href="#"><span aria-hidden="true">&larr;</span> Anterior</a></li>
         <li class="next" data-pag="0"><a href="#">Siguiente <span aria-hidden="true">&rarr;</span></a></li>
