@@ -6,304 +6,304 @@ var loading = $("<i />", {
 
 //Paginación proyecto
 $(document).on('click','.proyectoPaginacion',function(e){
-    e.preventDefault();
-    _this = $(this);
+	e.preventDefault();
+	_this = $(this);
 
-    if (_this.hasClass("active"))
-        return false;
+	if (_this.hasClass("active"))
+		return false;
 
-    pag = _this.data("pag");
-    limit = _this.data("limit");
-    ini = (limit * pag);
-    fin = ini + limit;
+	pag = _this.data("pag");
+	limit = _this.data("limit");
+	ini = (limit * pag);
+	fin = ini + limit;
 
-    $(".qwerty").hide();
-    $(".qwerty").slice(ini, fin).show();
-    $(".proyectoPaginacion").removeClass("active");
-    _this.addClass("active");
+	$(".qwerty").hide();
+	$(".qwerty").slice(ini, fin).show();
+	$(".proyectoPaginacion").removeClass("active");
+	_this.addClass("active");
 
-    $(".proyectoPrevious").data("pag", pag - 1);
-    $(".proyectoNext").data("pag", pag + 1);
+	$(".proyectoPrevious").data("pag", pag - 1);
+	$(".proyectoNext").data("pag", pag + 1);
 
-    $(".proyectoPaginacion").each(function(i){
-        __this = $(this);
-        if(__this.data("pag") === _this.data("pag"))
-            __this.addClass("active");
-    });
+	$(".proyectoPaginacion").each(function(i){
+		__this = $(this);
+		if(__this.data("pag") === _this.data("pag"))
+			__this.addClass("active");
+	});
 
-    if (fin < _this.data("total")){
-        $(".proyectoNext").removeClass("disabled");
-    }
+	if (fin < _this.data("total")){
+		$(".proyectoNext").removeClass("disabled");
+	}
 
-    else{
-        $(".proyectoNext").addClass("disabled");
-    }
+	else{
+		$(".proyectoNext").addClass("disabled");
+	}
 
-    if (ini > 0){
-        $(".proyectoPrevious").removeClass("disabled");
-    }
+	if (ini > 0){
+		$(".proyectoPrevious").removeClass("disabled");
+	}
 
-    else{
-       $(".proyectoPrevious").addClass("disabled");
-    }
+	else{
+		$(".proyectoPrevious").addClass("disabled");
+	}
 
-    return false;
+	return false;
 });
 
 $(document).on('click','.proyectoPrevious',function(e){
-    e.preventDefault();
-    _this = $(this);
+	e.preventDefault();
+	_this = $(this);
 
-    if (_this.hasClass("disabled"))
-        return false;
+	if (_this.hasClass("disabled"))
+		return false;
 
-    pag = _this.data("pag");
+	pag = _this.data("pag");
 
-    $(".proyectoPaginacion").each(function( index ) {
-        active = $(this);
+	$(".proyectoPaginacion").each(function( index ) {
+		active = $(this);
 
-        if (active.data("pag") == pag)
-        {
-            active.addClass("active");
-            active.next().removeClass("active");
-            _this.data("pag", active.prev().data("pag"));
-        }
-    });
+		if (active.data("pag") == pag)
+		{
+			active.addClass("active");
+			active.next().removeClass("active");
+			_this.data("pag", active.prev().data("pag"));
+		}
+	});
 
-    $(".proyectoPrevious").data("pag", pag - 1);
-    $(".proyectoNext").data("pag", pag + 1);
+	$(".proyectoPrevious").data("pag", pag - 1);
+	$(".proyectoNext").data("pag", pag + 1);
 
-    limit = _this.data("limit");
-    ini = (limit * pag);
-    fin = ini + limit;
+	limit = _this.data("limit");
+	ini = (limit * pag);
+	fin = ini + limit;
 
-    $(".qwerty").hide();
-    $(".qwerty").slice(ini, fin).show();
+	$(".qwerty").hide();
+	$(".qwerty").slice(ini, fin).show();
 
-    if (fin < active.data("total")){
-        $(".proyectoNext").removeClass("disabled");
-    }
+	if (fin < active.data("total")){
+		$(".proyectoNext").removeClass("disabled");
+	}
 
-    else{
-        $(".proyectoNext").addClass("disabled");
-    }
+	else{
+		$(".proyectoNext").addClass("disabled");
+	}
 
-    if (ini > 0){
-        $(".proyectoPrevious").removeClass("disabled");
-    }
+	if (ini > 0){
+		$(".proyectoPrevious").removeClass("disabled");
+	}
 
-    else{
-       $(".proyectoPrevious").addClass("disabled");
-    }
+	else{
+		$(".proyectoPrevious").addClass("disabled");
+	}
 });
 
 $(document).on('click','.proyectoNext',function(e){
-    e.preventDefault();
-    _this = $(this);
+	e.preventDefault();
+	_this = $(this);
 
-    if (_this.hasClass("disabled"))
-        return false;
+	if (_this.hasClass("disabled"))
+		return false;
 
-    pag = _this.data("pag");
-    $(".proyectoPaginacion").removeClass("active");
-    $(".ppag_"+ pag).addClass("active");
+	pag = _this.data("pag");
+	$(".proyectoPaginacion").removeClass("active");
+	$(".ppag_"+ pag).addClass("active");
 
-    $(".proyectoPaginacion").each(function( index ) {
-        active = $(this);
+	$(".proyectoPaginacion").each(function( index ) {
+		active = $(this);
 
-        if (active.data("pag") == _this.data("pag")){
+		if (active.data("pag") == _this.data("pag")){
 
-            if (active.next().data("pag")){
-                _this.data("pag", active.next().data("pag"));
-            }
-        }
-    });
+			if (active.next().data("pag")){
+				_this.data("pag", active.next().data("pag"));
+			}
+		}
+	});
 
-    $(".proyectoPrevious").data("pag", pag - 1);
-    $(".proyectoNext").data("pag", pag + 1);
+	$(".proyectoPrevious").data("pag", pag - 1);
+	$(".proyectoNext").data("pag", pag + 1);
 
-    limit = _this.data("limit");
-    ini = (limit * pag);
-    fin = ini + limit;
+	limit = _this.data("limit");
+	ini = (limit * pag);
+	fin = ini + limit;
 
-    $(".qwerty").hide();
-    $(".qwerty").slice(ini, fin).show();
+	$(".qwerty").hide();
+	$(".qwerty").slice(ini, fin).show();
 
-    if (fin < active.data("total")){
-        $(".proyectoNext").removeClass("disabled");
-    }
+	if (fin < active.data("total")){
+		$(".proyectoNext").removeClass("disabled");
+	}
 
-    else{
-        $(".proyectoNext").addClass("disabled");
-    }
+	else{
+		$(".proyectoNext").addClass("disabled");
+	}
 
-    if (ini > 0){
-        $(".proyectoPrevious").removeClass("disabled");
-    }
+	if (ini > 0){
+		$(".proyectoPrevious").removeClass("disabled");
+	}
 
-    else{
-       $(".proyectoPrevious").addClass("disabled");
-    }
+	else{
+		$(".proyectoPrevious").addClass("disabled");
+	}
 });
 
 //Paginación número
 $(document).on('click','.paginacion',function(e){
-    e.preventDefault();
-    _this = $(this);
+	e.preventDefault();
+	_this = $(this);
 
-    if (_this.hasClass("active"))
-        return false;
+	if (_this.hasClass("active"))
+		return false;
 
-    lista = _this.closest(".lista");
-    lista.find("li.paginacion").removeClass("active");
-    _this.addClass("active");
+	lista = _this.closest(".lista");
+	lista.find("li.paginacion").removeClass("active");
+	_this.addClass("active");
 
-    $(".paginacion").each(function(i){
-        __this = $(this);
-        if(__this.data("pag") === _this.data("pag"))
-            __this.addClass("active");
-    });
+	$(".paginacion").each(function(i){
+		__this = $(this);
+		if(__this.data("pag") === _this.data("pag"))
+			__this.addClass("active");
+	});
 
-    tbody = lista.find("tbody");
-    next = lista.find("li.next");
-    prev = lista.find("li.previous");
-    datos = lista.data("pag");
-    pag = _this.data("pag");
-    sig = pag + 1;
-    atras = pag - 1;
-    ini = (datos.limit * pag);
-    fin = ini + datos.limit;
+	tbody = lista.find("tbody");
+	next = lista.find("li.next");
+	prev = lista.find("li.previous");
+	datos = lista.data("pag");
+	pag = _this.data("pag");
+	sig = pag + 1;
+	atras = pag - 1;
+	ini = (datos.limit * pag);
+	fin = ini + datos.limit;
 
-    if (fin < datos.data.length){
-        next.removeClass("disabled");
-    }
+	if (fin < datos.data.length){
+		next.removeClass("disabled");
+	}
 
-    else{
-        next.addClass("disabled");
-    }
+	else{
+		next.addClass("disabled");
+	}
 
-    if (ini > 0){
-        prev.removeClass("disabled");
-    }
+	if (ini > 0){
+		prev.removeClass("disabled");
+	}
 
-    else{
-        prev.addClass("disabled");
-    }
+	else{
+		prev.addClass("disabled");
+	}
 
-    next.data("pag", sig);
-    prev.data("pag", atras);
+	next.data("pag", sig);
+	prev.data("pag", atras);
 
-    var seccion = datos.data.slice(ini, fin);
-    tbody.empty();
+	var seccion = datos.data.slice(ini, fin);
+	tbody.empty();
 
-    $.each(seccion, function(i, v) {
-       tbody.append('<tr><th scope="row">'+ v.link +'</th><td>'+ v.nombre +'</td><td>'+ v.descripcion +' </td><td>'+ v.fecha +'</td><td>'+ v.estado +'</td></tr>');
-    });
+	$.each(seccion, function(i, v) {
+		tbody.append('<tr><th scope="row">'+ v.link +'</th><td>'+ v.nombre +'</td><td>'+ v.descripcion +' </td><td>'+ v.fecha +'</td><td>'+ v.estado +'</td></tr>');
+	});
 
-    return false;
+	return false;
 });
 
 
 //Paginación siguiente
 $(document).on('click','.next',function(e){
-    e.preventDefault();
-    _this = $(this);
+	e.preventDefault();
+	_this = $(this);
 
-    if (_this.hasClass("disabled"))
-        return false;
+	if (_this.hasClass("disabled"))
+		return false;
 
-    lista = _this.closest(".lista");
-    tbody = lista.find("tbody");
-    next = lista.find("li.next");
-    prev = lista.find("li.previous");
-    datos = lista.data("pag");
-    pag = _this.data("pag");
-    sig = pag + 1;
-    ini = (datos.limit * sig);
-    fin = ini + datos.limit;
+	lista = _this.closest(".lista");
+	tbody = lista.find("tbody");
+	next = lista.find("li.next");
+	prev = lista.find("li.previous");
+	datos = lista.data("pag");
+	pag = _this.data("pag");
+	sig = pag + 1;
+	ini = (datos.limit * sig);
+	fin = ini + datos.limit;
 
-    if (fin < datos.data.length){
-        next.removeClass("disabled");
-    }
+	if (fin < datos.data.length){
+		next.removeClass("disabled");
+	}
 
-    else{
-        next.addClass("disabled");
-    }
+	else{
+		next.addClass("disabled");
+	}
 
-    if (ini > 0){
-        prev.removeClass("disabled");
-    }
+	if (ini > 0){
+		prev.removeClass("disabled");
+	}
 
-    else{
-        prev.addClass("disabled");
-    }
+	else{
+		prev.addClass("disabled");
+	}
 
-    next.data("pag", sig);
-    prev.data("pag", pag);
+	next.data("pag", sig);
+	prev.data("pag", pag);
 
-    currentActive = lista.find("li.active");
-    currentActive.removeClass("active");
-    currentActive.next().addClass("active");
+	currentActive = lista.find("li.active");
+	currentActive.removeClass("active");
+	currentActive.next().addClass("active");
 
-    var seccion = datos.data.slice(ini, fin);
-    tbody.empty();
+	var seccion = datos.data.slice(ini, fin);
+	tbody.empty();
 
-    $.each(seccion, function(i, v) {
-       tbody.append('<tr><th scope="row">'+ v.link +'</th><td>'+ v.nombre +'</td><td>'+ v.descripcion +' </td><td>'+ v.fecha +'</td><td>'+ v.estado +'</td></tr>');
-    });
+	$.each(seccion, function(i, v) {
+		tbody.append('<tr><th scope="row">'+ v.link +'</th><td>'+ v.nombre +'</td><td>'+ v.descripcion +' </td><td>'+ v.fecha +'</td><td>'+ v.estado +'</td></tr>');
+	});
 
-    return false;
+	return false;
 });
 
 //Paginación atrás
 $(document).on('click','.previous',function(e){
-    e.preventDefault();
-    _this = $(this);
+	e.preventDefault();
+	_this = $(this);
 
-    if (_this.hasClass("disabled"))
-        return false;
+	if (_this.hasClass("disabled"))
+		return false;
 
-    lista = _this.closest(".lista");
-    tbody = lista.find("tbody");
-    next = lista.find("li.next");
-    prev = lista.find("li.previous");
-    datos = lista.data("pag");
-    pag = _this.data("pag");
-    atras = pag - 1;
-    ini = (datos.limit * pag);
-    fin = ini + datos.limit;
+	lista = _this.closest(".lista");
+	tbody = lista.find("tbody");
+	next = lista.find("li.next");
+	prev = lista.find("li.previous");
+	datos = lista.data("pag");
+	pag = _this.data("pag");
+	atras = pag - 1;
+	ini = (datos.limit * pag);
+	fin = ini + datos.limit;
 
-    if (fin < datos.data.length){
-        next.removeClass("disabled");
-    }
+	if (fin < datos.data.length){
+		next.removeClass("disabled");
+	}
 
-    else{
-        next.addClass("disabled");
-    }
+	else{
+		next.addClass("disabled");
+	}
 
-    if (ini > 0){
-        prev.removeClass("disabled");
-    }
+	if (ini > 0){
+		prev.removeClass("disabled");
+	}
 
-    else{
-        prev.addClass("disabled");
-    }
+	else{
+		prev.addClass("disabled");
+	}
 
-    next.data("pag", pag);
-    prev.data("pag", atras);
+	next.data("pag", pag);
+	prev.data("pag", atras);
 
-    currentActive = lista.find("li.active");
-    currentActive.removeClass("active");
-    currentActive.prev().addClass("active");
+	currentActive = lista.find("li.active");
+	currentActive.removeClass("active");
+	currentActive.prev().addClass("active");
 
-    var seccion = datos.data.slice(ini, fin);
-    tbody.empty();
+	var seccion = datos.data.slice(ini, fin);
+	tbody.empty();
 
-    $.each(seccion, function(i, v) {
-       tbody.append('<tr><th scope="row">'+ v.link +'</th><td>'+ v.nombre +'</td><td>'+ v.descripcion +' </td><td>'+ v.fecha +'</td><td>'+ v.estado +'</td></tr>');
-    });
+	$.each(seccion, function(i, v) {
+		tbody.append('<tr><th scope="row">'+ v.link +'</th><td>'+ v.nombre +'</td><td>'+ v.descripcion +' </td><td>'+ v.fecha +'</td><td>'+ v.estado +'</td></tr>');
+	});
 
-    return false;
+	return false;
 });
 
 function generar_subgraficas(options)
@@ -311,6 +311,10 @@ function generar_subgraficas(options)
 	var sub_vencidas =  $("#show_proyecto_"+ options.idproyecto).find(".mostrar_vencidas").html(loading),
 		sub_vencer = $("#show_proyecto_"+ options.idproyecto).find(".mostrar_vencer").html(loading);
 		$(".mostrar_lista").empty().html(" ");
+		$(".mostrar_lista").css({
+			"border-width": "0",
+			"border": "none"
+		});
 
 	$("html, body").animate({
 		scrollTop: $("#show_proyecto_"+ options.idproyecto).offset().top
@@ -329,7 +333,7 @@ function generar_subgraficas(options)
 
 				mostrar = (key === "vencidas" ? sub_vencidas : sub_vencer);
 				titulo = (key === "vencidas" ? " - VENCIDAS" : " - POR VENCER");
-                noData = (key === "vencidas" ? "No hay tareas vencidas" : "No hay tareas por vencer");
+				noData = (key === "vencidas" ? "No hay tareas vencidas" : "No hay tareas por vencer");
 				$("#show_proyecto_"+ options.idproyecto).css({
 					"border-style": "solid",
 					"border-color": options.color,
@@ -344,9 +348,9 @@ function generar_subgraficas(options)
 		error: function(xhr) {}
 	});
 
-    delete sub_vencidas;
-    delete sub_vencer;
-    delete options;
+	delete sub_vencidas;
+	delete sub_vencer;
+	delete options;
 }
 
 function generar_lista(options)
@@ -360,47 +364,47 @@ function generar_lista(options)
 		cache: false,
 		type: "POST",
 		success: function(data) {
-            data = JSON.parse(data);
-            var limite = 4; // 10 por default
+			data = JSON.parse(data);
+			var limite = 4; // 10 por default
 
-            tabla.data("pag", {options:options, data:data, limit:limite});
+			tabla.data("pag", {options:options, data:data, limit:limite});
 			tabla.removeClass("hidden");
-            tabla.find("li.previous").addClass("disabled");
+			tabla.find("li.previous").addClass("disabled");
 
-            if (data.length > limite){
-                seccion = data.slice(0, limite);
-                paginas = Math.ceil(data.length / limite);
-                for(i = 0; i < paginas; i++){
-                    li = $("<li/>", {
-                        html: '<a href="#">'+ (i + 1) +'</a>',
-                        'class': 'paginacion' + (i === 0 ? " active" : "")
-                    });
-                    li.data("pag", i);
-                    li.insertBefore(tabla.find("li.next"));
-                }
-            }
+			if (data.length > limite){
+				seccion = data.slice(0, limite);
+				paginas = Math.ceil(data.length / limite);
+				for(i = 0; i < paginas; i++){
+					li = $("<li/>", {
+						html: '<a href="#">'+ (i + 1) +'</a>',
+						'class': 'paginacion' + (i === 0 ? " active" : "")
+					});
+					li.data("pag", i);
+					li.insertBefore(tabla.find("li.next"));
+				}
+			}
 
-            else{
-                tabla.find("li.next").addClass("disabled hidden");
-                tabla.find("li.previous").addClass("hidden");
-                seccion = data;
-            }
+			else{
+				tabla.find("li.next").addClass("disabled hidden");
+				tabla.find("li.previous").addClass("hidden");
+				seccion = data;
+			}
 
-            $.each(seccion, function(i, v){
-                tabla.find("tbody").append('<tr><th scope="row">'+ v.link +'</th><td>'+ v.nombre +'</td><td>'+ v.descripcion +' </td><td>'+ v.fecha +'</td><td>'+ v.estado +'</td></tr>');
-            });
+			$.each(seccion, function(i, v){
+				tabla.find("tbody").append('<tr><th scope="row">'+ v.link +'</th><td>'+ v.nombre +'</td><td>'+ v.descripcion +' </td><td>'+ v.fecha +'</td><td>'+ v.estado +'</td></tr>');
+			});
 
-            tabla.find(".panel-heading").text(options.tableHeader);
+			tabla.find(".panel-heading").text(options.tableHeader);
 			divTable.append(tabla);
-            divTable.css({
-                "border-color": options.color,
-                "border-style": "solid",
-                "border-width": "1px"
-            });
+			divTable.css({
+				"border-color": options.color,
+				"border-style": "solid",
+				"border-width": "1px"
+			});
 
-            $("html, body").animate({
-                scrollTop: $("#show_proyecto_"+ options.idproyecto).find(".mostrar_vencidas").offset().top
-            }, 1000);
+			$("html, body").animate({
+				scrollTop: $("#show_proyecto_"+ options.idproyecto).find(".mostrar_vencidas").offset().top
+			}, 1000);
 		},
 		error: function(xhr) {}
 	});
@@ -409,14 +413,14 @@ function generar_lista(options)
 function generar_grafica(jObject, titulo, legend, datos, callback, noData)
 {
 	var jData = [],
-        oObject = jObject;
+		oObject = jObject;
 	jData = datos;
-    noData = noData ? noData : "No hay tareas disponibles";
-    Highcharts.setOptions({
-        lang:{
-            noData: '<span style="color:#333333;font-size:18px;">' + noData + '</span>'
-        }
-    });
+	noData = noData ? noData : "No hay tareas disponibles";
+	Highcharts.setOptions({
+		lang:{
+			noData: '<span style="color:#333333;font-size:18px;">' + noData + '</span>'
+		}
+	});
 	oObject.highcharts({
 		chart: {
 			type: "pie"
@@ -471,7 +475,7 @@ function generar_grafica(jObject, titulo, legend, datos, callback, noData)
 		}]
 	});
 	delete jData;
-    delete oObject;
+	delete oObject;
 }
 
 $('body').on('click','.abrir-programacion', function(){

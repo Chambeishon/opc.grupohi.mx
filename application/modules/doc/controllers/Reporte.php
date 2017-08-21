@@ -3,42 +3,42 @@
 class Reporte extends MX_Controller
 {
 	public function __construct()
-    {
-        parent::__construct();
-        $this->load->model('reportes_ejecutivos_model');
-        $this->load->model('reporte_model');
-        $this->load->model('programacion_model');
-        $this->load->model('dashboard_model');
-        $this->load->library('template');
-        $this->load->library('menu');
-    }
+	{
+		parent::__construct();
+		$this->load->model('reportes_ejecutivos_model');
+		$this->load->model('reporte_model');
+		$this->load->model('programacion_model');
+		$this->load->model('dashboard_model');
+		$this->load->library('template');
+		$this->load->library('menu');
+	}
 
-    public function index()
-    {
-        if($this->session->userdata('id'))
-        {
-            $session_data = $this->session->userdata();
-            $data['js'] = '';
-            $data['usuario'] = $session_data['username'];
-            $data['iduser'] = $session_data['id'];
-            $data['idperfil'] = $session_data['idperfil'];
-            $data["menu"] = $this->menu->crea_menu($data['idperfil']);
+	public function index()
+	{
+		if($this->session->userdata('id'))
+		{
+			$session_data = $this->session->userdata();
+			$data['js'] = '';
+			$data['usuario'] = $session_data['username'];
+			$data['iduser'] = $session_data['id'];
+			$data['idperfil'] = $session_data['idperfil'];
+			$data["menu"] = $this->menu->crea_menu($data['idperfil']);
 			$hoy = date("Y-m-d");
 			$totales = array();
-            $limite = 1; // 5 default
+			$limite = 2; // 5 default
 
-            $proyectosRaw = $this->dashboard_model->desplegar_proyectos($data['iduser']);
+			$proyectosRaw = $this->dashboard_model->desplegar_proyectos($data['iduser']);
 
-            foreach ($proyectosRaw as $p)
-            {
-                $max_rango = $this->reporte_model->obtener_max_rango($p['idproyecto']);
+			foreach ($proyectosRaw as $p)
+			{
+				$max_rango = $this->reporte_model->obtener_max_rango($p['idproyecto']);
 
-                $proyectos = $this->dashboard_model->desplegar_proyectos_fecha($data['iduser'], $max_rango[1]['fecha_ini'], $max_rango[0]['fecha_fin']);
-            }
+				$proyectos = $this->dashboard_model->desplegar_proyectos_fecha($data['iduser'], $max_rango[1]['fecha_ini'], $max_rango[0]['fecha_fin']);
+			}
 
-            foreach ($proyectos as $p)
-            {
-                $max_rango = $this->reporte_model->obtener_max_rango($p['idproyecto']);
+			foreach ($proyectos as $p)
+			{
+				$max_rango = $this->reporte_model->obtener_max_rango($p['idproyecto']);
 
 				if(empty($max_rango[0]))
 					continue;
@@ -52,7 +52,7 @@ class Reporte extends MX_Controller
 						'categorias' => array(),
 					);
 				}
-            }
+			}
 
 			foreach ($vencidas as $k => $a)
 			{
@@ -70,11 +70,11 @@ class Reporte extends MX_Controller
 				}
 			}
 
-            $grafica = $proyectoPag = '';
-            $show = array();
+			$grafica = $proyectoPag = '';
+			$show = array();
 
-            foreach ($totales as $k => $t)
-            {
+			foreach ($totales as $k => $t)
+			{
 				foreach ($t['categorias'] as $cat_id => $cat)
 				{
 					$total = count($cat['vencidas']) + count($cat['vencer']);
@@ -95,50 +95,49 @@ class Reporte extends MX_Controller
 					);
 				}
 
-                $grafica .= '
+				$grafica .= '
 generar_grafica($("#proyecto_'. $k .'"), {useHTML:true, text:"<div >'. $t['nombre'] .'</div>", style:{ "color": "#333333", "fontSize": "20px", "text-decoration": "underline"}}, [], '. json_encode(array_values($show[$k])) .', function(){
 	this.point.options.color = this.point.color;
 	generar_subgraficas(this.point.options);
 });
 ';
-            }
+			}
 
-            $items= count($totales);
-            if ($items > $limite)
-            {
-                $paginas = ceil($items / $limite);
-                $proyectoPag .= '
+			$items= count($totales);
+			if ($items > $limite)
+			{
+				$paginas = ceil($items / $limite);
+				$proyectoPag .= '
 $(".qwerty").hide();
 var cuerpo = $("#cuerpo");
 for(i = 0; i < '. $paginas .'; i++){
-    li = $("<li/>", {
-        html: "<a href=\'#\'>" + (i + 1) + \'</a>\',
-        \'class\': \'ppag_\' + i + \' proyectoPaginacion\' + (i === 0 ? " active" : "")
-    });
-    li.data("pag", i);
-    li.data("limit", '. $limite .');
-    li.data("total", '. $items .');
-    li.insertBefore(cuerpo.find("li.proyectoNext"));
-    $(".proyectoPrevious").data("limit", '. $limite .');
-    $(".proyectoNext").data("limit", '. $limite .');
+	li = $("<li/>", {
+		html: "<a href=\'#\'>" + (i + 1) + \'</a>\',
+		\'class\': \'ppag_\' + i + \' proyectoPaginacion\' + (i === 0 ? " active" : "")
+	});
+	li.data("pag", i);
+	li.data("limit", '. $limite .');
+	li.data("total", '. $items .');
+	li.insertBefore(cuerpo.find("li.proyectoNext"));
+	$(".proyectoPrevious").data("limit", '. $limite .');
+	$(".proyectoNext").data("limit", '. $limite .');
 }
 $(".qwerty").slice(0, '. $limite .').show();
 
 
-      ';
-            }
+	  ';
+			}
 
-            else{
-              $proyectoPag .= '$(".proPag").hide();';
-            }
+			else{
+			  $proyectoPag .= '$(".proPag").hide();';
+			}
 
-            $data['proyectos'] = $totales;
-            $data['js'] .= '<script src="'.base_url('assets/js/highcharts.js').'"></script>';
-            $data['js'] .= '<script src="'.base_url('assets/js/highcharts-more.js').'"></script>';
+			$data['proyectos'] = $totales;
+			$data['js'] .= '<script src="'.base_url('assets/js/highcharts.js').'"></script>';
+			$data['js'] .= '<script src="'.base_url('assets/js/highcharts-more.js').'"></script>';
 			$data['js'] .= '<script src="'.base_url('assets/js/highcharts-no-data-to-display.js').'"></script>';
-//            $data['js'] .= '<script src="'.base_url('assets/js/scrollreveal.min.js').'"></script>';
-            $data['js'] .= '<script src="'.base_url('assets/js/doc-reportes-ejecutivos.js').'"></script>';
-            $data['js'] .= '
+			$data['js'] .= '<script src="'.base_url('assets/js/doc-reportes-ejecutivos.js').'"></script>';
+			$data['js'] .= '
 <script>
 $(function() {
 '. $grafica . '
@@ -146,33 +145,33 @@ $(function() {
 });
 </script>';
 
-            $this->template->load('template','reporte',$data);
+			$this->template->load('template','reporte',$data);
 
-        }
-        else{
-            redirect('login/index', 'refresh');
-        }
-    }
+		}
+		else{
+			redirect('login/index', 'refresh');
+		}
+	}
 
-    public function sub_categorias()
-    {
-        $data = array();
-        $session_data = $this->session->userdata();
-        $data['usuario'] = $session_data['username'];
-        $data['iduser'] = $session_data['id'];
-        $idproyecto = $this->input->get('idproyecto');
+	public function sub_categorias()
+	{
+		$data = array();
+		$session_data = $this->session->userdata();
+		$data['usuario'] = $session_data['username'];
+		$data['iduser'] = $session_data['id'];
+		$idproyecto = $this->input->get('idproyecto');
 		$datos = $this->input->get();
-        $parametrosVencidas = $this->reportes_ejecutivos_model->obtener_parametros_todos(1, $idproyecto);
+		$parametrosVencidas = $this->reportes_ejecutivos_model->obtener_parametros_todos(1, $idproyecto);
 		$parametrosVencer = $this->reportes_ejecutivos_model->obtener_parametros_todos(2, $idproyecto);
 		$hoy = date("Y-m-d");
 
-         $periodos = array(
+		 $periodos = array(
 			'3' => 'meses',
 			'2' => 'semanas',
 			'1' => 'días'
-        );
-        $send = $vencidas = $vencer = array();
-        $coloresVencer = array('#789048',  '#A8DBA8', '#3B8686', '#0B486B', '#519548', '#79BD9A', '#607848', '#E3EDC4', '#CFF09E', '#88C425', '#0A7B74');
+		);
+		$send = $vencidas = $vencer = array();
+		$coloresVencer = array('#789048', '#A8DBA8', '#3B8686', '#0B486B', '#519548', '#79BD9A', '#607848', '#E3EDC4', '#CFF09E', '#88C425', '#0A7B74');
 		$coloresVencidas = array('#DFCCCC', '#FFD3D3', '#FFA4A4', '#D17878', '#965959', '#D83018', '#F07848', '#FDAB64', '#FD9960', '#9B0F2B', '#FE4E76');
 
 		// '1' => 'Fecha vencida',
@@ -199,13 +198,11 @@ $(function() {
 		foreach ($vencidas as $reporteId => $v)
 		{
 			if(empty($v['actividades']))
-			{
 				continue;
-			}
 
 			$rando = mt_rand(0, count($coloresVencer) - 1);
 			$total = count($v['actividades']);
-            $stringActividades = $total > 1 ? 'actividades' : 'actividad';
+			$stringActividades = $total > 1 ? 'actividades' : 'actividad';
 
 			$send['vencidas'][] = array(
 				'nombre' => $datos['nombre'],
@@ -213,7 +210,7 @@ $(function() {
 				'y' => $total,
 				'customLegend' => '<b>'. $total .'</b> '. $stringActividades .'<br>(de '. ($v['rango']['rango_inicial'] .' a '. $v['rango']['rango_final']) .' '. $periodos[$v['rango']['periodo_raw']] .')',
 				'customTooltip' => $datos['nombre'] ."<br>Vencidas <b>". $total ."</b> periodo:<br>". $v['rango']['fecha_fin'] ." al ". $v['rango']['fecha_ini'],
-                'tableHeader' => $datos['nombre'] .' VENCIDAS (DE '. ($v['rango']['rango_inicial'] .' A '. $v['rango']['rango_final']) .' '. $periodos[$v['rango']['periodo_raw']] .')',
+				'tableHeader' => $datos['nombre'] .' VENCIDAS (DE '. ($v['rango']['rango_inicial'] .' A '. $v['rango']['rango_final']) .' '. $periodos[$v['rango']['periodo_raw']] .')',
 				'idproyecto' => $datos['idproyecto'],
 				'idcat_categoria' => $datos['idcat_categoria'],
 				'rango' => array(
@@ -232,7 +229,7 @@ $(function() {
 
 			$rando = mt_rand(0, count($coloresVencer) - 1);
 			$total = count($v['actividades']);
-            $stringActividades = $total > 1 ? 'actividades' : 'actividad';
+			$stringActividades = $total > 1 ? 'actividades' : 'actividad';
 
 			$send['vencer'][] = array(
 				'nombre' => $datos['nombre'],
@@ -240,7 +237,7 @@ $(function() {
 				'y' => $total,
 				'customLegend' => '<b>'. $total .'</b> '. $stringActividades .'<br>(de '. ($v['rango']['rango_inicial'] .' a '. $v['rango']['rango_final']) .' '. $periodos[$v['rango']['periodo_raw']] .')',
 				'customTooltip' => $datos['nombre'] ."<br>Por vencer <b>". $total ."</b> periodo:<br>". $v['rango']['fecha_ini'] ." al ". $v['rango']['fecha_fin'],
-                'tableHeader' => $datos['nombre'] .' POR VENCER (DE '. ($v['rango']['rango_inicial'] .' A '. $v['rango']['rango_final']) .' '. $periodos[$v['rango']['periodo_raw']] .')',
+				'tableHeader' => $datos['nombre'] .' POR VENCER (DE '. ($v['rango']['rango_inicial'] .' A '. $v['rango']['rango_final']) .' '. $periodos[$v['rango']['periodo_raw']] .')',
 				'idproyecto' => $datos['idproyecto'],
 				'idcat_categoria' => $datos['idcat_categoria'],
 				'rango' => array(
@@ -266,20 +263,18 @@ $(function() {
 		$lista = $this->reporte_model->obtener_datos($datos['idproyecto'], ""
 			. "fecha BETWEEN '". $datos['rango'][0] ."' AND '". $datos['rango'][1] ."' AND idcat_categoria = ". $datos['idcat_categoria']);
 
-        $json = array();
+		$json = array();
 
 		foreach ($lista as $l)
-		{
-            $json[] = array(
-                'link' => '<a class=\'abrir-programacion\' idprogramacion=\''. $l['idprogramacion'] .'\'>P-'. $l['idprogramacion'] .'</a>',
-                'nombre' => $l['nombre_actividad'],
-                'descripcion' => $l['descripcion_actividad'],
-                'fecha' => $l['fecha'],
-                'estado' => $l['estado_actividad']
-            );
-		}
+			$json[] = array(
+				'link' => '<a class=\'abrir-programacion\' idprogramacion=\''. $l['idprogramacion'] .'\'>P-'. $l['idprogramacion'] .'</a>',
+				'nombre' => $l['nombre_actividad'],
+				'descripcion' => $l['descripcion_actividad'],
+				'fecha' => $l['fecha'],
+				'estado' => $l['estado_actividad']
+			);
 
-        echo json_encode($json);
+		echo json_encode($json);
 	}
 
 	protected function _generarDatos($idproyecto = 0, $iduser = 0, $total = array(), $fecha_ini = '', $fecha_fin = '')
@@ -322,6 +317,7 @@ $(function() {
 				}
 			}
 		}
+
 		return $datos;
 	}
 }
