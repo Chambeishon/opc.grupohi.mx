@@ -47,28 +47,18 @@ class Reporte extends MX_Controller
 				$vencidas[$p['idproyecto']] = $this->reporte_model->obtener_datos($p['idproyecto'], "fecha BETWEEN '". $max_rango[0]['fecha_ini'] ."' AND '". $hoy ."'");
 
 				if (empty($totales[$p['idproyecto']]))
-				{
 					$totales[$p['idproyecto']] = array(
 						'categorias' => array(),
 					);
-				}
 			}
 
 			foreach ($vencidas as $k => $a)
-			{
 				foreach ($a as $v)
-				{
 					$totales[$k]['categorias'][$v['idcat_categoria']]['vencidas'][$v['idprogramacion']] = $v;
-				}
-			}
 
 			foreach ($vencer as $k => $a)
-			{
 				foreach ($a as $v)
-				{
 					$totales[$k]['categorias'][$v['idcat_categoria']]['vencer'][$v['idprogramacion']] = $v;
-				}
-			}
 
 			$grafica = $proyectoPag = '';
 			$show = array();
@@ -123,14 +113,11 @@ for(i = 0; i < '. $paginas .'; i++){
 	$(".proyectoNext").data("limit", '. $limite .');
 }
 $(".qwerty").slice(0, '. $limite .').show();
-
-
-	  ';
+';
 			}
 
-			else{
-			  $proyectoPag .= '$(".proPag").hide();';
-			}
+			else
+				$proyectoPag .= '$(".proPag").hide();';
 
 			$data['proyectos'] = $totales;
 			$data['js'] .= '<script src="'.base_url('assets/js/highcharts.js').'"></script>';
