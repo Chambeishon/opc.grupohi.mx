@@ -1,20 +1,20 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-//session_start(); 
+//session_start();
 class Registro extends MX_Controller
 {
-    
+
     public function __construct()
     {
         parent::__construct();
-        $this->load->library('template');  
+        $this->load->library('template');
 		$this->load->library('menu');
 		$this->load->model('grl/general_model');
 		$this->load->model('area_model');
-		$this->load->model('registro_model');  
+		$this->load->model('registro_model');
     }
-    
+
     public function index()
-    { 
+    {
 		if($this->session->userdata('id')):
      		$session_data = $this->session->userdata();
      		$data['usuario'] = $session_data['username'];
@@ -33,24 +33,24 @@ class Registro extends MX_Controller
 			$this->template->load('template','registro',$data);
 		else:
 			redirect('login/index', 'refresh');
-		endif;    
-		      
+		endif;
+
     }
-	
+
 	public function carga_carriles()
 	{
 		$plaza = $this->input->post('plaza');
 		$data['carriles'] = $this->general_model->desplega_carriles_plaza($plaza);
 		$this->load->view('registro_linea',$data);
 	}
-	
+
 	public function carga_fallas()
 	{
 		$area = $this->input->post('area');
 		$data['fallas'] = $this->area_model->desplega_fallas_area($area);
 		$this->load->view('registro_falla',$data);
 	}
-	
+
 	public function carga_clasificacion()
 	{
 		$falla = $this->input->post('falla');
@@ -59,7 +59,7 @@ class Registro extends MX_Controller
 		$data['fondo']=$data['clasificaciones'][0]['fondo'];
 		$this->load->view('registro_clasificacion',$data);
 	}
-	
+
 	public function registrar()
 	{
 		if($this->session->userdata('id')):
@@ -93,16 +93,16 @@ class Registro extends MX_Controller
 				//$this->load->library('email');
 				$this->load->library('My_PHPMailer');
 				$mail = new PHPMailer();
-				$mail->IsSMTP(); 
-				$mail->SMTPAuth   = true; 
-				$mail->Host       = "172.20.74.6";   
-				$mail->Port       = 25;              
-				$mail->Username   = "scaf"; 
-				$mail->Password   = "GpoHermesInfra";
+				$mail->IsSMTP();
+				$mail->SMTPAuth   = true;
+				$mail->Host       = "mail.hermesconstruccion.com.mx";
+				$mail->Username   = 'sgwc@hermesconstruccion.com.mx';
+				$mail->Password   = "hz9dzt";
+				$mail->Port       = 25;
 				$correos = $this->notificacion_model->select_correos($tipo,$clasificacion,$data["result"][0]["idplaza"],20);
 				$copiaoculta = $this->notificacion_model->select_copiaoculta();
 				$html = $this->load->view('registro_notificacion', $data, true);
-				$mail->SetFrom('sao@grupohi.mx', utf8_decode('BitÃ¡cora OperaciÃ³n y Mantto.'));
+				$mail->SetFrom('sao@grupohi.mx', utf8_decode('Bitácora Operación y Mantto.'));
 				$mail->Subject = utf8_decode('Reporte Registrado '.$data["result"][0]["folio"].' Plaza "'.$data["result"][0]["nombre_plaza"].'"');
 				$mail->Body      = $html;
 				$mail->AltBody    = "To view the message, please use an HTML compatible email viewer!";
@@ -116,7 +116,7 @@ class Registro extends MX_Controller
 				/*foreach($correos as $correo):
 					$this->email->clear();
 					$this->email->to($correo["correo"]);
-					$this->email->from('sao@grupohi.mx','BitÃ¡cora OperaciÃ³n y Mantto.');
+					$this->email->from('sao@grupohi.mx','Bitácora Operación y Mantto.');
 					$this->email->subject('Reporte Registrado '.$data["result"][0]["folio"].' Plaza "'.$data["result"][0]["nombre_plaza"].'"');
 					$this->email->message($html);
 					$this->email->send();
@@ -124,7 +124,7 @@ class Registro extends MX_Controller
 				foreach($copiaoculta as $co):
 					$this->email->clear();
 					$this->email->bcc($co['correo']);
-					$this->email->from('sao@grupohi.mx','BitÃ¡cora OperaciÃ³n y Mantto.');
+					$this->email->from('sao@grupohi.mx','Bitácora Operación y Mantto.');
 					$this->email->subject('Reporte Registrado '.$data["result"][0]["folio"].' Plaza "'.$data["result"][0]["nombre_plaza"].'"');
 					$this->email->message($html);
 					$this->email->send();
@@ -134,8 +134,8 @@ class Registro extends MX_Controller
 			redirect('login/index', 'refresh');
 		endif;
 	}
-	
-	
+
+
 	public function pdf_registro($id)
 	{
 		$data["result"] = $this->registro_model->pdf_registro($id);

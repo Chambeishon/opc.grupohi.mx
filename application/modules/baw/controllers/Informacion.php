@@ -1,18 +1,18 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-//session_start(); 
+//session_start();
 class Informacion extends MX_Controller
 {
-    
+
     public function __construct()
     {
         parent::__construct();
-        $this->load->library('template');  
-		$this->load->library('menu'); 
-		$this->load->model('informacion_model');  
-    }	
-	
+        $this->load->library('template');
+		$this->load->library('menu');
+		$this->load->model('informacion_model');
+    }
+
 	public function index()
-    { 
+    {
 		if($this->session->userdata('id')):
      		$session_data = $this->session->userdata();
      		$data['usuario'] = $session_data['username'];
@@ -28,7 +28,7 @@ class Informacion extends MX_Controller
 			$data['js'] .='<script src="'.base_url('assets/js/infragistics.lob.js').'"></script>';
 			$data['js'] .='<script src="'.base_url('assets/js/jquery.btechco.excelexport.js').'"></script>';
 			$data['js'] .='<script src="'.base_url('assets/js/jquery.base64.js').'"></script>';
-			
+
 			$resultados=$this->informacion_model->desplega_solicitud_datos($data['iduser']);
 			//$data["solicitudes"]=$this->informacion_model->resumen_informacion();
 			$datasource = array();
@@ -36,16 +36,16 @@ class Informacion extends MX_Controller
 				//$datasource[]=array_map('utf8_encode', $resultado);
 				$datasource[]=($resultado);
 			endforeach;
-				
+
 			$data["datasource"]=json_encode($datasource);
-			
-			
+
+
 			$this->template->load('template','informacion',$data);
 		else:
 			redirect('login/index', 'refresh');
-		endif;  	      
+		endif;
     }
-	
+
 	public function modal_solicitud_info()
 	{
 		$idsolicitud=$this->input->get('idsolicitud');
@@ -55,12 +55,12 @@ class Informacion extends MX_Controller
 			//$datasource[]=array_map('utf8_encode', $resultado);
 			$datasource[]=($resultado);
 		endforeach;
-		json_encode($datasource);			
+		json_encode($datasource);
 		$data=trim(json_encode($datasource),']');
 		$data=trim($data,'[');
 		echo $data;
 	}
-	
+
 	public function informacion_responder($solicitud)
 	{
 		if($this->session->userdata('id')):
@@ -70,23 +70,23 @@ class Informacion extends MX_Controller
 			$data['idperfil'] = $session_data['idperfil'];
 			$data["menu"] = $this->menu->crea_menu($data['idperfil']);
 			$data["menu_baw"] = $this->menu->crea_menu_baw($data['idperfil'],$data['iduser']);
-			$data['css'] = '<link href="'.base_url('assets/css/summernote.css').'" rel="stylesheet">';			
+			$data['css'] = '<link href="'.base_url('assets/css/summernote.css').'" rel="stylesheet">';
 			$data['css'] .= '<link href="'.base_url('assets/css/summernote-bs3.css').'" rel="stylesheet">';
-			$data['js'] = '<script src="'.base_url('assets/js/baw.js').'"></script>';	
+			$data['js'] = '<script src="'.base_url('assets/js/baw.js').'"></script>';
 			$data['js'] .= '<script src="'.base_url('assets/js/baw_editor.js').'"></script>';
 			$data['js'] .= '<script src="'.base_url('assets/js/summernote.min.js').'"></script> ';
-			$this->load->model('administrar_model');  			
+			$this->load->model('administrar_model');
 			$data["resultados"]=$this->informacion_model->informacion_datos($solicitud);
 			$data["preguntas"]=$this->informacion_model->desplega_preguntas($solicitud);
 			$data["respuestas"]=$this->informacion_model->desplega_respuesta($solicitud);
 			$data["sol"]=$solicitud	;
-			
+
 			$this->template->load('template','informacion_responder',$data);
 		else:
 			redirect('login/index', 'refresh');
-		endif;  		
+		endif;
 	}
-	
+
 	/*public function responder_comentario()
 	{
 		if($this->session->userdata('id')):
@@ -94,11 +94,11 @@ class Informacion extends MX_Controller
      		$data['usuario'] = $session_data['username'];
 	 		$data['iduser'] = $session_data['id'];
 			$data['idperfil'] = $session_data['idperfil'];
-			
+
 			$solicitud=$this->input->get('solicitud');
-			$respuesta=$this->input->get('respuesta');		
-			$usuario=$this->input->get('usuario');		
-			
+			$respuesta=$this->input->get('respuesta');
+			$usuario=$this->input->get('usuario');
+
 			$result=$this->informacion_model->responder_comentario($solicitud,$data['usuario'],$respuesta);
 			$new = $result[0]["mensaje"];
 			if($new=="Error"):
@@ -107,14 +107,14 @@ class Informacion extends MX_Controller
 				echo '{"msg":"ok"}';
 				//**CONEXION A INTRANET
 				$connect = mysqli_connect('172.20.74.7', 'intranet_ghi','Int_GHi14','igh');
-				if ($connect) 
-				{ 
+				if ($connect)
+				{
 					$result=mysqli_query($connect,"SELECT correo FROM usuario where usuario_estado = 2 and concat_ws(' ',nombre,apaterno,amaterno)='".$usuario."'");
-					$row=mysqli_num_rows($result);					
+					$row=mysqli_num_rows($result);
 					for($j=0;$j<$row;$j++)
 					{
 						$fila=mysqli_fetch_array($result);
-						$correo_usuario=$fila["correo"];	
+						$correo_usuario=$fila["correo"];
 					}
 				}
 				else{exit;}
@@ -122,20 +122,20 @@ class Informacion extends MX_Controller
 				foreach($informacion as $info):
 					$this->load->library('My_PHPMailer');
 					$mail = new PHPMailer();
-					$mail->IsSMTP(); 
-					$mail->SMTPAuth   = true; 
-					$mail->Host       = "172.20.74.2";   
-					$mail->Port       = 25;              
-					$mail->Username   = "scaf"; 
+					$mail->IsSMTP();
+					$mail->SMTPAuth   = true;
+					$mail->Host       = "172.20.74.2";
+					$mail->Port       = 25;
+					$mail->Username   = "scaf";
 					$mail->Password   = 'GpoHermesInfra';
 					$mail->From = 'sao@grupohi.mx';
-					$mail->FromName = "Bitácora de Atención Web";				
+					$mail->FromName = "BitÃ¡cora de AtenciÃ³n Web";
 					$mail->Subject    = ($info->tema);
 					$mail->AddAddress($correo_usuario);
 					$mail->AddBCC('khernandezz@grupohi.mx');
 					$mail->AddBCC('jccarrillo@grupohi.mx');
 					$mail->AddBCC('oaguayo@grupohi.mx');
-					 
+
 					 //Cuerpo del mensaje
 					$cuerpo='
 <HTML><HEAD><META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1"></HEAD><BODY>
@@ -208,16 +208,16 @@ SAO.- Grupo Hermes Infraestructura. </strong>.
 					$mail->IsHTML(true);
 					$mail->Body = $cuerpo;
 					$mail->Send();
-				endforeach;				
-			endif;  	
+				endforeach;
+			endif;
 		else:
 			redirect('login/index', 'refresh');
-		endif;  
-		
+		endif;
+
 	}*/
-	
+
 	private function set_upload_options()
-	{   
+	{
 		$config = array();
 		$config['upload_path'] = './documents/baw/';
 		$config['allowed_types'] = 'txt|pdf|xls|ppt|zip|rar|jpeg|jpg|xml|xsl|doc|docx|xlsx|word|xl';
@@ -225,8 +225,8 @@ SAO.- Grupo Hermes Infraestructura. </strong>.
 		$config['overwrite']     = FALSE;
 		return $config;
 	}
-	
-	
+
+
 	public function responder_comentario()
 	{
 		if($this->session->userdata('id')):
@@ -236,14 +236,14 @@ SAO.- Grupo Hermes Infraestructura. </strong>.
 			$data['idperfil'] = $session_data['idperfil'];
 			$data["menu"] = $this->menu->crea_menu($data['idperfil']);
 			$data['css'] = '';
-			$data['js'] = '';	
+			$data['js'] = '';
 			$idrespuesta=$this->input->post('idrespuesta');
 			$solicitud=$this->input->post('solicitud');
-			$respuesta=$this->input->post('respuesta');		
-			$usuario=$this->input->post('usuario_solicita');		
-			
+			$respuesta=$this->input->post('respuesta');
+			$usuario=$this->input->post('usuario_solicita');
+
 			$data["mensaje"]='';
-			$respuesta = strtr(mb_strtoupper($respuesta,'ISO-8859-1'),"àèìòùáéíóúçñäëïöü","ÀÈÌÒÙÁÉÍÓÚÇÑÄËÏÖÜ");
+			$respuesta = strtr(mb_strtoupper($respuesta'ISO-8859-1'),"Ã Ã¨Ã¬Ã²Ã¹Ã¡Ã©Ã­Ã³ÃºÃ§Ã±Ã¤Ã«Ã¯Ã¶Ã¼","Ã€ÃˆÃŒÃ’Ã™ÃÃ‰ÃÃ“ÃšÃ‡Ã‘Ã„Ã‹ÃÃ–Ãœ");
 			$result=$this->informacion_model->responder_comentario($solicitud,$data['usuario'],$respuesta);
 			$new = $result[0]["mensaje"];
 			if($new=="Error"):
@@ -256,14 +256,14 @@ SAO.- Grupo Hermes Infraestructura. </strong>.
 				//echo '{"msg":"ok"}';
 				$this->load->library('My_PHPMailer');
 				$mail = new PHPMailer();
-				$mail->IsSMTP(); 
-				$mail->SMTPAuth   = true; 
-				$mail->Host       = "172.20.74.6";   
-				$mail->Port       = 25;              
-				$mail->Username   = "scaf"; 
-				$mail->Password   = 'GpoHermesInfra';
+				$mail->IsSMTP();
+				$mail->SMTPAuth   = true;
+				$mail->Host       = "mail.hermesconstruccion.com.mx";
+				$mail->Username   = 'sgwc@hermesconstruccion.com.mx';
+				$mail->Password   = "hz9dzt";
+				$mail->Port       = 25;
 				$mail->From = 'sao@grupohi.mx';
-				$mail->FromName = "Bitácora de Atención Web";
+				$mail->FromName = "BitÃ¡cora de AtenciÃ³n Web";
 				$idrespuesta_datos = $new;
 				$this->load->library('upload');
 				$files = $_FILES;
@@ -273,16 +273,16 @@ SAO.- Grupo Hermes Infraestructura. </strong>.
 				else:
 					$data["mensaje"].="<div class='alert alert-success'>Se han adjuntado los siguientes documentos:</div>";
 					for($i=0; $i<$cpt; $i++):
-						echo $i; 
+						echo $i;
 						$_FILES['userfile']['name']= $files['userfile']['name'][$i];
 						$_FILES['userfile']['type']= $files['userfile']['type'][$i];
 						$_FILES['userfile']['tmp_name']= $files['userfile']['tmp_name'][$i];
 						$_FILES['userfile']['error']= $files['userfile']['error'][$i];
-						$_FILES['userfile']['size']= $files['userfile']['size'][$i];    
+						$_FILES['userfile']['size']= $files['userfile']['size'][$i];
 						$this->upload->initialize($this->set_upload_options());
 						if($this->upload->do_upload()):
 							$datos = array('upload_data' => $this->upload->data());
-							$file = $datos["upload_data"]["file_name"];	
+							$file = $datos["upload_data"]["file_name"];
 							$upload = $this->informacion_model->responder_comentario_documento($idrespuesta_datos,$file);
 							$data["mensaje"].="<div class='alert alert-success'>
 							<h5>El archivo ".$file." fue enviado con &eacute;xito</h5></div>";
@@ -293,31 +293,31 @@ SAO.- Grupo Hermes Infraestructura. </strong>.
 						endif;
 					endfor;
 				endif;
-				
+
 				$data["mensaje"].="<div class='alert alert-success'>
 						<h5>La respuesta fue enviada con &eacute;xito</h5>
 						<a href='".base_url('baw/informacion/informacion_responder/'.$idrespuesta)."' class='btn btn-success'>Aceptar</a>
 					</div>";
 				/**CONEXION A INTRANET*/
 				$connect = mysqli_connect('localhost', 'intranet_ghi','Int_GHi14','igh');
-				if ($connect) 
-				{ 
+				if ($connect)
+				{
 					$result=mysqli_query($connect,"SELECT correo FROM usuario where usuario_estado = 2 and concat_ws(' ',nombre,apaterno,amaterno)='".$usuario."'");
-					$row=mysqli_num_rows($result);					
+					$row=mysqli_num_rows($result);
 					for($j=0;$j<$row;$j++)
 					{
 						$fila=mysqli_fetch_array($result);
-						$correo_usuario=$fila["correo"];	
+						$correo_usuario=$fila["correo"];
 					}
 				}
 				else{exit;}
 				$informacion=$this->informacion_model->consulta_solicitud_datos($solicitud);
-				foreach($informacion as $info):				
+				foreach($informacion as $info):
 					$mail->Subject    = ($info->tema);
 					$mail->AddAddress($correo_usuario);
 					$mail->AddBCC('khernandezz@grupohi.mx');
 					$mail->AddBCC('oaguayo@grupohi.mx');
-					 
+
 					 //Cuerpo del mensaje
 					$cuerpo='
 <HTML><HEAD><META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1"></HEAD><BODY>
@@ -403,16 +403,16 @@ SAO.- Grupo Hermes Infraestructura. </strong>.
 					$mail->IsHTML(true);
 					$mail->Body = $cuerpo;
 					$mail->Send();
-				endforeach;		
+				endforeach;
 			endif;
-			$this->template->load('template','informacion_responder_mensaje',$data);	
+			$this->template->load('template','informacion_responder_mensaje',$data);
 		else:
 			redirect('login/index', 'refresh');
-		endif;  
-		
+		endif;
+
 	}
 
-	
+
 }
 /*
 *end modules/login/controllers/index.php

@@ -1,20 +1,20 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-//session_start(); 
+//session_start();
 class Dashboard_hist extends MX_Controller
 {
-    
+
     public function __construct(){
         parent::__construct();
-        $this->load->library('template');  
-		$this->load->library('menu'); 
-		$this->load->model('dashboard_hist_model');  
+        $this->load->library('template');
+		$this->load->library('menu');
+		$this->load->model('dashboard_hist_model');
     }
-	
+
     public function info(){
             phpinfo();
     }
-    
-    public function index(){ 
+
+    public function index(){
 		if($this->session->userdata('id')):
      		$session_data = $this->session->userdata();
      		$data['usuario'] = $session_data['username'];
@@ -32,9 +32,9 @@ class Dashboard_hist extends MX_Controller
 			$this->template->load('template','dashboard_hist',$data);
 		else:
 			redirect('login/index', 'refresh');
-		endif;  	      
+		endif;
     }
-	
+
     public function proyectos(){
             if($this->session->userdata('id')):
             $session_data = $this->session->userdata();
@@ -50,12 +50,12 @@ class Dashboard_hist extends MX_Controller
                             //$datasource[]=array_map('utf8_encode', $resultado);
                             $datasource[]=($resultado);
                     endforeach;
-                    echo json_encode($datasource);	
+                    echo json_encode($datasource);
             else:
                     redirect('login/index', 'refresh');
             endif;
     }
-	
+
     public function contratos(){
             if($this->session->userdata('id')):
             $session_data = $this->session->userdata();
@@ -72,7 +72,7 @@ class Dashboard_hist extends MX_Controller
                             //$datasource[]=array_map('utf8_encode', $resultado);
                             $datasource[]=($resultado);
                     endforeach;
-                    echo json_encode($datasource);	
+                    echo json_encode($datasource);
             else:
                     redirect('login/index', 'refresh');
             endif;
@@ -99,7 +99,7 @@ class Dashboard_hist extends MX_Controller
                     redirect('login/index', 'refresh');
             endif;
     }
-	
+
     public function subcategorias(){
             if($this->session->userdata('id')):
             $session_data = $this->session->userdata();
@@ -122,7 +122,7 @@ class Dashboard_hist extends MX_Controller
                     redirect('login/index', 'refresh');
             endif;
     }
-	
+
     public function actividades(){
         if($this->session->userdata('id')):
             $session_data = $this->session->userdata();
@@ -137,18 +137,18 @@ class Dashboard_hist extends MX_Controller
             $fecha_fin = $this->input->get('fecha_fin');
             $actividades = $this->dashboard_hist_model->desplegar_actividades_hist($data['iduser'],$idcontrato,$idcategoria,$idsubcategoria,$fecha_inicio,$fecha_fin);
             $datasource = array();
-            
+
             foreach ($actividades as $resultado):
                 //$datasource[]=array_map('utf8_encode', $resultado);
                 $datasource[]=($resultado);
             endforeach;
-            
+
             echo json_encode($datasource);
         else:
             redirect('login/index', 'refresh');
         endif;
     }
-	
+
 
     public function programacion(){
             $idprogramacion = $this->input->get('idprogramacion');
@@ -160,7 +160,7 @@ class Dashboard_hist extends MX_Controller
             endforeach;
             echo json_encode($datasource);
     }
-	
+
     public function programacion_actividad(){
             $idprogramacion = $this->input->get('idprogramacion');
             $programaciones = $this->dashboard_hist_model->desplegar_programacion_actividad($idprogramacion);
@@ -182,7 +182,7 @@ class Dashboard_hist extends MX_Controller
             endforeach;
             echo json_encode($datasource);
     }
-	
+
     public function areas_usuarios(){
             $idarea = $this->input->get('idarea');
             $usuarios = $this->dashboard_hist_model->desplegar_areas_usuarios($idarea);
@@ -219,7 +219,7 @@ class Dashboard_hist extends MX_Controller
                     redirect('login/index', 'refresh');
             endif;
     }
-	
+
     public function agregar_evidencia_documental(){
             if($this->session->userdata('id')):
             $session_data = $this->session->userdata();
@@ -247,8 +247,8 @@ class Dashboard_hist extends MX_Controller
                             "application/zip",
                             "application/octet-stream",
                             "multipart/x-zip",
-                            "application/vnd.openxmlformats-officedocument.wordprocessingml.document");				
-                            if(in_array($_FILES["myfile"]["type"],$typeAccepted)): 
+                            "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+                            if(in_array($_FILES["myfile"]["type"],$typeAccepted)):
                                     $file = date('Ymd_His').utf8_decode($_FILES["myfile"]["name"]);
                                     move_uploaded_file($_FILES["myfile"]["tmp_name"],$output_dir.$file);
                                     echo "La evidencia documental ha sido registrada";
@@ -265,7 +265,7 @@ class Dashboard_hist extends MX_Controller
                     redirect('login/index', 'refresh');
             endif;
     }
-	
+
     public function desplegar_evidencias(){
             $idprogramacion = $this->input->get('idprogramacion');
             $evidencias = $this->dashboard_hist_model->desplegar_evidencias($idprogramacion);
@@ -289,27 +289,27 @@ class Dashboard_hist extends MX_Controller
                     redirect('login/index', 'refresh');
             endif;
     }
-	
+
 	public function notificacion(){
 		$idprogramacion = $this->input->get('not-idprogramacion');
 		$correos = $this->input->get('correos');
 		$datos = $this->dashboard_hist_model->desplegar_programacion($idprogramacion);
 		$this->load->library('My_PHPMailer');
 		$mail = new PHPMailer();
-		$mail->IsSMTP(); 
-		$mail->SMTPAuth   = true; 
-		$mail->Host       = "172.20.74.6";   
-		$mail->Port       = 25;              
-		$mail->Username   = "scaf"; 
-		$mail->Password   = "GpoHermesInfra";
+		$mail->IsSMTP();
+		$mail->SMTPAuth   = true;
+		$mail->Host       = "mail.hermesconstruccion.com.mx";
+		$mail->Username   = 'sgwc@hermesconstruccion.com.mx';
+		$mail->Password   = "hz9dzt";
+		$mail->Port       = 25;
 		$mail->From       = "ContratosDeConcesiones@grupohi.mx";
-		$mail->FromName   = "Mï¿½dulo de Contratos de Concesiones";		
+		$mail->FromName   = "Módulo de Contratos de Concesiones";
 		$mail->Subject    = $datos[0]["clave"]."-".$datos[0]["numero_contrato"]." ".utf8_decode($datos[0]["nombre_actividad"])." (P-".$datos[0]["idprogramacion"].") ".$datos[0]["estado_actividad"];
-		
+
                 foreach ($correos as $correo):
 			$mail->AddAddress($correo);
 		endforeach;
-                
+
 		$mail->AddBCC('oaguayo@grupohi.mx');
 		$html='
 <HTML><HEAD>
@@ -393,8 +393,8 @@ src="'.base_url('assets/img/logo_.png').'">
 </fieldset>
 <br>
 <br>
-<span>Este correo es informativo, favor de no responder a 
-esta direcci&oacute;n de correo, ya que no se encuentra habilitada 
+<span>Este correo es informativo, favor de no responder a
+esta direcci&oacute;n de correo, ya que no se encuentra habilitada
 para recibir mensajes.
 <br><br>
 </span>
@@ -411,7 +411,7 @@ para recibir mensajes.
 			echo '{"msg":0}';
 		endif;
 	}
-	
+
 	public function desplegar_botones(){
 		$idprogramacion = $this->input->get('idprogramacion');
 		$botones  = $this->dashboard_hist_model->get_botones($idprogramacion);
@@ -420,9 +420,9 @@ para recibir mensajes.
 			//$datasource[]=array_map('utf8_encode', $resultado);
 			$datasource[]=($resultado);
 		endforeach;
-		echo json_encode($datasource);	
+		echo json_encode($datasource);
 	}
-	
+
 	public function desplegar_seguimiento(){
 		$idprogramacion = $this->input->get('idprogramacion');
 		$seguimiento  = $this->dashboard_hist_model->get_seguimiento($idprogramacion);
@@ -431,7 +431,7 @@ para recibir mensajes.
 			//$datasource[]=array_map('utf8_encode', $resultado);
 			$datasource[]=($resultado);
 		endforeach;
-		echo json_encode($datasource);	
+		echo json_encode($datasource);
 	}
 
 	public function numero_evidencia(){
@@ -444,7 +444,7 @@ para recibir mensajes.
 		endforeach;
 		echo json_encode($datasource);
 	}
-	
+
 	public function guarda_anotacion(){
 		$idprogramacion = $this->input->get('idprogramacion');
 		$fecha = $this->input->get('fecha');
@@ -452,11 +452,11 @@ para recibir mensajes.
 		$nota = $this->input->get('nota');
 		$valoracion = $this->input->get('valoracion');
 		$usuario = $this->input->get('usuario');
-		
-		$insert=$this->dashboard_hist_model->get_guarda_anotacion($idprogramacion,$hora,$fecha,($nota),$valoracion,$usuario);		
-		echo '{"msg":'.$insert[0]["mensaje"].'}';	
+
+		$insert=$this->dashboard_hist_model->get_guarda_anotacion($idprogramacion,$hora,$fecha,($nota),$valoracion,$usuario);
+		echo '{"msg":'.$insert[0]["mensaje"].'}';
 	}
-	
+
 	public function desplegar_anotaciones()
 	{
 		$idprogramacion = $this->input->get('idprogramacion');
@@ -468,21 +468,21 @@ para recibir mensajes.
 		endforeach;
 		echo json_encode($datasource);
 	}
-	
+
 	public function bloquea_anotacion()
 	{
 		$id = $this->input->get('id');
-		$cambio=$this->dashboard_hist_model->get_bloquea_anotacion($id);		
-		echo '{"msg":'.$cambio[0]["mensaje"].'}';	
+		$cambio=$this->dashboard_hist_model->get_bloquea_anotacion($id);
+		echo '{"msg":'.$cambio[0]["mensaje"].'}';
 	}
-	
+
 	public function eliminar_anotacion()
 	{
 		$id = $this->input->get('id');
-		$delete=$this->dashboard_hist_model->get_eliminar_anotacion($id);		
+		$delete=$this->dashboard_hist_model->get_eliminar_anotacion($id);
 		echo '{"msg":'.$delete[0]["mensaje"].'}';
 	}
-	
+
 	public function numero_anotacion()
 	{
 		$idprogramacion = $this->input->get('idprogramacion');
@@ -494,8 +494,8 @@ para recibir mensajes.
 		endforeach;
 		echo json_encode($datasource);
 	}
-	
-	
+
+
 }
 /*
 *end modules/login/controllers/index.php

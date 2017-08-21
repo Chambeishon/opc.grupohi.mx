@@ -10,22 +10,20 @@ $mail             = new PHPMailer();
 $mail->IsSMTP();
 $mail->SMTPAuth   = true;
 //$mail->SMTPSecure = "ssl";
-$mail->Host       = "172.20.74.6";
+// $mail->Host       = "172.20.74.6";
+// $mail->Username   = 'scaf';
+// $mail->Password   = "GpoHermesInfra";
+$mail->Host       = "mail.hermesconstruccion.com.mx";
+$mail->Username   = 'sgwc@hermesconstruccion.com.mx';
+$mail->Password   = "hz9dzt";
 $mail->Port       = 25;
-$mail->Username   = 'scaf';
-$mail->Password   = "GpoHermesInfra";
 $mail->From       = "soporte_sgw@grupohi.mx";
 $mail->FromName   = "CPCC-SINALOA";
 
 //ARREGLO DE CORREOS
-//$array_correos = array(
-//    'khernandezz@grupohi.mx',
-//	'oaguayo@grupohi.mx');
 $array_correos = array(
-    'michel.mendiola.lopez@gmail.com',
-    'mirahalo20@hotmail.com',
-    'suki@missallsunday.com'
-);
+   'khernandezz@grupohi.mx',
+	'oaguayo@grupohi.mx');
 
 //FUNCIONES
 function consulta_clases()

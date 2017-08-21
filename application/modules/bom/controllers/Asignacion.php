@@ -1,20 +1,20 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-//session_start(); 
+//session_start();
 class Asignacion extends MX_Controller
 {
-    
+
     public function __construct()
     {
         parent::__construct();
-        $this->load->library('template');  
+        $this->load->library('template');
 		$this->load->library('menu');
 		$this->load->model('grl/general_model');
 		$this->load->model('bom_general_model');
 		$this->load->model('asignacion_model');
     }
-    
+
     public function index()
-    { 
+    {
 		if($this->session->userdata('id')):
 			$this->load->helper('text');
      		$session_data = $this->session->userdata();
@@ -30,9 +30,9 @@ class Asignacion extends MX_Controller
 			$this->template->load('template','asignacion',$data);
 		else:
 			redirect('login/index', 'refresh');
-		endif; 
+		endif;
     }
-	
+
 	public function generales($id)
 	{
 		if($this->session->userdata('id')):
@@ -52,9 +52,9 @@ class Asignacion extends MX_Controller
 			$this->template->load('template','asignacion_generales',$data);
 		else:
 			redirect('login/index', 'refresh');
-		endif; 
+		endif;
 	}
-	
+
 	public function asignar()
 	{
 		if($this->session->userdata('id')):
@@ -81,19 +81,19 @@ class Asignacion extends MX_Controller
 				//$this->load->library('email');
 				$this->load->library('My_PHPMailer');
 				$mail = new PHPMailer();
-				$mail->IsSMTP(); 
-				$mail->SMTPAuth   = true; 
-				$mail->Host       = "172.20.74.6";   
-				$mail->Port       = 25;              
-				$mail->Username   = "scaf"; 
-				$mail->Password   = "GpoHermesInfra";
+				$mail->IsSMTP();
+				$mail->SMTPAuth   = true;
+				$mail->Host       = "mail.hermesconstruccion.com.mx";
+				$mail->Username   = 'sgwc@hermesconstruccion.com.mx';
+				$mail->Password   = "hz9dzt";
+				$mail->Port       = 25;
 				$this->load->model('diagnostico_model');
 				$data["result"] = $this->diagnostico_model->desplega_reporte($idreporte);
 				$correos = $this->notificacion_model->select_correos($tipo,$clasificacion,$data["result"][0]["idplaza"],21);
 				$copiaoculta = $this->notificacion_model->select_copiaoculta();
 				$html = $this->load->view('asignacion_notificacion', $data, true);
-				$mail->SetFrom('sao@grupohi.mx', utf8_decode('BitÃ¡cora OperaciÃ³n y Mantto.'));
-				$mail->Subject = utf8_decode('TÃ©cnico Asignado '.$data["result"][0]["folio"].' Plaza "'.$data["result"][0]["nombre_plaza"].'"');
+				$mail->SetFrom('sao@grupohi.mx', utf8_decode('Bitácora Operación y Mantto.'));
+				$mail->Subject = utf8_decode('Técnico Asignado '.$data["result"][0]["folio"].' Plaza "'.$data["result"][0]["nombre_plaza"].'"');
 				$mail->Body      = $html;
 				$mail->AltBody    = "To view the message, please use an HTML compatible email viewer!";
 				foreach ($correos as $correo):
@@ -106,16 +106,16 @@ class Asignacion extends MX_Controller
 				/*foreach($correos as $correo):
 					$this->email->clear();
 					$this->email->to($correo["correo"]);
-					$this->email->from('sao@grupohi.mx','BitÃ¡cora OperaciÃ³n y Mantto.');
-					$this->email->subject('TÃ©cnico Asignado '.$data["result"][0]["folio"].' Plaza "'.$data["result"][0]["nombre_plaza"].'"');
+					$this->email->from('sao@grupohi.mx','Bitácora Operación y Mantto.');
+					$this->email->subject('Técnico Asignado '.$data["result"][0]["folio"].' Plaza "'.$data["result"][0]["nombre_plaza"].'"');
 					$this->email->message($html);
 					$this->email->send();
 				endforeach;
 				foreach($copiaoculta as $co):
 					$this->email->clear();
 					$this->email->bcc($co['correo']);
-					$this->email->from('sao@grupohi.mx','BitÃ¡cora OperaciÃ³n y Mantto.');
-					$this->email->subject('TÃ©cnico Asignado '.$data["result"][0]["folio"].' Plaza "'.$data["result"][0]["nombre_plaza"].'"');
+					$this->email->from('sao@grupohi.mx','Bitácora Operación y Mantto.');
+					$this->email->subject('Técnico Asignado '.$data["result"][0]["folio"].' Plaza "'.$data["result"][0]["nombre_plaza"].'"');
 					$this->email->message($html);
 					$this->email->send();
 				endforeach;*/
@@ -123,9 +123,9 @@ class Asignacion extends MX_Controller
 			$this->template->load('template','asignacion_mensaje',$data);
 		else:
 			redirect('login/index', 'refresh');
-		endif; 
+		endif;
 	}
-	
+
 	public function carga_informacion()
 	{
 		$id=$this->input->post('id');
@@ -137,7 +137,7 @@ class Asignacion extends MX_Controller
 					$data["result"][0]["folio"].'
                 	<br>
                 	<span class="label label-'.$data["result"][0]["color"].'">'.$data["result"][0]["nombre_clasificacion"].'</span>
-            	</div>	
+            	</div>
             </div>
             <div class="clearfix"></div>
             <br>
@@ -181,7 +181,7 @@ class Asignacion extends MX_Controller
                         &Aacute;rea de Afectaci&oacute;n<br>';
 			if($data["result"][0]["nombre_area"]=="CARRIL"):
 				$mensaje .='Ubicaci&oacute;n<br>';
-			endif;						
+			endif;
                         $mensaje .= 'Tipo de Falla<br>
                         Observaciones<br>
                     </strong>
@@ -190,7 +190,7 @@ class Asignacion extends MX_Controller
                     $data["result"][0]["nombre_area"].'<br>';
 					if($data["result"][0]["nombre_area"]=="CARRIL"):
 						$mensaje .=$data["result"][0]["nombre_carril"].'<br>';
-					endif;	
+					endif;
                     $mensaje .= $data["result"][0]["nombre_tipofalla"].'<br>'.
                     $data["result"][0]["observacion_reporte"].'
                 </div>

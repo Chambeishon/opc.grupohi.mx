@@ -82,7 +82,7 @@ class Administrar extends MX_Controller
 			$data["accion"]=$accion;
 			$data["anterior"]='';
 			$data["siguiente"]='';
-                        
+
 			if($accion==1):
 				$data["titulo"]="SOLICITUDES REGISTRADAS";
 				$data["solicitudes"]=$this->administrar_model->desplega_solicitud($solicitud);
@@ -170,7 +170,7 @@ class Administrar extends MX_Controller
 
 			$solicitud=$this->input->post('solicitud');
 			$respuesta=$this->input->post('respuesta');
-			$respuesta=strtr(mb_strtoupper($respuesta,'ISO-8859-1'),"Ã Ã¨Ã¬Ã²Ã¹Ã¡Ã©Ã­Ã³ÃºÃ§Ã±Ã¤Ã«Ã¯Ã¶Ã¼","Ã€ÃˆÃŒÃ’Ã™ÃÃ‰ÃÃ“ÃšÃ‡Ã‘Ã„Ã‹ÃÃ–Ãœ");
+			$respuesta=strtr(mb_strtoupper($respuesta,'ISO-8859-1'),"àèìòùáéíóúçñäëïöü","ÀÈÌÒÙÁÉÍÓÚÇÑÄËÏÖÜ");
 			$result=$this->administrar_model->agrega_respuesta($solicitud,$data['usuario'],$respuesta);
 
 			if($result[0]["mensaje"]==0):
@@ -315,7 +315,7 @@ p&aacute;gina<br>
 
 			$solicitud=$this->input->post('solicitud');
 			$respuesta=$this->input->post('respuesta');
-			$respuesta=strtr(mb_strtoupper($respuesta,'ISO-8859-1'),"Ã Ã¨Ã¬Ã²Ã¹Ã¡Ã©Ã­Ã³ÃºÃ§Ã±Ã¤Ã«Ã¯Ã¶Ã¼","Ã€ÃˆÃŒÃ’Ã™ÃÃ‰ÃÃ“ÃšÃ‡Ã‘Ã„Ã‹ÃÃ–Ãœ");
+			$respuesta=strtr(mb_strtoupper($respuesta,'ISO-8859-1'),"àèìòùáéíóúçñäëïöü","ÀÈÌÒÙÁÉÍÓÚÇÑÄËÏÖÜ");
 			$accion =$this->input->post('accion');
 
 			if(empty($respuesta) || empty(trim($respuesta)) || empty(strip_tags($respuesta))):
@@ -343,10 +343,10 @@ p&aacute;gina<br>
 					$mail = new PHPMailer();
 					$mail->IsSMTP();
 					$mail->SMTPAuth   = true;
-					$mail->Host       = "172.20.74.6";
+					$mail->Host       = "mail.hermesconstruccion.com.mx";
+					$mail->Username   = 'sgwc@hermesconstruccion.com.mx';
+					$mail->Password   = "hz9dzt";
 					$mail->Port       = 25;
-					$mail->Username   = "scaf";
-					$mail->Password   = "GpoHermesInfra";
 
 					$idrespuesta = $result[0]["mensaje"];
 					$this->load->library('upload');
@@ -668,8 +668,8 @@ p&aacute;gina<br>
 			endfor;
 
 			$data["mensaje"]='';
-			$tema = strtr(mb_strtoupper($tema, 'ISO-8859-1'),"Ã Ã¨Ã¬Ã²Ã¹Ã¡Ã©Ã­Ã³ÃºÃ§Ã±Ã¤Ã«Ã¯Ã¶Ã¼","Ã€ÃˆÃŒÃ’Ã™ÃÃ‰ÃÃ“ÃšÃ‡Ã‘Ã„Ã‹ÃÃ–Ãœ");
-			$comentario = strtr(mb_strtoupper($comentario, 'ISO-8859-1'),"Ã Ã¨Ã¬Ã²Ã¹Ã¡Ã©Ã­Ã³ÃºÃ§Ã±Ã¤Ã«Ã¯Ã¶Ã¼","Ã€ÃˆÃŒÃ’Ã™ÃÃ‰ÃÃ“ÃšÃ‡Ã‘Ã„Ã‹ÃÃ–Ãœ");
+			$tema = strtr(mb_strtoupper($tema, 'ISO-8859-1'),"àèìòùáéíóúçñäëïöü","ÀÈÌÒÙÁÉÍÓÚÇÑÄËÏÖÜ");
+			$comentario = strtr(mb_strtoupper($comentario, 'ISO-8859-1'),"àèìòùáéíóúçñäëïöü","ÀÈÌÒÙÁÉÍÓÚÇÑÄËÏÖÜ");
 			$result=$this->administrar_model->enviar_datos($solicitud,$data["usuario"],$tema,$comentario,$usuario_enviar);
 			$new = $result[0]["mensaje"];
 			if($new=="0"):
@@ -687,12 +687,12 @@ p&aacute;gina<br>
 					$mail = new PHPMailer();
 					$mail->IsSMTP();
 					$mail->SMTPAuth   = true;
-					$mail->Host       = "172.20.74.6";
+					$mail->Host       = "mail.hermesconstruccion.com.mx";
+					$mail->Username   = 'sgwc@hermesconstruccion.com.mx';
+					$mail->Password   = "hz9dzt";
 					$mail->Port       = 25;
-					$mail->Username   = "scaf";
-					$mail->Password   = 'GpoHermesInfra';
 					$mail->From = 'sao@grupohi.mx';
-					$mail->FromName = "BitÃ¡cora de AtenciÃ³n Web";
+					$mail->FromName = "Bitácora de Atención Web";
 					$mail->Subject    = $tema;
 
 					//DOCUMENTOS DE SOLICITUD
@@ -851,7 +851,7 @@ SAO.- Grupo Hermes Infraestructura. </strong>.
                             {
                                 $dom->loadHTML(mb_convert_encoding($v->respuesta, 'HTML-ENTITIES', 'UTF-8'));
                                 $v->respuesta = strip_tags($dom->saveHTML(), '<br><a><p><span><ul><li><h1><h2><h3><b><img><ol><i><hr>');
-                                $data['solicitudes'][$k]->respuesta = $v->respuesta;                       
+                                $data['solicitudes'][$k]->respuesta = $v->respuesta;
                             }
                         }
 

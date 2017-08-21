@@ -5,8 +5,8 @@ class Resumen extends MX_Controller
 	{
 		parent::__construct();
 		$this->load->model('resumen_model');
-	}	
-	
+	}
+
 	public function index()
 	{
 		$data['result']=$this->resumen_model->detalle_resumen();
@@ -15,16 +15,16 @@ class Resumen extends MX_Controller
 		//$this->load->library('email');
 		$this->load->library('My_PHPMailer');
 		$mail = new PHPMailer();
-		$mail->IsSMTP(); 
-		$mail->SMTPAuth   = true; 
-		$mail->Host       = "172.20.74.6";   
-		$mail->Port       = 25;              
-		$mail->Username   = "scaf"; 
-		$mail->Password   = "GpoHermesInfra";
+		$mail->IsSMTP();
+		$mail->SMTPAuth   = true;
+		$mail->Host       = "mail.hermesconstruccion.com.mx";
+		$mail->Username   = 'sgwc@hermesconstruccion.com.mx';
+		$mail->Password   = "hz9dzt";
+		$mail->Port       = 25;
 		$copiaoculta = $this->notificacion_model->select_copiaoculta();
-		$correos = $this->notificacion_model->select_actividades_resumen();		
+		$correos = $this->notificacion_model->select_actividades_resumen();
 		$html = $this->load->view('resumen', $data, true);
-		$mail->SetFrom('sao@grupohi.mx', utf8_decode('BitÃ¡cora OperaciÃ³n y Mantto.'));
+		$mail->SetFrom('sao@grupohi.mx', utf8_decode('Bitácora Operación y Mantto.'));
 		$mail->Subject = utf8_decode('Resumen Actividades Pendientes');
 		$mail->Body      = $html;
 		$mail->AltBody    = "To view the message, please use an HTML compatible email viewer!";
@@ -34,8 +34,8 @@ class Resumen extends MX_Controller
 		foreach($copiaoculta as $co):
 			$mail->AddBcc($co["correo"]);
 		endforeach;
-		
-		$mail->Send();	
+
+		$mail->Send();
 	}
 }
 ?>

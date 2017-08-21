@@ -1,18 +1,18 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-//session_start(); 
+//session_start();
 class Facturacion extends MX_Controller
 {
-    
+
     public function __construct()
     {
         parent::__construct();
-        $this->load->library('template');  
-		$this->load->library('menu'); 
-		$this->load->model('administrar_model');  
-    }	
-	
+        $this->load->library('template');
+		$this->load->library('menu');
+		$this->load->model('administrar_model');
+    }
+
 	public function index()
-    { 
+    {
 		if($this->session->userdata('id')):
      		$session_data = $this->session->userdata();
      		$data['usuario'] = $session_data['username'];
@@ -22,14 +22,14 @@ class Facturacion extends MX_Controller
 			$data["menu_baw"] = $this->menu->crea_menu_baw($data['idperfil'],$data['iduser']);
 			$data['css'] = '';
 			$data['js'] = '<script src="'.base_url('assets/js/baw.js').'"></script>';
-			
+
 			$data['tipos'] = $this->administrar_model->desplega_resumen_facturacion($data['iduser']);
 			$this->template->load('template','facturacion',$data);
 		else:
 			redirect('login/index', 'refresh');
-		endif;  	      
+		endif;
     }
-	
+
 	public function registrados()
 	{
 		if($this->session->userdata('id')):
@@ -59,9 +59,9 @@ class Facturacion extends MX_Controller
 
 		else:
 			redirect('login/index', 'refresh');
-		endif;  
+		endif;
 	}
-	
+
 	public function solicitudes_atendidas($solicitud,$accion)
 	{
 		if($this->session->userdata('id')):
@@ -73,13 +73,13 @@ class Facturacion extends MX_Controller
 			$data["menu_baw"] = $this->menu->crea_menu_baw($data['idperfil'],$data['iduser']);
 			$data['css'] = '';
 			$data['js'] = '<script src="'.base_url('assets/js/baw.js').'"></script>';
-			
+
 			$data["tipos"]=$this->administrar_model->desplega_tipos_solicitud();
 			$data["preguntas"]=$this->administrar_model->desplega_preguntas_facturacion($solicitud);
-			$data["informacion"]=$this->administrar_model->desplega_solicitud_informacion($solicitud);	
+			$data["informacion"]=$this->administrar_model->desplega_solicitud_informacion($solicitud);
 			$data["archivos"]=$this->administrar_model->desplega_archivos($solicitud);
 			$data["facturados"]=$this->administrar_model->desplega_tickets_facturados($solicitud,$data['iduser']);
-			$notificado=$this->administrar_model->valida_notificacion($solicitud);			
+			$notificado=$this->administrar_model->valida_notificacion($solicitud);
 			$data["accion"]=$accion;
 			$notificado=$notificado[0]->total;
 			if($accion==1 && $notificado==0):
@@ -117,13 +117,13 @@ class Facturacion extends MX_Controller
 			else:
 				redirect('baw/facturacion/index');
 			endif;
-			
+
 			$this->template->load('template','facturacion_solicitudes_atendidas',$data);
 		else:
 			redirect('login/index', 'refresh');
-		endif;  
+		endif;
 	}
-	
+
 	public function solicitudes_descartadas($solicitud)
 	{
 		if($this->session->userdata('id')):
@@ -134,18 +134,18 @@ class Facturacion extends MX_Controller
 			$data["menu"] = $this->menu->crea_menu($data['idperfil']);
 			$data["menu_baw"] = $this->menu->crea_menu_baw($data['idperfil'],$data['iduser']);
 			$data['css'] = '';
-			
-			$result=$this->administrar_model->descartar_solicitud($solicitud);			
+
+			$result=$this->administrar_model->descartar_solicitud($solicitud);
 			$data["result"]=$result[0]["mensaje"];
 			$data["aceptar"]=base_url('baw/facturacion/registrados');
 			$data["error"]=base_url('baw/facturacion/registrados');
-			
+
 			$this->template->load('template','facturacion_mensaje_accion',$data);
 		else:
 			redirect('login/index', 'refresh');
-		endif;  
+		endif;
 	}
-	
+
 	public function responder_solicitud()
 	{
 		if($this->session->userdata('id')):
@@ -155,14 +155,14 @@ class Facturacion extends MX_Controller
 			$data['idperfil'] = $session_data['idperfil'];
 			$data["menu"] = $this->menu->crea_menu($data['idperfil']);
 			$data["menu_baw"] = $this->menu->crea_menu_baw($data['idperfil'],$data['iduser']);
-			$data['css'] = '';			
-			$data['css'] .= '<link href="'.base_url('assets/css/summernote.css').'" rel="stylesheet">';			
+			$data['css'] = '';
+			$data['css'] .= '<link href="'.base_url('assets/css/summernote.css').'" rel="stylesheet">';
 			$data['css'] .= '<link href="'.base_url('assets/css/summernote-bs3.css').'" rel="stylesheet">';
-			
+
 			$data['js'] = '<script src="'.base_url('assets/js/baw.js').'"></script>';
 			$data['js'] .= '<script src="'.base_url('assets/js/baw_editor.js').'"></script>';
 			$data['js'] .= '<script src="'.base_url('assets/js/summernote.min.js').'"></script> ';
-			
+
 			$idsolicitud=$this->input->post('idsolicitud');
 			$data["accion"]=$this->input->post('accion');
 			$data["solicitudes"]=$this->administrar_model->informacion_solicitud($idsolicitud);
@@ -170,11 +170,11 @@ class Facturacion extends MX_Controller
 			$this->template->load('template','facturacion_responder_solicitud',$data);
 		else:
 			redirect('login/index', 'refresh');
-		endif;  	 
+		endif;
 	}
-	
+
 	private function set_upload_options()
-	{   
+	{
 		$config = array();
 		$config['upload_path'] = './documents/baw/';
 		$config['allowed_types'] = 'txt|pdf|xls|ppt|zip|rar|jpeg|jpg|xml|xsl|doc|docx|xlsx|word|xl';
@@ -182,7 +182,7 @@ class Facturacion extends MX_Controller
 		$config['overwrite']     = FALSE;
 		return $config;
 	}
-	
+
 	public function respuesta()
 	{
 		if($this->session->userdata('id')):
@@ -192,15 +192,15 @@ class Facturacion extends MX_Controller
 			$data['idperfil'] = $session_data['idperfil'];
 			$data["menu"] = $this->menu->crea_menu($data['idperfil']);
 			$data["menu_baw"] = $this->menu->crea_menu_baw($data['idperfil'],$data['iduser']);
-			$data['css'] = '';		
-			$data['js'] = '';			
+			$data['css'] = '';
+			$data['js'] = '';
 
 			$solicitud=$this->input->post('solicitud');
 			$respuesta=$this->input->post('respuesta');
-			
-			$respuesta=strtr(mb_strtoupper($respuesta,'ISO-8859-1'),"Ã Ã¨Ã¬Ã²Ã¹Ã¡Ã©Ã­Ã³ÃºÃ§Ã±Ã¤Ã«Ã¯Ã¶Ã¼","Ã€ÃˆÃŒÃ’Ã™ÃÃ‰ÃÃ“ÃšÃ‡Ã‘Ã„Ã‹ÃÃ–Ãœ");
+
+			$respuesta=strtr(mb_strtoupper($respuesta,'ISO-8859-1'),"àèìòùáéíóúçñäëïöü","ÀÈÌÒÙÁÉÍÓÚÇÑÄËÏÖÜ");
 			$result=$this->administrar_model->agrega_respuesta($solicitud,$data['usuario'],$respuesta);
-			$data["mensaje"]='';			
+			$data["mensaje"]='';
 			if($result[0]["mensaje"]==0):
 				$data["mensaje"].="<div class='alert alert-danger'>
 						<h5>Ocurri&oacute; un error durante la acci&oacute;n</h5>
@@ -209,13 +209,13 @@ class Facturacion extends MX_Controller
 			else:
 				$this->load->library('My_PHPMailer');
 				$mail = new PHPMailer();
-				$mail->IsSMTP(); 
-				$mail->SMTPAuth   = true; 
-				$mail->Host       = "172.20.74.6";   
-				$mail->Port       = 25;              
-				$mail->Username   = "scaf"; 
-				$mail->Password   = "GpoHermesInfra";
-					
+				$mail->IsSMTP();
+				$mail->SMTPAuth   = true;
+				$mail->Host       = "mail.hermesconstruccion.com.mx";
+				$mail->Username   = 'sgwc@hermesconstruccion.com.mx';
+				$mail->Password   = "hz9dzt";
+				$mail->Port       = 25;
+
 				$idrespuesta = $result[0]["mensaje"];
 				$this->load->library('upload');
 				$files = $_FILES;
@@ -229,11 +229,11 @@ class Facturacion extends MX_Controller
 						$_FILES['userfile']['type']= $files['userfile']['type'][$i];
 						$_FILES['userfile']['tmp_name']= $files['userfile']['tmp_name'][$i];
 						$_FILES['userfile']['error']= $files['userfile']['error'][$i];
-						$_FILES['userfile']['size']= $files['userfile']['size'][$i];    
+						$_FILES['userfile']['size']= $files['userfile']['size'][$i];
 						$this->upload->initialize($this->set_upload_options());
 						if($this->upload->do_upload()):
 							$datos = array('upload_data' => $this->upload->data());
-							$file = $datos["upload_data"]["file_name"];	
+							$file = $datos["upload_data"]["file_name"];
 							$upload = $this->administrar_model->agrega_respuesta_documento($idrespuesta,$file);
 							$data["mensaje"].="<div class='alert alert-success'>
 							<h5>El archivo ".$file." fue subido con &eacute;xito</h5></div>";
@@ -254,17 +254,17 @@ class Facturacion extends MX_Controller
 						<h5>La acci&oacute;n se realiz&oacute; con &eacute;xito</h5>
 						<a href='".base_url('baw/facturacion/solicitudes_atendidas/'.$anterior.'/0')."' class='btn btn-success'>Aceptar</a>
 					</div>";
-					
+
 			$data["respuesta_correo"]=$this->administrar_model->respuesta_correo($solicitud);
-				
+
 				foreach($data["respuesta_correo"] as $respuesta_c):
 					$mail->From = $respuesta_c->contacto;
-					$mail->FromName = $respuesta_c->nombre;				
-					$mail->Subject    = "Respuesta de Solicitud de Facturación (TICKET #".$respuesta_c->folio.")";
+					$mail->FromName = $respuesta_c->nombre;
+					$mail->Subject    = "Respuesta de Solicitud de facturación (TICKET #".$respuesta_c->folio.")";
 					$mail->AddAddress($respuesta_c->mail_solicitante);
 					$mail->AddBCC("khernandezz@grupohi.mx");
 					$mail->AddBCC('oaguayo@grupohi.mx');
-					 
+
 					 //Cuerpo del mensaje
 					$cuerpo='
 <HTML><HEAD><META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1"></HEAD><BODY>
@@ -320,8 +320,8 @@ src="'.$respuesta_c->logo.'">
 </fieldset>
 <br>
 <br>
-<span>Este correo es informativo, favor de no responder a 
-esta direcci&oacute;n de correo, ya que no se encuentra habilitada 
+<span>Este correo es informativo, favor de no responder a
+esta direcci&oacute;n de correo, ya que no se encuentra habilitada
 para recibir mensajes.
 <br><br>
 Si requiere mayor informaci&oacute;n sobre el contenido visite
@@ -340,15 +340,15 @@ p&aacute;gina<br>
 					$mail->Body = $cuerpo;
 					$mail->Send();
 				endforeach;
-				
+
             endif;
 			$this->template->load('template','facturacion_responder_solicitud_mensaje',$data);
-			
+
 		else:
 			redirect('login/index', 'refresh');
-		endif;		
+		endif;
 	}
-	
+
 	public function atendiendose()
 	{
 		if($this->session->userdata('id')):
@@ -373,15 +373,15 @@ p&aacute;gina<br>
 				//$datasource[]=array_map('utf8_encode', $resultado);
 				$datasource[]=($resultado);
 			endforeach;
-				
+
 			$data["datasource"]=json_encode($datasource);
 			$this->template->load('template','facturacion_atendiendose',$data);
 
 		else:
 			redirect('login/index', 'refresh');
-		endif;  
+		endif;
 	}
-	
+
 	public function atendidos()
 	{
 		if($this->session->userdata('id')):
@@ -391,7 +391,7 @@ p&aacute;gina<br>
 			$data['idperfil'] = $session_data['idperfil'];
 			$data["menu"] = $this->menu->crea_menu($data['idperfil']);
 			$data["menu_baw"] = $this->menu->crea_menu_baw($data['idperfil'],$data['iduser']);
-			$data['css'] = '';		
+			$data['css'] = '';
 			$data['js'] = '<script src="'.base_url('assets/js/baw.js').'"></script>';
 			$data['js'] .= '<script src="'.base_url('assets/js/jquery-ui.min.js').'"></script> ';
 			$data['js'] .= '<script src="'.base_url('assets/js/modernizr.min.js').'"></script> ';
@@ -406,15 +406,15 @@ p&aacute;gina<br>
 				//$datasource[]=array_map('utf8_encode', $resultado);
 				$datasource[]=($resultado);
 			endforeach;
-				
+
 			$data["datasource"]=json_encode($datasource);
 			$this->template->load('template','facturacion_atendidos',$data);
 
 		else:
 			redirect('login/index', 'refresh');
-		endif;  
+		endif;
 	}
-	
+
 	public function modificar_solicitud()
 	{
 		$solicitud=$this->input->get('solicitud');
@@ -426,9 +426,9 @@ p&aacute;gina<br>
 			echo '{"msg":"ko"}';
 		else:
 			echo '{"msg":"'.$new.'"}';
-		endif;	
+		endif;
 	}
-	
+
 	public function solicitudes_atendidas_descartadas($solicitud)
 	{
 		if($this->session->userdata('id')):
@@ -439,18 +439,18 @@ p&aacute;gina<br>
 			$data["menu"] = $this->menu->crea_menu($data['idperfil']);
 			$data["menu_baw"] = $this->menu->crea_menu_baw($data['idperfil'],$data['iduser']);
 			$data['css'] = '';
-			
-			$result=$this->administrar_model->descartar_solicitud_atendida($solicitud);	
+
+			$result=$this->administrar_model->descartar_solicitud_atendida($solicitud);
 			$data["result"]=$result[0]["mensaje"];
 			$data["aceptar"]=base_url('baw/administrar/atendiendose');
-			$data["error"]=base_url('baw/administrar/atendiendose');		
-			
+			$data["error"]=base_url('baw/administrar/atendiendose');
+
 			$this->template->load('template','mensaje_accion',$data);
 		else:
 			redirect('login/index', 'refresh');
-		endif;  		
+		endif;
 	}
-	
+
 	public function solicitar_datos($solicitud,$accion)
 	{
 		if($this->session->userdata('id')):
@@ -460,23 +460,23 @@ p&aacute;gina<br>
 			$data['idperfil'] = $session_data['idperfil'];
 			$data["menu"] = $this->menu->crea_menu($data['idperfil']);
 			$data["menu_baw"] = $this->menu->crea_menu_baw($data['idperfil'],$data['iduser']);
-			$data['css'] = '<link href="'.base_url('assets/css/summernote.css').'" rel="stylesheet">';			
+			$data['css'] = '<link href="'.base_url('assets/css/summernote.css').'" rel="stylesheet">';
 			$data['css'] .= '<link href="'.base_url('assets/css/summernote-bs3.css').'" rel="stylesheet">';
-			$data['js'] = '<script src="'.base_url('assets/js/baw.js').'"></script>';	
+			$data['js'] = '<script src="'.base_url('assets/js/baw.js').'"></script>';
 			$data['js'] .= '<script src="'.base_url('assets/js/baw_editor.js').'"></script>';
 			$data['js'] .= '<script src="'.base_url('assets/js/summernote.min.js').'"></script> ';
-			
+
 			//CONEXION A INTRANET
 			$connect = mysqli_connect('localhost', 'intranet_ghi','Int_GHi14','igh');
-			if ($connect) 
-			{ 
+			if ($connect)
+			{
 				$result=mysqli_query($connect,"SELECT idusuario,concat_ws(' ',nombre,apaterno,amaterno)as nombre,correo FROM usuario where usuario_estado = 2 and correo<>'' order by nombre,apaterno,amaterno ASC");
 				$row=mysqli_num_rows($result);
 				$datasource = array();
 				for($j=0;$j<$row;$j++)
 				{
 					$datasource[]=mysqli_fetch_array($result);
-					
+
 				}
 				$data["datasource"]=$datasource;
 			}
@@ -487,9 +487,9 @@ p&aacute;gina<br>
 			$this->template->load('template','facturacion_solicitar_datos',$data);
 		else:
 			redirect('login/index', 'refresh');
-		endif;  	
+		endif;
 	}
-	
+
 	public function enviar_datos()
 	{
 		if($this->session->userdata('id')):
@@ -500,29 +500,29 @@ p&aacute;gina<br>
 			$data["menu"] = $this->menu->crea_menu($data['idperfil']);
 			$data["menu_baw"] = $this->menu->crea_menu_baw($data['idperfil'],$data['iduser']);
 			$data['css'] = '';
-			$data['js'] = '<script src="'.base_url('assets/js/baw.js').'"></script>';					
-			
+			$data['js'] = '<script src="'.base_url('assets/js/baw.js').'"></script>';
+
 			$conteo = $this->input->post('conteo');
 			$tema=$this->input->post('tema');
 			$comentario=$this->input->post('comentario');
 			$solicitud=$this->input->post('solicitud');
 			$id=$this->input->post('id');
-			$Usuarios='';			
+			$Usuarios='';
 			$usuario_enviar='';
-			
+
 			for($i=1;$i<=$conteo;$i++):
 				if($this->input->post('usuario'.$i)!=''):
 					$usuario = ($this->input->post('usuario'.$i)=='')?0:$this->input->post('usuario'.$i);
-					
+
 					$Usuarios.= $usuario.';';
 					if($i==$conteo):$coma=',';else:$coma=',';endif;
-					$usuario_enviar .= $usuario.$coma;					
+					$usuario_enviar .= $usuario.$coma;
 				endif;
-			endfor;		
-			
+			endfor;
+
 			$data["mensaje"]='';
-			$tema = strtr(mb_strtoupper($tema,'ISO-8859-1'),"Ã Ã¨Ã¬Ã²Ã¹Ã¡Ã©Ã­Ã³ÃºÃ§Ã±Ã¤Ã«Ã¯Ã¶Ã¼","Ã€ÃˆÃŒÃ’Ã™ÃÃ‰ÃÃ“ÃšÃ‡Ã‘Ã„Ã‹ÃÃ–Ãœ");
-			$comentario = strtr(mb_strtoupper($comentario,'ISO-8859-1'),"Ã Ã¨Ã¬Ã²Ã¹Ã¡Ã©Ã­Ã³ÃºÃ§Ã±Ã¤Ã«Ã¯Ã¶Ã¼","Ã€ÃˆÃŒÃ’Ã™ÃÃ‰ÃÃ“ÃšÃ‡Ã‘Ã„Ã‹ÃÃ–Ãœ");
+			$tema = strtr(mb_strtoupper($tema,'ISO-8859-1'),"àèìòùáéíóúçñäëïöü","ÀÈÌÒÙÁÉÍÓÚÇÑÄËÏÖÜ");
+			$comentario = strtr(mb_strtoupper($comentario,'ISO-8859-1'),"àèìòùáéíóúçñäëïöü","ÀÈÌÒÙÁÉÍÓÚÇÑÄËÏÖÜ");
 			$result=$this->administrar_model->enviar_datos($solicitud,$data["usuario"],$tema,$comentario,$usuario_enviar);
 			$new = $result[0]["mensaje"];
 			if($new=="0"):
@@ -532,22 +532,22 @@ p&aacute;gina<br>
 						<a href='".base_url('baw/informacion/informacion_responder/'.$idrespuesta)."' class='btn btn-danger'>Intentar nuevamente</a>
 					</div>";
 			else:
-				//echo '{"msg":"ok"}';				
+				//echo '{"msg":"ok"}';
 				//ENVIO DE CORREO
 				$informacion=$this->administrar_model->consulta_solicitud_datos($solicitud);
 				foreach($informacion as $info):
 					$this->load->library('My_PHPMailer');
 					$mail = new PHPMailer();
-					$mail->IsSMTP(); 
-					$mail->SMTPAuth   = true; 
-					$mail->Host       = "172.20.74.6";   
-					$mail->Port       = 25;              
-					$mail->Username   = "scaf"; 
-					$mail->Password   = 'GpoHermesInfra';
+					$mail->IsSMTP();
+					$mail->SMTPAuth   = true;
+					$mail->Host       = "mail.hermesconstruccion.com.mx";
+					$mail->Username   = 'sgwc@hermesconstruccion.com.mx';
+					$mail->Password   = "hz9dzt";
+					$mail->Port       = 25;
 					$mail->From = 'sao@grupohi.mx';
-					$mail->FromName = "Bitácora de Atención Web";				
+					$mail->FromName = "Bitácora de Atención Web";
 					$mail->Subject    = $tema;
-					
+
 					//DOCUMENTOS DE SOLICITUD
 				$idrespuesta_datos = $new;
 				$this->load->library('upload');
@@ -558,16 +558,16 @@ p&aacute;gina<br>
 				else:
 					$data["mensaje"].="<div class='alert alert-success'>Se han adjuntado los siguientes documentos:</div>";
 					for($i=0; $i<$cpt; $i++):
-						echo $i; 
+						echo $i;
 						$_FILES['userfile']['name']= $files['userfile']['name'][$i];
 						$_FILES['userfile']['type']= $files['userfile']['type'][$i];
 						$_FILES['userfile']['tmp_name']= $files['userfile']['tmp_name'][$i];
 						$_FILES['userfile']['error']= $files['userfile']['error'][$i];
-						$_FILES['userfile']['size']= $files['userfile']['size'][$i];    
+						$_FILES['userfile']['size']= $files['userfile']['size'][$i];
 						$this->upload->initialize($this->set_upload_options());
 						if($this->upload->do_upload()):
 							$datos = array('upload_data' => $this->upload->data());
-							$file = $datos["upload_data"]["file_name"];	
+							$file = $datos["upload_data"]["file_name"];
 							$upload = $this->administrar_model->solicitud_comentario_documento($idrespuesta_datos,$file);
 							$data["mensaje"].="<div class='alert alert-success'>
 							<h5>El archivo ".$file." fue adjuntado con &eacute;xito</h5></div>";
@@ -578,26 +578,26 @@ p&aacute;gina<br>
 						endif;
 					endfor;
 				endif;
-				
+
 				$data["mensaje"].="<div class='alert alert-success'>
 						<h5>La solicitud de informaci&oacute;n fue enviada con &eacute;xito a los siguientes destinatarios:</h5>";
 				for($k=1;$k<=$conteo;$k++):
-						if($this->input->post('correo'.$k)!=''):							
+						if($this->input->post('correo'.$k)!=''):
 							$data["mensaje"].=$this->input->post('correo'.$k).'<br>';
 						endif;
-					endfor;		
+					endfor;
 				$data["mensaje"].="<br><a href='".base_url('baw/facturacion/solicitudes_atendidas/'.$id)."/0' class='btn btn-success'>Aceptar</a>
 					</div>";
-					
-					
+
+
 					for($k=1;$k<=$conteo;$k++):
-						if($this->input->post('correo'.$k)!=''):							
+						if($this->input->post('correo'.$k)!=''):
 							$mail->AddAddress($this->input->post('correo'.$k));
 						endif;
 					endfor;
 					$mail->AddBCC('khernandezz@grupohi.mx');
 					$mail->AddBCC('oaguayo@grupohi.mx');
-					 
+
 					 //Cuerpo del mensaje
 					$cuerpo='
 <HTML><HEAD><META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1"></HEAD><BODY>
@@ -650,7 +650,7 @@ $comentario
 </table>
 <br>
 Se le recuerda que usted debe responder esta solicitud
-desde el m&oacute;dulo de Atenci&oacute;n a 
+desde el m&oacute;dulo de Atenci&oacute;n a
 usuarios ubicado en la siguiente direcci&oacute;n:
 <a href="http://opc.grupohi.mx/baw/informacion/index">
 Responder</a><br><br>
@@ -666,15 +666,15 @@ SAO.- Grupo Hermes Infraestructura. </strong>.
 					$mail->Body = $cuerpo;
 					$mail->Send();
 				endforeach;
-			endif;			
+			endif;
 			$this->template->load('template','facturacion_administrar_enviar_datos',$data);
 		else:
 			redirect('login/index', 'refresh');
-		endif;  
-		
-		
+		endif;
+
+
 	}
-	
+
 	public function consulta($solicitud)
 	{
 		if($this->session->userdata('id')):
@@ -686,9 +686,9 @@ SAO.- Grupo Hermes Infraestructura. </strong>.
 			$data["menu_baw"] = $this->menu->crea_menu_baw($data['idperfil'],$data['iduser']);
 			$data['css'] = '';
 			$data['js'] = '';
-			
+
 			$data["solicitudes"] = $this->administrar_model->desplega_consulta_solicitud($solicitud);
-			$data["preguntas"]=$this->administrar_model->desplega_preguntas($solicitud);			
+			$data["preguntas"]=$this->administrar_model->desplega_preguntas($solicitud);
 			$data["respuesta"]=$this->administrar_model->desplega_respuesta($solicitud);
 			$data["documentos"]=$this->administrar_model->desplega_documentos_facturacion($solicitud);
 			$data["tickets"] = $this->administrar_model->consultar_solicitud_facturacion($solicitud);
@@ -702,37 +702,37 @@ SAO.- Grupo Hermes Infraestructura. </strong>.
 					$data["siguiente"].='<a class="btn btn-danger btn-xs pull-right" href="'.base_url('baw/facturacion/consulta/'.$etiqueta->idcon_solicitud).'" style="margin-left:5px;">Siguiente <i class="fa fa-chevron-right"></i></a>';
 				endif;
 			endforeach;
-			
-				
+
+
 			$this->template->load('template','facturacion_consulta',$data);
 		else:
 			redirect('login/index', 'refresh');
-		endif; 		
+		endif;
 	}
-	
+
 	public function cerrar_tema ()
 	{
 		$solicitud=$this->input->get('solicitud');
-		$result=$this->administrar_model->cerrar_tema($solicitud);			
-						
+		$result=$this->administrar_model->cerrar_tema($solicitud);
+
 		$new = $result[0]["mensaje"];
 		if($new=="Error"):
 			echo '{"msg":"ko"}';
 		else:
 			echo '{"msg":"ok"}';
-		endif;  
+		endif;
 	}
-	
+
 	public function validar_ticket()
 	{
 		$idsolicitud_ticket=$this->input->get('idsolicitud_ticket');
 		$estado=$this->input->get('estado');
-		$result=$this->administrar_model->validar_ticket($idsolicitud_ticket,$estado);					
+		$result=$this->administrar_model->validar_ticket($idsolicitud_ticket,$estado);
 		$msg = $result[0]["mensaje"];
 		$val = $result[0]["valor"];
-		echo '{"msg":"'.$msg.'","val":'.$val.'}';   
+		echo '{"msg":"'.$msg.'","val":'.$val.'}';
 	}
-	
+
 	public function eliminar_tickets()
 	{
 		if($this->session->userdata('id')):
@@ -741,13 +741,13 @@ SAO.- Grupo Hermes Infraestructura. </strong>.
 	 		$data['iduser'] = $session_data['id'];
 			$data['idperfil'] = $session_data['idperfil'];
 			$idsolicitud=$this->input->get('idsolicitud');
-			$result=$this->administrar_model->eliminar_tickets($idsolicitud,$data['iduser']);					
+			$result=$this->administrar_model->eliminar_tickets($idsolicitud,$data['iduser']);
 				echo '{"msg":"'.$result[0]["mensaje"].'"}';
 		else:
 			redirect('login/index', 'refresh');
-		endif; 
+		endif;
 	}
-	
+
 	public function notificar_tickets()
 	{
 		$solicitud = $this->input->get('idsolicitud');
@@ -758,15 +758,15 @@ SAO.- Grupo Hermes Infraestructura. </strong>.
 			foreach($informacion as $info):
 				$this->load->library('My_PHPMailer');
 				$mail = new PHPMailer();
-				$mail->IsSMTP(); 
-				$mail->SMTPAuth   = true; 
-				$mail->Host       = "172.20.74.6";   
-				$mail->Port       = 25;              
-				$mail->Username   = "scaf"; 
-				$mail->Password   = 'GpoHermesInfra';
+				$mail->IsSMTP();
+				$mail->SMTPAuth   = true;
+				$mail->Host       = "mail.hermesconstruccion.com.mx";
+				$mail->Username   = 'sgwc@hermesconstruccion.com.mx';
+				$mail->Password   = "hz9dzt";
+				$mail->Port       = 25;
 				$mail->From = $info->correo;
-				$mail->FromName = "Autopista ".mb_convert_case($info->nombre_proyecto, MB_CASE_TITLE, "utf8");				
-				$mail->Subject    = 'Atención de Solicitud de Facturación (TICKET #'.$info->folio.')';
+				$mail->FromName = "Autopista ".mb_convert_case($info->nombre_proyecto, MB_CASE_TITLE, "utf8");
+				$mail->Subject    = 'Atención de Solicitud de facturación (TICKET #'.$info->folio.')';
 				$mail->AddAddress($info->mail_solicitante);
 				$mail->AddBCC("khernandezz@grupohi.mx");
 				$mail->AddBCC('oaguayo@grupohi.mx');
@@ -883,13 +883,13 @@ página<br>
 						echo '{"msg":"ok"}';
 					else:
 						echo '{"msg":"ko"}';
-					endif;	
+					endif;
 		endforeach;
 		else:
 			echo '{"msg":"ko"}';
 		endif;
 	}
-	
+
 	public function reenviar()
 	{
 		if($this->session->userdata('id')):
@@ -899,41 +899,41 @@ página<br>
 			$data['idperfil'] = $session_data['idperfil'];
 			$data["menu"] = $this->menu->crea_menu($data['idperfil']);
 			$data["menu_baw"] = $this->menu->crea_menu_baw($data['idperfil'],$data['iduser']);
-			$data['css'] = '';		
-			$data['js'] = '';			
-			
-			
+			$data['css'] = '';
+			$data['js'] = '';
+
+
 				$this->load->library('My_PHPMailer');
 				$mail = new PHPMailer();
-				$mail->IsSMTP(); 
-				$mail->SMTPAuth   = true; 
-				$mail->Host       = "172.20.74.6";   
-				$mail->Port       = 25;              
-				$mail->Username   = "scaf"; 
-				$mail->Password   = "GpoHermesInfra";
-					
-			$solicitud = $this->input->post('idsolicitud');	
+				$mail->IsSMTP();
+				$mail->SMTPAuth   = true;
+				$mail->Host       = "mail.hermesconstruccion.com.mx";
+				$mail->Username   = 'sgwc@hermesconstruccion.com.mx';
+				$mail->Password   = "hz9dzt";
+				$mail->Port       = 25;
+
+			$solicitud = $this->input->post('idsolicitud');
 			$destinatario = $this->input->post('destinatario');
-			
-			
+
+
 			$respuestas=$this->administrar_model->respuesta_correo($solicitud);
-			
-			
-				
+
+
+
 				foreach($respuestas as $respuesta_c):
 					$mail->From = $respuesta_c->contacto;
-					$mail->FromName = $respuesta_c->nombre;				
-					$mail->Subject    = "Respuesta de Solicitud de Facturación (TICKET #".$respuesta_c->folio.")";
+					$mail->FromName = $respuesta_c->nombre;
+					$mail->Subject    = "Respuesta de Solicitud de facturación (TICKET #".$respuesta_c->folio.")";
 					//$mail->AddAddress($respuesta_c->mail_solicitante);
 					$mail->AddAddress($destinatario);
-					$adicioneles = preg_replace('/\s+/', '', $this->input->post('adicionales'));		
+					$adicioneles = preg_replace('/\s+/', '', $this->input->post('adicionales'));
 					$adicionales = explode(';',$adicioneles);
 					foreach($adicionales as $adicional):
 						$mail->AddAddress($adicional);
 					endforeach;
 					$mail->AddBCC("khernandezz@grupohi.mx");
 					$mail->AddBCC('oaguayo@grupohi.mx');
-					$documentos=$this->administrar_model->desplega_documentos_facturacion($solicitud); 
+					$documentos=$this->administrar_model->desplega_documentos_facturacion($solicitud);
 					foreach ($documentos as $docto):
 						$mail->AddAttachment('./documents/baw/'.$docto->nombre_documento);
 					endforeach;
@@ -992,8 +992,8 @@ src="'.$respuesta_c->logo.'">
 </fieldset>
 <br>
 <br>
-<span>Este correo es informativo, favor de no responder a 
-esta direcci&oacute;n de correo, ya que no se encuentra habilitada 
+<span>Este correo es informativo, favor de no responder a
+esta direcci&oacute;n de correo, ya que no se encuentra habilitada
 para recibir mensajes.
 <br><br>
 Si requiere mayor informaci&oacute;n sobre el contenido visite
@@ -1010,7 +1010,7 @@ p&aacute;gina<br>
 </BODY></HTML>';
 					$mail->IsHTML(true);
 					$mail->Body = $cuerpo;
-					
+
 					if($mail->Send()):
 						$data["mensaje"]='<div class="alert alert-success">
 						<h5>La respuesta de la solicitud fue reenviada con &eacute;xito</h5><br><a href="'.base_url('baw/facturacion/consulta/'.$solicitud).'" class="btn btn-success">Aceptar</a></div>';
@@ -1019,14 +1019,14 @@ p&aacute;gina<br>
 						<h5>La respuesta de la solicitud no pudo ser reenviada.</h5><br><a href="'.base_url('baw/facturacion/consulta/'.$solicitud).'" class="btn btn-success">Aceptar</a></div>';
 					endif;
 				endforeach;
-			
+
 			$this->template->load('template','facturacion_reenviar_solicitud_mensaje',$data);
-			
+
 		else:
 			redirect('login/index', 'refresh');
-		endif;		
+		endif;
 	}
-	
+
 	public function consultar()
 	{
 		if($this->session->userdata('id')):
@@ -1035,7 +1035,7 @@ p&aacute;gina<br>
 	 		$data['iduser'] = $session_data['id'];
 			$data['idperfil'] = $session_data['idperfil'];
 			$data["menu"] = $this->menu->crea_menu($data['idperfil']);
-			$data['css'] = '';		
+			$data['css'] = '';
 			$data['js'] = '<script src="'.base_url('assets/js/baw.js').'"></script>';
 			$data['js'] .= '<script src="'.base_url('assets/js/jquery-ui.min.js').'"></script> ';
 			$data['js'] .= '<script src="'.base_url('assets/js/modernizr.min.js').'"></script> ';
@@ -1055,7 +1055,7 @@ p&aacute;gina<br>
 			redirect('login/index', 'refresh');
 		endif;
 	}
-	
+
 	public function consultar_detalle($idsolicitud)
 	{
 		if($this->session->userdata('id')):
@@ -1064,7 +1064,7 @@ p&aacute;gina<br>
 	 		$data['iduser'] = $session_data['id'];
 			$data['idperfil'] = $session_data['idperfil'];
 			$data["menu"] = $this->menu->crea_menu($data['idperfil']);
-			$data['css'] = '';		
+			$data['css'] = '';
 			$data['js'] = '';
 			$data["solicitudes"]=$this->administrar_model->consultar_solicitud_facturacion($idsolicitud);
 			$data["respuestas"]=$this->administrar_model->consultar_respuesta_facturacion($idsolicitud);
@@ -1082,9 +1082,9 @@ p&aacute;gina<br>
 			$this->template->load('template','facturacion_consultar_detalle',$data);
 		else:
 			redirect('login/index', 'refresh');
-		endif;	
+		endif;
 	}
-	
+
 	public function validacion_automatica()
 	{
 		if($this->session->userdata('id')):
@@ -1100,9 +1100,9 @@ p&aacute;gina<br>
 			$this->template->load('template','facturacion_validacion_automatica',$data);
 		else:
 			redirect('login/index', 'refresh');
-		endif;	
+		endif;
 	}
-	
+
 	public function ejecutar_validacion()
 	{
 		if($this->session->userdata('id')):
@@ -1123,10 +1123,10 @@ p&aacute;gina<br>
 			redirect('login/index', 'refresh');
 		endif;
 	}
-	
+
 	public function ejecutar_validacion_pdf($idvalidacion)
 	{
-			
+
 			$this->load->library('pdf_validacion');
 			$this->pdf_validacion = new Pdf_validacion();
 			$encabezado = $this->administrar_model->desplegar_validacion_encabezado($idvalidacion);
@@ -1143,7 +1143,7 @@ p&aacute;gina<br>
 			$this->pdf_validacion->SetLeftMargin(15);
 			$this->pdf_validacion->SetRightMargin(15);
 			$this->pdf_validacion->SetFillColor(235,235,235);
- 			
+
 			// Se define el formato de fuente: Arial, negritas, tamaño 9
 			$this->pdf_validacion->SetFont('Arial', '', 7);
 			/*
@@ -1151,7 +1151,7 @@ p&aacute;gina<br>
 			 *
 			 * $this->pdf->Cell(Ancho, Alto,texto,borde,posición,alineación,relleno);
 			 */
- 
+
 			$this->pdf_validacion->Cell(7,4,'#','TL',0,'C','1');
 			$this->pdf_validacion->Cell(25,4,'FOLIO','TL',0,'C','1');
 			$this->pdf_validacion->Cell(18,4,'TICKETS DE','TL',0,'C','1');
@@ -1163,7 +1163,7 @@ p&aacute;gina<br>
 			$this->pdf_validacion->Cell(18,4,'TOTAL NO','TL',0,'C','1');
 			$this->pdf_validacion->Cell(20,4,'INEFECTIVIDAD','TLR',0,'C','1');
 			$this->pdf_validacion->Ln(4);
-			
+
 			$this->pdf_validacion->Cell(7,4,'','BL',0,'C','1');
 			$this->pdf_validacion->Cell(25,4,'','BL',0,'C','1');
 			$this->pdf_validacion->Cell(18,4,'SOLICITUD','BL',0,'C','1');
@@ -1175,7 +1175,7 @@ p&aacute;gina<br>
 			$this->pdf_validacion->Cell(18,4,'VALIDADOS','BL',0,'C','1');
 			$this->pdf_validacion->Cell(20,4,'','BLR',0,'C','1');
 			$this->pdf_validacion->Ln(4);
-			
+
         // La variable $x se utiliza para mostrar un número consecutivo
         $x = 1;
 		$resultados = $this->administrar_model->desplegar_validacion_detalle($idvalidacion);
@@ -1199,11 +1199,11 @@ p&aacute;gina<br>
         }
         $this->pdf_validacion->Output("Validación ATA ".$titulo.".pdf", 'D');
 	}
-	
+
 	public function cargar_tickets()
 	{
 		if($this->session->userdata('id')):
-			$this->load->model('grl/general_model');  
+			$this->load->model('grl/general_model');
      		$session_data = $this->session->userdata();
      		$data['usuario'] = $session_data['username'];
 	 		$data['iduser'] = $session_data['id'];
@@ -1218,11 +1218,11 @@ p&aacute;gina<br>
 			redirect('login/index', 'refresh');
 		endif;
 	}
-	
+
 	public function procesaExcel()
 	{
 		if($this->session->userdata('id')):
-			$this->load->model('grl/general_model');  
+			$this->load->model('grl/general_model');
      		$session_data = $this->session->userdata();
      		$data['usuario'] = $session_data['username'];
 	 		$data['iduser'] = $session_data['id'];
@@ -1270,7 +1270,7 @@ p&aacute;gina<br>
 							$datos[$r][$columnHeading] = $dataRow[$row][$columnKey];
 						endforeach;
 					endif;
-				endfor;	
+				endfor;
 				$cont=0;
 				foreach($datos as $key => $value):
 					$fecha_hora = preg_replace('/\s+/', '', $value["Fecha y Hora"]);
@@ -1315,7 +1315,7 @@ p&aacute;gina<br>
 					echo json_encode(array('error'=>'<i class="fa fa-warning"></i> El archivo esta vacio o no tiene los datos coresponientes a insertar....'));
 				endif;
 				//echo json_encode(array('msj'=>'Muy bien'));
-				
+
 			}
 			catch (Exception $ex){
 				echo json_encode(array('error'=>$ex->getMessage()));
@@ -1323,20 +1323,20 @@ p&aacute;gina<br>
 		else:
 			echo '<script>alert("Reinicie sesión");</script>';
 		endif;
-			
+
 	}
-	
+
 	function validar_archivos()
 	{
 		$fecha = $this->input->get('fecha');
 		$result = $this->administrar_model->validar_archivos($fecha);
 		echo '{"msg":'.$result.'}';
 	}
-	
+
 	function busqueda()
 	{
 		if($this->session->userdata('id')):
-			$this->load->model('grl/general_model');  
+			$this->load->model('grl/general_model');
      		$session_data = $this->session->userdata();
      		$data['usuario'] = $session_data['username'];
 	 		$data['iduser'] = $session_data['id'];
@@ -1354,7 +1354,7 @@ p&aacute;gina<br>
 			redirect('login/index', 'refresh');
 		endif;
 	}
-	
+
 	function buscar()
 	{
 		$valor = $this->input->get('valor');
@@ -1366,10 +1366,10 @@ p&aacute;gina<br>
 		endforeach;
 		echo json_encode($datasource);
 	}
-	
-	
-	
-	
+
+
+
+
 }
 /*
 *end modules/login/controllers/index.php

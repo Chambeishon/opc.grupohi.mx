@@ -1,21 +1,21 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-//session_start(); 
+//session_start();
 class Diagnostico extends MX_Controller
 {
-    
+
     public function __construct()
     {
         parent::__construct();
-        $this->load->library('template');  
+        $this->load->library('template');
 		$this->load->library('menu');
 		$this->load->model('grl/general_model');
 		$this->load->model('bom_general_model');
 		$this->load->model('diagnostico_model');
 		$this->load->model('solucion_model');
     }
-    
+
     public function index()
-    { 
+    {
 		if($this->session->userdata('id')):
 			$this->load->helper('text');
      		$session_data = $this->session->userdata();
@@ -31,9 +31,9 @@ class Diagnostico extends MX_Controller
 			$this->template->load('template','diagnostico',$data);
 		else:
 			redirect('login/index', 'refresh');
-		endif; 
+		endif;
     }
-	
+
 	public function generales($id)
 	{
 		if($this->session->userdata('id')):
@@ -52,9 +52,9 @@ class Diagnostico extends MX_Controller
 			$this->template->load('template','diagnostico_generales',$data);
 		else:
 			redirect('login/index', 'refresh');
-		endif; 
+		endif;
 	}
-	
+
 	public function registrar()
 	{
 		if($this->session->userdata('id')):
@@ -98,9 +98,9 @@ class Diagnostico extends MX_Controller
 					$motivo = ($this->input->post('motivo'.$k)=='')?0:$this->input->post('motivo'.$k);
 					$destino = ($this->input->post('destino'.$k)=='')?0:$this->input->post('destino'.$k);
 					$fecha = ($this->input->post('fecha'.$k)=='')?0:$this->input->post('fecha'.$k);
-					
+
 					//$Reparar.= $marca.','.$modelo.','.$capacidad.','.$serie.','.$motivo.','.$destino.','.$fecha.';';
-					
+
 					if($k==$n_reparar):$coma=',';else:$coma=',';endif;
 					$Equipos .= $equipo.$coma;
 					$Marcas .= $marca.$coma;
@@ -117,9 +117,9 @@ class Diagnostico extends MX_Controller
 					$v_modelo = ($this->input->post('v_modelo'.$k)=='')?0:$this->input->post('v_modelo'.$k);
 					$v_motivo = ($this->input->post('v_motivo'.$k)=='')?0:$this->input->post('v_motivo'.$k);
 					$v_ubicacion = ($this->input->post('v_ubicacion'.$k)=='')?0:$this->input->post('v_ubicacion'.$k);
-				
+
 					//$Reemplazar.= $v_marca.','.$v_modelo.','.$v_capacidad.','.$v_serie.','.$v_motivo.','.$v_ubicacion.';';
-					
+
 					if($k==$n_reemplazar):$coma=',';else:$coma=',';endif;
 					$VEquipos .= $v_equipo.$coma;
 					$VMarcas .= $v_marca.$coma;
@@ -159,30 +159,30 @@ class Diagnostico extends MX_Controller
 																$VModelos,
 																$VMotivos,
 																$VUbicaciones);
-			
+
 			$data["css"]='';
-			$data["js"]='';	
+			$data["js"]='';
 			$data['mensaje'] = $result[0]["mensaje"];
 			if($data['mensaje']!='Error'):
 				$this->load->model('notificacion_model');
 				//$this->load->library('email');
 				$this->load->library('My_PHPMailer');
 				$mail = new PHPMailer();
-				$mail->IsSMTP(); 
-				$mail->SMTPAuth   = true; 
-				$mail->Host       = "172.20.74.6";   
-				$mail->Port       = 25;              
-				$mail->Username   = "scaf"; 
-				$mail->Password   = "GpoHermesInfra";
+				$mail->IsSMTP();
+				$mail->SMTPAuth   = true;
+				$mail->Host       = "mail.hermesconstruccion.com.mx";
+				$mail->Username   = 'sgwc@hermesconstruccion.com.mx';
+				$mail->Password   = "hz9dzt";
+				$mail->Port       = 25;
 				$this->load->model('solucion_model');
 				$data["result"] = $this->solucion_model->desplega_reporte($idreporte);
 				$data["reparos"]=$this->solucion_model->desplega_reparo($idreporte);
-				$data["reemplazos"]=$this->solucion_model->desplega_reemplazo($idreporte);			
+				$data["reemplazos"]=$this->solucion_model->desplega_reemplazo($idreporte);
 				$correos = $this->notificacion_model->select_correos($tipo,$clasificacion,$data["result"][0]["idplaza"],22);
 				$copiaoculta = $this->notificacion_model->select_copiaoculta();
 				$html = $this->load->view('diagnostico_notificacion', $data, true);
-				$mail->SetFrom('sao@grupohi.mx', utf8_decode('Bit谩cora Operaci贸n y Mantto.'));
-				$mail->Subject = utf8_decode('Diagn贸stico Registrado '.$data["result"][0]["folio"].' Plaza "'.$data["result"][0]["nombre_plaza"].'"');
+				$mail->SetFrom('sao@grupohi.mx', utf8_decode('Bit醕ora Operaci髇 y Mantto.'));
+				$mail->Subject = utf8_decode('Diagn髎tico Registrado '.$data["result"][0]["folio"].' Plaza "'.$data["result"][0]["nombre_plaza"].'"');
 				$mail->Body      = $html;
 				$mail->AltBody    = "To view the message, please use an HTML compatible email viewer!";
 				foreach ($correos as $correo):
@@ -191,21 +191,21 @@ class Diagnostico extends MX_Controller
 				foreach($copiaoculta as $co):
 					$mail->AddBcc($co["correo"]);
 				endforeach;
-				
+
 				$mail->Send();
 				/*foreach($correos as $correo):
 					$this->email->clear();
 					$this->email->to($correo["correo"]);
-					$this->email->from('sao@grupohi.mx','Bit谩cora Operaci贸n y Mantto.');
-					$this->email->subject('Diagn贸stico Registrado '.$data["result"][0]["folio"].' Plaza "'.$data["result"][0]["nombre_plaza"].'"');
+					$this->email->from('sao@grupohi.mx','Bit醕ora Operaci髇 y Mantto.');
+					$this->email->subject('Diagn髎tico Registrado '.$data["result"][0]["folio"].' Plaza "'.$data["result"][0]["nombre_plaza"].'"');
 					$this->email->message($html);
 					$this->email->send();
 				endforeach;
 				foreach($copiaoculta as $co):
 					$this->email->clear();
 					$this->email->bcc($co['correo']);
-					$this->email->from('sao@grupohi.mx','Bit谩cora Operaci贸n y Mantto.');
-					$this->email->subject('Diagn贸stico Registrado '.$data["result"][0]["folio"].' Plaza "'.$data["result"][0]["nombre_plaza"].'"');
+					$this->email->from('sao@grupohi.mx','Bit醕ora Operaci髇 y Mantto.');
+					$this->email->subject('Diagn髎tico Registrado '.$data["result"][0]["folio"].' Plaza "'.$data["result"][0]["nombre_plaza"].'"');
 					$this->email->message($html);
 					$this->email->send();
 				endforeach;*/
@@ -213,9 +213,9 @@ class Diagnostico extends MX_Controller
 			$this->template->load('template','diagnostico_mensaje',$data);
 		else:
 			redirect('login/index', 'refresh');
-		endif; 
+		endif;
 	}
-	
+
 	public function carga_informacion()
 	{
 		$id=$this->input->post('id');
@@ -227,7 +227,7 @@ class Diagnostico extends MX_Controller
 					$data["result"][0]["folio"].'
                 	<br>
                 	<span class="label label-'.$data["result"][0]["color"].'">'.$data["result"][0]["nombre_clasificacion"].'</span>
-            	</div>	
+            	</div>
             </div>
             <div class="clearfix"></div>
             <br>
@@ -271,7 +271,7 @@ class Diagnostico extends MX_Controller
                         &Aacute;rea de Afectaci&oacute;n<br>';
 			if($data["result"][0]["nombre_area"]=="CARRIL"):
 				$html .='Ubicaci&oacute;n<br>';
-			endif;						
+			endif;
             $html .='Tipo de Falla<br>
                         Observaciones<br>
                     </strong>
@@ -280,7 +280,7 @@ class Diagnostico extends MX_Controller
                     $data["result"][0]["nombre_area"].'<br>';
              if($data["result"][0]["nombre_area"]=="CARRIL"):
 				$html .=$data["result"][0]["nombre_carril"].'<br>';
-			endif;	
+			endif;
 			 $html .=  $data["result"][0]["nombre_tipofalla"].'<br>'.
                     $data["result"][0]["observacion_reporte"].'
                 </div>
@@ -303,10 +303,10 @@ class Diagnostico extends MX_Controller
 				</div>
 			</div>
             </div>';
-			
+
 			echo $html;
 	}
-	
+
 	public function carga_tabla_reemplazar()
 	{
 		$idreporte = $this->input->post('idreporte');

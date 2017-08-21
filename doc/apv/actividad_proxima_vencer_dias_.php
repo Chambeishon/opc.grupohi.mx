@@ -1,4 +1,4 @@
-<?php 
+<?php
 //en ejecucion
 //require_once("C:Apache24/htdocs/opc-pruebas/sgwc/npv/class.phpmailer.php");
 require_once('D:/xampp/htdocs/opc.grupohi.mx/sgwc/npv/class.phpmailer.php');
@@ -7,12 +7,12 @@ $mail             = new PHPMailer();
 $mail->IsSMTP();
 $mail->SMTPAuth   = true;
 //$mail->SMTPSecure = "ssl";
-$mail->Host       = "172.20.74.6";
+$mail->Host       = "mail.hermesconstruccion.com.mx";
+$mail->Username   = 'sgwc@hermesconstruccion.com.mx';
+$mail->Password   = "hz9dzt";
 $mail->Port       = 25;
-$mail->Username   = 'scaf';
-$mail->Password   = "GpoHermesInfra";
 $mail->From       = "ContratosDeConcesiones@grupohi.mx";
-$mail->FromName   = utf8_decode("MÃ³dulo de Contratos de Concesiones");		
+$mail->FromName   = utf8_decode("Módulo de Contratos de Concesiones");
 
 //ARREGLO DE CORREOS
 $array_correos = array(
@@ -25,10 +25,10 @@ function conectar_sql_server(){
 	$serverName = '172.20.74.3\GHIAPP'; //serverName\instanceName
 	$connectionInfo = array( "Database"=>"opi", "UID"=>"oaguayo", "PWD"=>"2014_opc7");
 	//$conn = sqlsrv_connect( $serverName, $connectionInfo);
-	
+
 	if(!$link=sqlsrv_connect($serverName,$connectionInfo)){
 		$mail->Subject    = "Mensaje de conexion OPI APV";
-		$texto="No se pudo conectar al servidor opi correo actividades proximas a vencer %s\n";		
+		$texto="No se pudo conectar al servidor opi correo actividades proximas a vencer %s\n";
 		$mail->Body		= $texto;
 		$mail->AltBody    = "Para ver el mensaje, por favor, utilice un visor de correo electronico HTML compatible";
 		foreach($array_correos as $a_correo):
@@ -42,11 +42,11 @@ function conectar_sql_server(){
 		}
 		exit();
 	}
-	
+
 	return $link;
 }
 
-$link = conectar_sql_server(); 
+$link = conectar_sql_server();
 
 
 $sql_select ="SELECT DISTINCT(idproyecto) FROM doc_contrato";
@@ -58,10 +58,10 @@ while($idp = sqlsrv_fetch_array($res_select)):
 	$idproyectos[] = $idp;
 endwhile;
 
-foreach ($idproyectos as $id):	
+foreach ($idproyectos as $id):
 	$idproyecto = $id["idproyecto"];
 	$params=array(array($idproyecto,SQLSRV_PARAM_IN));
-	$stmt = sqlsrv_query($link,'{CALL sp_doc_notificacion_mensaje_dias (?)}',$params);	
+	$stmt = sqlsrv_query($link,'{CALL sp_doc_notificacion_mensaje_dias (?)}',$params);
 	while( $dato = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ):
 	if(isset($dato["mensaje"])):
 		echo $dato["mensaje"];
@@ -81,11 +81,11 @@ foreach ($idproyectos as $id):
 		<div style="padding:10px;border:solid 1px #ccc; font-family:Arial,Helvetica,sans-serif;font-size:12px;">
 		<span style="color:#444444;font-size:16px;">
 <strong>SE LE NOTIFICA QUE LA ACTIVIDAD P-'.$idprogramacion.' CORRESPONDIENTE AL CONTRATO '.$row3["numero_contrato"].' DEL PROYECTO '.$row3["nombre_proyecto"].' SE ENCUENTRA EN EL SIGUIENTE ESTADO: '.$descripcion.'</strong>
-</span><br><br>'.$cuerpo.'<br><p style="color:#444444;font-size:12px;"><span>Este correo es informativo, favor de no responder a 
+</span><br><br>'.$cuerpo.'<br><p style="color:#444444;font-size:12px;"><span>Este correo es informativo, favor de no responder a
 esta direcci&oacute;n de correo, ya que no se encuentra habilitada para recibir mensajes.<br><br></span><i>Mensaje enviado autom&aacute;ticamente desde el M&oacute;dulo de Operaci&oacute;n e Infraestructura.</i></p><img src="http://intranet.grupohi.mx/ghi_mail.png"></div>';
 		echo 'Para la idprogramacion='.$idprogramacion.' se le enviarian correo a las sig personas:<br>';
 		$query = "select * from vw_doc_notificacion_usuario
-	WHERE idprogramacion=".$idprogramacion." 
+	WHERE idprogramacion=".$idprogramacion."
 	AND idnivel>=".$idnivel." and idnotificacion_color=".$color."";
 		$result2 = sqlsrv_query($link,$query);
 		while( $dato2 = sqlsrv_fetch_array( $result2, SQLSRV_FETCH_ASSOC) ) :

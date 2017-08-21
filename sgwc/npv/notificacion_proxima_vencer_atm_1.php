@@ -11,10 +11,10 @@ $mail             = new PHPMailer();
 $mail->IsSMTP();
 $mail->SMTPAuth   = true;
 //$mail->SMTPSecure = "ssl";
-$mail->Host       = "172.20.74.6";
+$mail->Host       = "mail.hermesconstruccion.com.mx";
+$mail->Username   = 'sgwc@hermesconstruccion.com.mx';
+$mail->Password   = "hz9dzt";
 $mail->Port       = 25;
-$mail->Username   = 'scaf';
-$mail->Password   = "GpoHermesInfra";
 $mail->From       = "soporte_sgw@grupohi.mx";
 $mail->FromName   = "ATM";
 
@@ -22,7 +22,7 @@ $mail->FromName   = "ATM";
 $array_correos = array(
     'khernandezz@grupohi.mx',
 	'oaguayo@grupohi.mx');
-	
+
 //FUNCIONES
 function consulta_clases()
 {
@@ -93,7 +93,7 @@ $c_correos=consulta_correos();
 function conectar_sql_server(){
 	if(!($link=mssql_connect('172.20.74.3\GHIAPP', 'oaguayo', '2014_opc7'))){
 		$mail->Subject    = "Mensaje de conexion POPI NPV";
-		$texto="Error de conexion: a servidor popi correo incidencias proximas a vencer %s\n";		
+		$texto="Error de conexion: a servidor popi correo incidencias proximas a vencer %s\n";
 		$mail->Body		= $texto;
 		$mail->AltBody    = "Para ver el mensaje, por favor, utilice un visor de correo electronico HTML compatible";
 		foreach($array_correos as $a_correo):
@@ -101,13 +101,13 @@ function conectar_sql_server(){
 		endforeach;
 		if(!$mail->Send()) {echo "Mensaje de conexion CANADA-Mailer Error: " . $mail->ErrorInfo;}
 		else {echo "Mensaje de conexion servidir popi correo incidencias proximas a vencer";}
-		exit; 
+		exit;
 		exit();
 	}
-			
+
 	if(!mssql_select_db("popi", $link)){
 		$mail->Subject    = "Mensaje de conexion POPI NPV";
-		$texto="Error de conexion: a base de datos popi correo incidencias proximas a vencer %s\n";		
+		$texto="Error de conexion: a base de datos popi correo incidencias proximas a vencer %s\n";
 		$mail->Body		= $texto;
 		$mail->AltBody    = "Para ver el mensaje, por favor, utilice un visor de correo electronico HTML compatible";
 		foreach($array_correos as $a_correo):
@@ -115,18 +115,18 @@ function conectar_sql_server(){
 		endforeach;
 		if(!$mail->Send()) {echo "Mensaje de conexion CANADA-Mailer Error: " . $mail->ErrorInfo;}
 		else {echo "Mensaje de conexion base de datos popi correo incidencias proximas a vencer";}
-		exit; 
+		exit;
 		exit();
 	}
 	return $link;
-	
+
 }
 
 //CONEXION CANADA
 $ssh = new Net_SSH2('192.99.17.91:22');
 if (!$ssh->login('sgwc_incidencias', 'P"L;cKYGt-Z$')){
 		$mail->Subject    = "Mensaje de conexion CANADA NPV";
-		$texto="Error de conexion: a servidor canada correo incidencias proximas a vencer%s\n";		
+		$texto="Error de conexion: a servidor canada correo incidencias proximas a vencer%s\n";
 		$mail->Body		= $texto;
 		$mail->AltBody    = "Para ver el mensaje, por favor, utilice un visor de correo electronico HTML compatible";
 		foreach($array_correos as $a_correo):
@@ -134,7 +134,7 @@ if (!$ssh->login('sgwc_incidencias', 'P"L;cKYGt-Z$')){
 		endforeach;
 		if(!$mail->Send()) {echo "Mensaje de conexion CANADA-Mailer Error: " . $mail->ErrorInfo;}
 		else {echo "Mensaje de conexion servidor CANADA correo incidencias proximas a vencer";}
-		exit; 
+		exit;
 	exit('Failed');
 }
 
@@ -142,7 +142,7 @@ else
 {
 	if (!$ssh->exec('mysql -h 192.99.17.91 -u swgc_incidencias -p 3=7!8wY3-%x7 atm')){
     	$mail->Subject    = "Mensaje de conexion CANADA NPV";
-		$texto="Error de conexion: a base de datos canada correo incidencias proximas a vencer %s\n";		
+		$texto="Error de conexion: a base de datos canada correo incidencias proximas a vencer %s\n";
 		$mail->Body		= $texto;
 		$mail->AltBody    = "Para ver el mensaje, por favor, utilice un visor de correo electronico HTML compatible";
 		foreach($array_correos as $a_correo):
@@ -153,23 +153,23 @@ else
 		exit;
 	exit('Login to MySQL Failed');
 	}
-	else{	
-	
-		//BUSCA TAREAS PARA LAS CLASES 
+	else{
+
+		//BUSCA TAREAS PARA LAS CLASES
 		$connect2 = conectar_sql_server();
-		$hora_actual=date('Y-m-d H:i:s');		
-		
+		$hora_actual=date('Y-m-d H:i:s');
+
 		$result=$ssh->exec('mysql -uswgc_incidencias -p3=7!8wY3-%x7 atm -e "SELECT concat(\"[]\",at.tareaID)tareaID ,concat(\"[]\",atc.claseID)claseID, concat(\"[]\",att.tipoID)tipoID, concat(\"[]\",ats.subtipoID)subtipoID, concat(\"[]\",(TIME_TO_SEC(SEC_TO_TIME(TIMESTAMPDIFF(SECOND,\"'.$hora_actual.'\",at.fecha_llegada))) DIV 60)) AS tiempo, concat(\"[]\",REPLACE(pc.carretera,\",\",\"  \"))carretera, concat(\"[]\",REPLACE(atc.title,\",\",\"  \"))clase, concat(\"[]\",REPLACE(att.title,\",\",\"  \"))tipo, concat(\"[]\",REPLACE(ats.title,\",\",\"  \"))subtipo, concat(\"[]\",REPLACE(at.descripcion,\",\",\"  \"))descripcion, concat(\"[]\",REPLACE(at.PKinicial,\".\",\"+\"))pkinicial, concat(\"[]\",REPLACE(at.PKfinal,\".\",\"+\"))pkfinal ,concat(\"[]\",at.fecha_conocimiento)fecha_conocimiento ,concat(\"[]\",at.fecha_llegada)fecha_llegada ,concat(\"[]\",REPLACE(ps.sector,\",\",\"  \"))sector ,CASE WHEN REPLACE(pt.tramo,\",\",\"  \") IS NULL THEN \"[]-\" ELSE concat(\"[]\",REPLACE(pt.tramo,\",\",\"  \")) END AS tramo ,concat(\"[]\",DATE_FORMAT(at.fecha_conocimiento,\"%d-%m-%Y %H:%i:%s\"))conocimiento, concat(\"[]\",DATE_FORMAT(at.fecha_llegada,\"%d-%m-%Y %H:%i:%s\"))llegada, concat(\"[]\",at.fuente_informacion)fuente_informacion FROM agenda_tareas AS at left join atm.puntospk_carreteras pc on (at.carreteraID=pc.carreteraID) left join atm.agenda_tareas_subtipos ats on (at.subtipoID=ats.subtipoID) left join atm.agenda_tareas_tipos att on (ats.tipoID=att.tipoID) left join atm.agenda_tareas_clases atc on (att.claseID=atc.claseID) left join atm.puntospk_sectores ps on (at.sectorID=ps.sectorID) left join atm.puntospk_tramos pt on (at.plataformaID=pt.plataformaID and ((at.pkinicial>=pt.pkINI) and (at.pkinicial<=pt.pkFIN))) WHERE at.activa=1 AND at.fin_actuacion=\"0000-00-00 00:00:00\" ;"');
-		
+
 		$array = explode("[]", $result);
 		//CORREO CLASES
-		for ($tareaID=1,$claseID=2,$tipoID=3,$subtipoID=4,$tiempo=5,$carretera=6,$clase=7,$tipo=8,$subtipo=9,$desc=10,$pki=11,$pkf=12,$fecha_c=13,$fecha_l=14,$sector=15,$tramo=16,$con=17,$llegada=18,$fuente=19; $tareaID<=(sizeof($array)-1),$claseID<=(sizeof($array)-1),$tipoID<=(sizeof($array)-1),$subtipoID<=(sizeof($array)-1),$tiempo<=(sizeof($array)-1),$carretera<=(sizeof($array)-1),$clase<=(sizeof($array)-1),$tipo<=(sizeof($array)-1),$subtipo<=(sizeof($array)-1),$desc<=(sizeof($array)-1),$pki<=(sizeof($array)-1),$pkf<=(sizeof($array)-1),$fecha_c<=(sizeof($array)-1),$fecha_l<=(sizeof($array)-1),$sector<=(sizeof($array)-1),$tramo<=(sizeof($array)-1),$con<=(sizeof($array)-1),$llegada<=(sizeof($array)-1),$fuente<=(sizeof($array)-1); $tareaID=$tareaID+19,$claseID=$claseID+19,$tipoID=$tipoID+19,$subtipoID=$subtipoID+19,$tiempo=$tiempo+19,$carretera=$carretera+19,$clase=$clase+19,$tipo=$tipo+19,$subtipo=$subtipo+19,$desc=$desc+19,$pki=$pki+19,$pkf=$pkf+19,$fecha_c=$fecha_c+19,$fecha_l=$fecha_l+19,$sector=$sector+19,$tramo=$tramo+19,$con=$con+19,$llegada=$llegada+19,$fuente=$fuente+19) {				
+		for ($tareaID=1,$claseID=2,$tipoID=3,$subtipoID=4,$tiempo=5,$carretera=6,$clase=7,$tipo=8,$subtipo=9,$desc=10,$pki=11,$pkf=12,$fecha_c=13,$fecha_l=14,$sector=15,$tramo=16,$con=17,$llegada=18,$fuente=19; $tareaID<=(sizeof($array)-1),$claseID<=(sizeof($array)-1),$tipoID<=(sizeof($array)-1),$subtipoID<=(sizeof($array)-1),$tiempo<=(sizeof($array)-1),$carretera<=(sizeof($array)-1),$clase<=(sizeof($array)-1),$tipo<=(sizeof($array)-1),$subtipo<=(sizeof($array)-1),$desc<=(sizeof($array)-1),$pki<=(sizeof($array)-1),$pkf<=(sizeof($array)-1),$fecha_c<=(sizeof($array)-1),$fecha_l<=(sizeof($array)-1),$sector<=(sizeof($array)-1),$tramo<=(sizeof($array)-1),$con<=(sizeof($array)-1),$llegada<=(sizeof($array)-1),$fuente<=(sizeof($array)-1); $tareaID=$tareaID+19,$claseID=$claseID+19,$tipoID=$tipoID+19,$subtipoID=$subtipoID+19,$tiempo=$tiempo+19,$carretera=$carretera+19,$clase=$clase+19,$tipo=$tipo+19,$subtipo=$subtipo+19,$desc=$desc+19,$pki=$pki+19,$pkf=$pkf+19,$fecha_c=$fecha_c+19,$fecha_l=$fecha_l+19,$sector=$sector+19,$tramo=$tramo+19,$con=$con+19,$llegada=$llegada+19,$fuente=$fuente+19) {
 			foreach($consulta_clases as $Clase):
-			if($array[$claseID]==$Clase["id"] and $array[$tiempo]<=$Clase["valor_tiempo"]):								
+			if($array[$claseID]==$Clase["id"] and $array[$tiempo]<=$Clase["valor_tiempo"]):
 				$tarea_notificada=consulta_tarea_notificada($array[$tareaID]);
 				if(sizeof($tarea_notificada)==0){
-					$inserta=mssql_query("INSERT INTO sgwc_tarea_pendiente_notificada (tareaID,idbase) VALUES (".$array[$tareaID].",1)",$connect2);	
-					$mail->Subject    = utf8_decode("Incidencia PrÃ³xima a vencer (Clase ").trim($array[$clase]).")";
+					$inserta=mssql_query("INSERT INTO sgwc_tarea_pendiente_notificada (tareaID,idbase) VALUES (".$array[$tareaID].",1)",$connect2);
+					$mail->Subject    = utf8_decode("Incidencia Próxima a vencer (Clase ").trim($array[$clase]).")";
 $texto='<HTML><HEAD><META HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=UTF-8"></HEAD><BODY>
 <div style="padding:10px;border:solid 1px #ccc;
 font-family:Arial,Helvetica,sans-serif;font-size:12px;">
@@ -235,41 +235,41 @@ $array[$llegada]
 $texto.='</tbody>
 </table>
 </div>
-<div style="clear:both;"></div>			
+<div style="clear:both;"></div>
 <br>
 <p style="color:#444444;font-size:12px;"><i>
-Mensaje enviado autom&aacute;ticamente desde el 
-m&oacute;dulo de Agenda de Vialidad del 
+Mensaje enviado autom&aacute;ticamente desde el
+m&oacute;dulo de Agenda de Vialidad del
 Sistema de Gesti&oacute;n Web Carretera.
 </i></p>
 <img src="http://intranet.grupohi.mx/ghi_mail.png">
 </div>
 </BODY></HTML>';
-				
+
 				$mail->ClearAllRecipients();
 				$mail->Body		= $texto;
 				$mail->AltBody    = "Para ver el mensaje, por favor, utilice un visor de correo electronico HTML compatible";
 				//Quitar comentarios para enviar notificaciones a usuarios
 				foreach($c_correos as $c_correo):
 					$mail->AddAddress($c_correo["correo"]);
-				endforeach;		
-				
+				endforeach;
+
 				foreach($array_correos as $a_correo):
 					$mail->AddBCC($a_correo);
 				endforeach;
 				if(!$mail->Send()) {echo "Error: " . $mail->ErrorInfo;}
-				else {echo "tarea enviada Clase-".$array[$tareaID]."<br>";}							
+				else {echo "tarea enviada Clase-".$array[$tareaID]."<br>";}
 				}
 			endif;
-		endforeach;	
-		
+		endforeach;
+
 		//CORREO TIPOS
 		foreach($consulta_tipos as $Tipo):
 			if($array[$tipoID]==$Tipo["id"] and $array[$tiempo]<=$Tipo["valor_tiempo"]):
 				$tarea_notificada=consulta_tarea_notificada($array[$tareaID]);
 				if(sizeof($tarea_notificada)==0){
 					$inserta=mssql_query("INSERT INTO sgwc_tarea_pendiente_notificada (tareaID,idbase) VALUES (".$array[$tareaID].",1)",$connect2);
-					$mail->Subject    = utf8_decode("Incidencia PrÃ³xima a vencer")." (".trim($array[$clase])." - Tipo ".trim($array[$tipo]).")";
+					$mail->Subject    = utf8_decode("Incidencia Próxima a vencer")." (".trim($array[$clase])." - Tipo ".trim($array[$tipo]).")";
 $texto='<HTML><HEAD><META HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=UTF-8"></HEAD><BODY>
 <div style="padding:10px;border:solid 1px #ccc;
 font-family:Arial,Helvetica,sans-serif;font-size:12px;">
@@ -335,11 +335,11 @@ $array[$llegada]
 $texto.='</tbody>
 </table>
 </div>
-<div style="clear:both;"></div>			
+<div style="clear:both;"></div>
 <br>
 <p style="color:#444444;font-size:12px;"><i>
-Mensaje enviado autom&aacute;ticamente desde el 
-m&oacute;dulo de Agenda de Vialidad del 
+Mensaje enviado autom&aacute;ticamente desde el
+m&oacute;dulo de Agenda de Vialidad del
 Sistema de Gesti&oacute;n Web Carretera.
 </i></p>
 <img src="http://intranet.grupohi.mx/ghi_mail.png">
@@ -351,24 +351,24 @@ Sistema de Gesti&oacute;n Web Carretera.
 					//Quitar comentarios para enviar notificaciones a usuarios
 					foreach($c_correos as $t_correo):
 						$mail->AddAddress($t_correo["correo"]);
-					endforeach;				
-					
+					endforeach;
+
 					foreach($array_correos as $a_correo):
 						$mail->AddBCC($a_correo);
-					endforeach;					
+					endforeach;
 					if(!$mail->Send()) {echo "Error: " . $mail->ErrorInfo;}
-					else {echo "tarea enviada Tipo-".$array[$tareaID]."<br>";}									
+					else {echo "tarea enviada Tipo-".$array[$tareaID]."<br>";}
 				}
 			endif;
 		endforeach;
-		
+
 		//CORREO SUBTIPO
 		foreach($consulta_subtipos as $Subtipo):
-			if($array[$subtipoID]==$Subtipo["id"] and $array[$tiempo]<=$Subtipo["valor_tiempo"]):			
+			if($array[$subtipoID]==$Subtipo["id"] and $array[$tiempo]<=$Subtipo["valor_tiempo"]):
 				$tarea_notificada=consulta_tarea_notificada($array[$tareaID]);
 				if(sizeof($tarea_notificada)==0){
 					$inserta=mssql_query("INSERT INTO sgwc_tarea_pendiente_notificada (tareaID,idbase) VALUES (".$array[$tareaID].",1)",$connect2);
-					$mail->Subject    = utf8_decode("Incidencia PrÃ³xima a vencer")." (".trim($array[$clase])." - Subtipo ".trim($array[$subtipo]).")";
+					$mail->Subject    = utf8_decode("Incidencia Próxima a vencer")." (".trim($array[$clase])." - Subtipo ".trim($array[$subtipo]).")";
 $texto='<HTML><HEAD><META HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=UTF-8"></HEAD><BODY>
 <div style="padding:10px;border:solid 1px #ccc;
 font-family:Arial,Helvetica,sans-serif;font-size:12px;">
@@ -435,11 +435,11 @@ $texto.='</tbody>
 </table>
 </div>
 
-<div style="clear:both;"></div>			
+<div style="clear:both;"></div>
 <br>
 <p style="color:#444444;font-size:12px;"><i>
-Mensaje enviado autom&aacute;ticamente desde el 
-m&oacute;dulo de Agenda de Vialidad del 
+Mensaje enviado autom&aacute;ticamente desde el
+m&oacute;dulo de Agenda de Vialidad del
 Sistema de Gesti&oacute;n Web Carretera.
 </i></p>
 <img src="http://intranet.grupohi.mx/ghi_mail.png">
@@ -452,18 +452,18 @@ Sistema de Gesti&oacute;n Web Carretera.
 					foreach($c_correos as $s_correo):
 						$mail->AddAddress($s_correo["correo"]);
 					endforeach;
-					
+
 					foreach($array_correos as $a_correo):
 						$mail->AddBCC($a_correo);
-					endforeach;					
+					endforeach;
 					if(!$mail->Send()) {echo "Error: " . $mail->ErrorInfo;}
-					else {echo "tarea enviada Subtipo-".$array[$tareaID]."<br>";}					
+					else {echo "tarea enviada Subtipo-".$array[$tareaID]."<br>";}
 				}
 			endif;
 		endforeach;
 		}
 	}
-	
+
 }
 
 $ssh->disconnect();
