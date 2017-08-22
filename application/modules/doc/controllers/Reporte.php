@@ -25,7 +25,7 @@ class Reporte extends MX_Controller
 			$data["menu"] = $this->menu->crea_menu($data['idperfil']);
 			$hoy = date("Y-m-d");
 			$totales = array();
-			$limite = 2; // 5 default
+			$limite = 5; // 5 default
 
 			$proyectosRaw = $this->dashboard_model->desplegar_proyectos($data['iduser']);
 
@@ -78,8 +78,8 @@ class Reporte extends MX_Controller
 					$show[$k][$cat_id] = array(
 						'nombre' => $cat_categoria[$cat_id],
 						'y' => $total,
-						'customLegend' => 'Actividades vencidas: <b>'. count($cat['vencidas'])  . '</b><br>Actividades por vencer: <b>'. count($cat['vencer']) .'</b>',
-						'customTooltip' => $cat_categoria[$cat_id] .'<br>Número total de actividades: <b>'. $total .'</b>',
+						'customLegend' => 'Actividades vencidas: <strong>'. count($cat['vencidas'])  . '</strong><br>Actividades por vencer: <strong>'. count($cat['vencer']) .'</strong>',
+						'customTooltip' => $cat_categoria[$cat_id] .'<br>Número total de actividades: <strong>'. $total .'</strong>',
 						'idproyecto' => $k,
 						'idcat_categoria' => $cat_id,
 					);
@@ -195,9 +195,9 @@ $(function() {
 				'nombre' => $datos['nombre'],
 				'color' => array_pop($coloresVencidas),
 				'y' => $total,
-				'customLegend' => '<b>'. $total .'</b> '. $stringActividades .'<br>(de '. ($v['rango']['rango_inicial'] .' a '. $v['rango']['rango_final']) .' '. $periodos[$v['rango']['periodo_raw']] .')',
-				'customTooltip' => $datos['nombre'] ."<br>Vencidas <b>". $total ."</b> periodo:<br>". $v['rango']['fecha_fin'] ." al ". $v['rango']['fecha_ini'],
-				'tableHeader' => $datos['nombre'] .' VENCIDAS (DE '. ($v['rango']['rango_inicial'] .' A '. $v['rango']['rango_final']) .' '. $periodos[$v['rango']['periodo_raw']] .')',
+				'customLegend' => '<strong>'. $total .'</strong> '. $stringActividades .'<br>(de '. ($v['rango']['rango_inicial'] .' a '. $v['rango']['rango_final']) .' '. $periodos[$v['rango']['periodo_raw']] .')',
+				'customTooltip' => $datos['nombre'] ."<br>Vencidas <strong>". $total ."</strong> periodo:<br>". $v['rango']['fecha_fin'] ." al ". $v['rango']['fecha_ini'],
+				'tableHeader' => $datos['nombre'] .' VENCIDAS (DE '. ($v['rango']['rango_inicial'] .' A '. $v['rango']['rango_final']) .' '. $periodos[$v['rango']['periodo_raw']] .') TOTAL DE ACTIVIDADES: '. $total,
 				'idproyecto' => $datos['idproyecto'],
 				'idcat_categoria' => $datos['idcat_categoria'],
 				'rango' => array(
@@ -210,9 +210,7 @@ $(function() {
 		foreach ($vencer as $reporteId => $v)
 		{
 			if(empty($v['actividades']))
-			{
 				continue;
-			}
 
 			$rando = mt_rand(0, count($coloresVencer) - 1);
 			$total = count($v['actividades']);
@@ -222,9 +220,9 @@ $(function() {
 				'nombre' => $datos['nombre'],
 				'color' => array_pop($coloresVencer),
 				'y' => $total,
-				'customLegend' => '<b>'. $total .'</b> '. $stringActividades .'<br>(de '. ($v['rango']['rango_inicial'] .' a '. $v['rango']['rango_final']) .' '. $periodos[$v['rango']['periodo_raw']] .')',
-				'customTooltip' => $datos['nombre'] ."<br>Por vencer <b>". $total ."</b> periodo:<br>". $v['rango']['fecha_ini'] ." al ". $v['rango']['fecha_fin'],
-				'tableHeader' => $datos['nombre'] .' POR VENCER (DE '. ($v['rango']['rango_inicial'] .' A '. $v['rango']['rango_final']) .' '. $periodos[$v['rango']['periodo_raw']] .')',
+				'customLegend' => '<strong>'. $total .'</strong> '. $stringActividades .'<br>(de '. ($v['rango']['rango_inicial'] .' a '. $v['rango']['rango_final']) .' '. $periodos[$v['rango']['periodo_raw']] .')',
+				'customTooltip' => $datos['nombre'] ."<br>Por vencer <strong>". $total ."</strong> periodo:<br>". $v['rango']['fecha_ini'] ." al ". $v['rango']['fecha_fin'],
+				'tableHeader' => $datos['nombre'] .' POR VENCER (DE '. ($v['rango']['rango_inicial'] .' A '. $v['rango']['rango_final']) .' '. $periodos[$v['rango']['periodo_raw']] .') TOTAL DE ACTIVIDADES: '. $total,
 				'idproyecto' => $datos['idproyecto'],
 				'idcat_categoria' => $datos['idcat_categoria'],
 				'rango' => array(

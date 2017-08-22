@@ -365,7 +365,7 @@ function generar_lista(options)
 		type: "POST",
 		success: function(data) {
 			data = JSON.parse(data);
-			var limite = 4; // 10 por default
+			var limite = 10; // 10 por default
 
 			tabla.data("pag", {options:options, data:data, limit:limite});
 			tabla.removeClass("hidden");
