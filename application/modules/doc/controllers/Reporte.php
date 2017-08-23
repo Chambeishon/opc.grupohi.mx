@@ -86,7 +86,7 @@ class Reporte extends MX_Controller
 				}
 
 				$grafica .= '
-generar_grafica($("#proyecto_'. $k .'"), {useHTML:true, text:"<div >'. $t['nombre'] .'</div>", style:{ "color": "#333333", "fontSize": "20px", "text-decoration": "underline"}}, [], '. json_encode(array_values($show[$k])) .', function(){
+generar_grafica($("#proyecto_'. $k .'"), {useHTML:true, text:"'. $t['nombre'] .'", style:{ "color": "#333333", "fontSize": "20px", "text-decoration": "underline"}}, [], '. json_encode(array_values($show[$k])) .', function(){
 	this.point.options.color = this.point.color;
 	generar_subgraficas(this.point.options);
 });

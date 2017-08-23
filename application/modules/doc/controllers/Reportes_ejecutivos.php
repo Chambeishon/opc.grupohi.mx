@@ -13,47 +13,51 @@ class Reportes_ejecutivos extends MX_Controller
 
 	public function index()
 	{
-		if($this->session->userdata('id')):
-			$session_data = $this->session->userdata();
-			$data["mensaje"]='';
-			$data['proyectos'] = array();
-			$data['usuario'] = $session_data['username'];
-			$data['iduser'] = $session_data['id'];
-			$data['idperfil'] = $session_data['idperfil'];
-			$data["menu"] = $this->menu->crea_menu($data['idperfil']);
-			$data['css'] = '';
-			$data['js'] = '<script src="'.base_url('assets/js/jquery-ui.min.js').'"></script>';
-			$data['js'] .= '<script src="'.base_url('assets/js/doc-reportes-ejecutivos-config.js').'"></script>';
-
-			$data['campos'] = $this->session->flashdata('campos') ? $this->session->flashdata('campos') : array('tipo' => false, 'rango' => false, 'fecha' => false);
-			$data["mensaje"].= $this->session->flashdata('mensaje') ? $this->session->flashdata('mensaje') : '';
-			$proyectos = $this->programacion_model->desplegar_contratos_activos($data['iduser']);
-
-			foreach ($proyectos as $p)
-			{
-				$data['proyectos'][$p->idproyecto] = array(
-					'nombre' => $p->nombre_proyecto,
-					'params' => array(
-						'1' => $this->reportes_ejecutivos_model->obtener_parametros_todos(1, $p->idproyecto),
-						'2' => $this->reportes_ejecutivos_model->obtener_parametros_todos(2, $p->idproyecto),
-					),
-				);
-			}
-
-			$data['periodos'] = array(
-				'1' => 'D&iacute;as',
-				'2' => 'Semanas',
-				'3' => 'Meses'
-			);
-			$data['tipos'] = array(
-				'1' => 'Fecha vencida',
-				'2' => 'Fecha por vencer'
-			);
-
-			$this->template->load('template','reportes_ejecutivos',$data);
-		else:
+		if(!$this->session->userdata('id'))
 			redirect('login/index', 'refresh');
-		endif;
+
+		$session_data = $this->session->userdata();
+
+		// Codigo duro, usuarios con permiso de configurar el reporte
+		$accesoUsuarios = array(58, 100, 130, 134);
+		if (!in_array($session_data['id'], $accesoUsuarios))
+			redirect('login/index', 'refresh');
+
+		$session_data = $this->session->userdata();
+		$data["mensaje"]='';
+		$data['proyectos'] = array();
+		$data['usuario'] = $session_data['username'];
+		$data['iduser'] = $session_data['id'];
+		$data['idperfil'] = $session_data['idperfil'];
+		$data["menu"] = $this->menu->crea_menu($data['idperfil']);
+		$data['css'] = '';
+		$data['js'] = '<script src="'.base_url('assets/js/jquery-ui.min.js').'"></script>';
+		$data['js'] .= '<script src="'.base_url('assets/js/doc-reportes-ejecutivos-config.js').'"></script>';
+
+		$data['campos'] = $this->session->flashdata('campos') ? $this->session->flashdata('campos') : array('tipo' => false, 'rango' => false, 'fecha' => false);
+		$data["mensaje"].= $this->session->flashdata('mensaje') ? $this->session->flashdata('mensaje') : '';
+		$proyectos = $this->programacion_model->desplegar_contratos_activos($data['iduser']);
+
+		foreach ($proyectos as $p)
+			$data['proyectos'][$p->idproyecto] = array(
+				'nombre' => $p->nombre_proyecto,
+				'params' => array(
+					'1' => $this->reportes_ejecutivos_model->obtener_parametros_todos(1, $p->idproyecto),
+					'2' => $this->reportes_ejecutivos_model->obtener_parametros_todos(2, $p->idproyecto),
+				),
+			);
+
+		$data['periodos'] = array(
+			'1' => 'D&iacute;as',
+			'2' => 'Semanas',
+			'3' => 'Meses'
+		);
+		$data['tipos'] = array(
+			'1' => 'Fecha vencida',
+			'2' => 'Fecha por vencer'
+		);
+
+		$this->template->load('template','reportes_ejecutivos',$data);
 	}
 
 	public function guardar()
