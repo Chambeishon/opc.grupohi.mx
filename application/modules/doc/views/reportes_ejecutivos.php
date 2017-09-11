@@ -63,8 +63,8 @@
 							<tbody>
 							<?php foreach ($params as $pa):?>
 								<tr>
-									<th scope="row"><?= $pa['rango_inicial'] ?> - <?= $pa['rango_final'] ?></th>
-									<td><?= $periodos[$pa['periodo']] ?></td>
+									<th scope="row" class="rango"><?= $pa['rango_inicial'] ?> - <?= $pa['rango_final'] ?></th>
+									<td> <?= $periodos[$pa['periodo']] ?></td>
 									<td><a href="<?=base_url('doc/reportes_ejecutivos/eliminar/'. $pa['idreporte_ejecutivo'])?>" class="eliminar_rango">Eliminar</a></td>
 								</tr>
 							<?php endforeach;?>

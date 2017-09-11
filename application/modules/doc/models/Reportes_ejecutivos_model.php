@@ -26,7 +26,12 @@ class Reportes_ejecutivos_model extends CI_Model
 
 		$query = $this->db->get();
 
-		return $query->result_array();
+		$return = $query->result_array();
+		usort($return, function($a, $b) {
+			return $a['rango_inicial'] - $b['rango_inicial'];
+		});
+
+		return $return;
 	}
 
 	public function obtener_parametro($idreporte_ejecutivo)

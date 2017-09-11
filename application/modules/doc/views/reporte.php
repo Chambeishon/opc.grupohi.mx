@@ -1,9 +1,9 @@
 <style>
-	.sr .fooReveal { visibility: hidden; }
+	.cerrar_subgraficas { float:right;display:inline-block; text-decoration:underline; cursor: pointer; color:red; }
 </style>
 <div class="page-header">
 	<h4><a class="bom-menu" href="<?=base_url('doc/home/index')?>">
-	<i class="fa fa-institution fa-2x"></i> DOCUMENTOS </a>/ <a class="bom-menu" href="<?=base_url('doc/contratos_concesion/index')?>">CONTRATOS DE CONCESI&Oacute;N </a> / REPORTE</h4>
+	<i class="fa fa-institution fa-2x"></i> DOCUMENTOS </a>/ <a class="bom-menu" href="<?=base_url('doc/contratos_concesion/index')?>">CONTRATOS DE CONCESI&Oacute;N </a> / REPORTE EJECUTIVO</h4>
 </div>
 
 <div class="row" id="cuerpo">
@@ -19,6 +19,7 @@
 	<div class="qwerty">
 	<div class="row box panel panel-default" id="show_proyecto_<?=$k?>">
 		<div class="col-md-12" id="proyecto_<?=$k?>"></div>
+		<div class="col-md-12 titulo_subgrafica text-center" style="color: #333333; font-size: 20px;"></div>
 		<div class="col-md-6 mostrar_vencidas"></div>
 		<div class="col-md-6 mostrar_vencer"></div>
 	</div>

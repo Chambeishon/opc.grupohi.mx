@@ -158,4 +158,10 @@ WHERE idactividad = (SELECT idactividad FROM vw_doc_programacion WHERE idprogram
 		$query = $this->db->query("SELECT * FROM vw_doc_numero_anotacion WHERE idprogramacion=".$idprogramacion);
         return $query->result_array();
 	}
+
+	public function obtenerPrioridades($idprogramacion = 0)
+	{
+		$query = $this->db->query("SELECT idprioridad, prioridad_nombre, prioridad_clave FROM vw_doc_programacion WHERE idprogramacion =".$idprogramacion);
+		return $query->result_array();
+	}
 }

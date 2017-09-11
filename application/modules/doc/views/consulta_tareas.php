@@ -62,7 +62,7 @@
 	}
 </style>
 <div class="page-header">
-	<h4><a class="bom-menu" href="<?=base_url('doc/home/index')?>"> 
+	<h4><a class="bom-menu" href="<?=base_url('doc/home/index')?>">
     <i class="fa fa-institution fa-2x"></i> DOCUMENTOS </a>/ <a class="bom-menu" href="<?=base_url('doc/contratos_concesion/index')?>">CONTRATOS DE CONCESI&Oacute;N </a> / CONSULTA TAREAS PROGRAMADAS</h4>
 </div>
 <b>Buscar por</b>
@@ -85,52 +85,57 @@
             </div>
         </div>
     </div>
-  </div>  
+  </div>
   <div id="filtro_filtros" class="row letra11" style="display:none">
-	<div class="col-md-6">		    	
+	<div class="col-md-6">
         <div class="form-group" id="act-contrato-contenedor">
         	<b>CONTRATO</b>
-            <select class="form-control selectpicker letra11" multiple data-selected-text-format="count>0" id="act-contrato">           
+            <select class="form-control selectpicker letra11" multiple data-selected-text-format="count>0" id="act-contrato">
             </select>
         </div>
         <div class="form-group" id="act-categoria-contenedor">
         	<b>CATEGOR&Iacute;A</b>
-            <select class="form-control letra11 selectpicker" multiple data-selected-text-format="count>0" id="act-categoria-select">            	
+            <select class="form-control letra11 selectpicker" multiple data-selected-text-format="count>0" id="act-categoria-select">
             </select>
-        </div>    
+        </div>
         <div class="form-group" id="act-subcategoria-contenedor">
         	<b>SUBCATEGOR&Iacute;A</b>
             <select class="form-control letra11 selectpicker" multiple data-selected-text-format="count>0" id="act-subcategoria-select">
             </select>
-        </div>    
+        </div>
         <div class="form-group" id="act-estado-contenedor">
         	<b>ESTADO</b>
             <select class="form-control letra11 selectpicker" multiple data-selected-text-format="count>0" id="act-estado-select">
             </select>
-        </div>                
+        </div>
+        <div class="form-group" id="act-prioridad-contenedor">
+            <b>PRIORIDAD</b>
+            <select class="form-control letra11 selectpicker" multiple data-selected-text-format="count>0" id="act-prioridad-select">
+            </select>
+        </div>
     </div>
-    
+
     <div class="col-md-4" id="f_fecha">
-    	<input type="checkbox" name="c_fechas" id="c_fechas" />     
+    	<input type="checkbox" name="c_fechas" id="c_fechas" />
         <b>B&Uacute;SQUEDA POR FECHA L&Iacute;MITE DE PROGRAMACI&Oacute;N</b><br/><br/>
-        
-        <div class="form-group" style="width:250px">        	
+
+        <div class="form-group" style="width:250px">
         	<label for="Inicio" class="col-sm-3 control-label">Inicio</label>
-            <div class="input-append input-group datepicker">            	
+            <div class="input-append input-group datepicker">
         		<input data-format="yyyy-MM-dd" value="" type="text" class="form-control letra11" readonly name="fecha_inicio" id="fecha_inicio">
             	<span class="input-group-addon add-on">
             		<i data-time-icon="fa fa-calendar" data-date-icon="fa fa-calendar"></i>
-            	</span>                
+            	</span>
         	</div>
         </div>
         <div class="form-group" style="width:250px">
-        	<label for="Fin" class="col-sm-3 control-label">Fin</label> 
+        	<label for="Fin" class="col-sm-3 control-label">Fin</label>
         	<div class="input-append input-group datepicker">
         		<input data-format="yyyy-MM-dd" value="" type="text" class="form-control letra11" readonly name="fecha_fin" id="fecha_fin">
             	<span class="input-group-addon add-on" id="icono-fecha-fin">
             		<i data-date-icon="fa fa-calendar"></i>
-				</span>                
-        	</div>      	
+				</span>
+        	</div>
         </div>
     </div>
 </div>
@@ -159,7 +164,7 @@
                 </table>
         	</div>
         </fieldset>
-        
+
         <fieldset class="well the-fieldset">
       	<legend class="the-legend">Datos de actividad</legend>
         	<div class="col-md-12">
@@ -176,26 +181,26 @@
                 </table>
         	</div>
         </fieldset>
-        
+
         <fieldset class="well the-fieldset">
       	<legend class="the-legend">Seguimiento de la tarea</legend>
-        	<div id="seguimiento" class="col-md-12">            	
+        	<div id="seguimiento" class="col-md-12">
         	</div>
         </fieldset>
-        
+
         <div id="detalle_acciones"></div>
         <fieldset class="well the-fieldset">
       		<legend class="the-legend">Notificaciones</legend>
         	<div class="col-md-12" id="areas">
-            	
+
         	</div>
         </fieldset>
-        
+
         <fieldset class="well the-fieldset">
         	<legend class="the-legend">Evidencias documentales</legend>
             <div class="col-md-12" id="consultar-evidencias"></div>
         </fieldset>
-        
+
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal" id="cerrar_detalle">Cerrar</button>
@@ -266,12 +271,12 @@
                 </table>
         	</div>
         </fieldset>
-        
+
         <fieldset class="well the-fieldset">
       		<legend class="the-legend">Notificaciones</legend>
             	<form id="form-enviar-notificaciones-usuarios">
                     <div class="col-md-12" id="enviar-areas">
-                    	    
+
                     </div>
                     <input type="hidden" name="not-idprogramacion" id="not-idprogramacion">
             	</form>

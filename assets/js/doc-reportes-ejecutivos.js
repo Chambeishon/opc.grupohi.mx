@@ -306,6 +306,16 @@ $(document).on('click','.previous',function(e){
 	return false;
 });
 
+$(document).on('click','.cerrar_subgraficas',function(e){
+	$this = $(this);
+	idproyecto = $this.data('idproyecto');
+	$div = $("#show_proyecto_" + idproyecto);
+	$div.find('.titulo_subgrafica').fadeOut();
+	$div.find('.mostrar_vencidas').fadeOut();
+	$div.find('.mostrar_vencer').fadeOut();
+
+});
+
 function generar_subgraficas(options)
 {
 	var sub_vencidas =  $("#show_proyecto_"+ options.idproyecto).find(".mostrar_vencidas").html(loading),
@@ -328,11 +338,10 @@ function generar_subgraficas(options)
 		success: function(data) {
 			data = JSON.parse(data),
 			legend = [];
-
 			$.each(data, function(key, item){
 
 				mostrar = (key === "vencidas" ? sub_vencidas : sub_vencer);
-				titulo = (key === "vencidas" ? " - VENCIDAS" : " - POR VENCER");
+				titulo = (key === "vencidas" ? "VENCIDAS" : "POR VENCER");
 				noData = (key === "vencidas" ? "No hay tareas vencidas" : "No hay tareas por vencer");
 				$("#show_proyecto_"+ options.idproyecto).css({
 					"border-style": "solid",
@@ -340,7 +349,11 @@ function generar_subgraficas(options)
 					"border-width": "1px"
 				});
 				mostrar.html();
-				generar_grafica(mostrar, {useHTML:false, text:options.nombre + titulo}, false, item, function(){
+				$("#show_proyecto_"+ options.idproyecto).find(".titulo_subgrafica").html(options.nombre_contrato +' - ' + options.nombre_categoria).fadeIn();
+				$("#show_proyecto_"+ options.idproyecto).find('.mostrar_vencidas').fadeIn();
+				$("#show_proyecto_"+ options.idproyecto).find('.mostrar_vencer').fadeIn();
+				$("#show_proyecto_"+ options.idproyecto).find(".titulo_subgrafica").append('<span title="cerrar" class="cerrar_subgraficas" data-idproyecto="' + options.idproyecto +'">X</span>');
+				generar_grafica(mostrar, {useHTML:false, text: titulo}, false, item, function(){
 					generar_lista(this.point.options);
 				}, noData);
 			});
@@ -348,9 +361,6 @@ function generar_subgraficas(options)
 		error: function(xhr) {}
 	});
 
-	delete sub_vencidas;
-	delete sub_vencer;
-	delete options;
 }
 
 function generar_lista(options)
@@ -394,7 +404,7 @@ function generar_lista(options)
 				tabla.find("tbody").append('<tr><th scope="row">'+ v.link +'</th><td>'+ v.nombre +'</td><td>'+ v.descripcion +' </td><td>'+ v.fecha +'</td><td>'+ v.estado +'</td></tr>');
 			});
 
-			tabla.find(".panel-heading").text(options.tableHeader);
+			tabla.find(".panel-heading").html(options.tableHeader);
 			divTable.append(tabla);
 			divTable.css({
 				"border-color": options.color,
@@ -422,6 +432,9 @@ function generar_grafica(jObject, titulo, legend, datos, callback, noData)
 		}
 	});
 	oObject.highcharts({
+		noData: {
+			useHTML:true
+		},
 		chart: {
 			type: "pie"
 		},

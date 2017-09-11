@@ -6,6 +6,24 @@ $(function() {
 		$("#proyecto_"+ id).show();
 	});
 
+$sort = function($table){
+
+	var rows = $table.find('tr').get();
+	rows.sort(function(a, b) {
+		var keyA = $(a).find('td.rango').html();
+		var keyB = $(b).find('td.rango').html();
+
+		if (keyA < keyB)
+			return 1;
+
+	if (keyA > keyB) return -1;
+		return 0;
+	});
+	$.each(rows, function(index, row) {
+		$table.children('tbody').append(row);
+	});
+}
+
 	$(document).on('click','.eliminar_rango',function(e){
 		e.preventDefault();
 

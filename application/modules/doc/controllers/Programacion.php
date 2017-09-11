@@ -1,18 +1,18 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-//session_start(); 
+//session_start();
 class Programacion extends MX_Controller
 {
-    
+
     public function __construct()
     {
         parent::__construct();
-        $this->load->library('template');  
-		$this->load->library('menu'); 
+        $this->load->library('template');
+		$this->load->library('menu');
 		$this->load->model('programacion_model');
     }
-	
+
 	public function index()
-    { 	
+    {
 		if($this->session->userdata('id')):
      		$session_data = $this->session->userdata();
      		$data['usuario'] = $session_data['username'];
@@ -28,7 +28,7 @@ class Programacion extends MX_Controller
 			$data['js'] .= '<script src="'.base_url('assets/js/modernizr.min.js').'"></script> ';
 			$data['js'] .='<script src="'.base_url('assets/js/infragistics.core.js').'"></script>';
 			$data['js'] .='<script src="'.base_url('assets/js/infragistics.lob.js').'"></script>';
-			
+
 			$data['js'] .= '<script src="'.base_url('assets/js/bootstrap-datetimepicker.min.js').'"></script>';
 			$data['js'] .= '<script src="'.base_url('assets/js/doc-prog.js').'"></script>';
 			$data["contratos"] = $this->programacion_model->desplegar_contratos_activos($data["iduser"]);
@@ -36,9 +36,9 @@ class Programacion extends MX_Controller
 			$this->template->load('template','programacion',$data);
 		else:
 			redirect('login/index', 'refresh');
-		endif;  	      
+		endif;
     }
-	
+
 	public function agregar()
 	{
 		if($this->session->userdata('id')):
@@ -53,22 +53,23 @@ class Programacion extends MX_Controller
 			$correos = $this->input->get('correos');
 			$result = $this->programacion_model->agregar_programacion($idactividad,$repeticion,$periodo,$fecha,$data['usuario']);
 			echo '{"msg":'.$result[0]["mensaje"].'}';
-			if($result[0]["mensaje"]>0 and $correos<>''):				
+			if($result[0]["mensaje"]>0 and $correos<>''):
 				$datos = $this->programacion_model->desplegar_programacion($idactividad);
 				$this->load->library('My_PHPMailer');
 				$mail = new PHPMailer();
-				$mail->IsSMTP(); 
-				$mail->SMTPAuth   = true; 
-				$mail->Host       = "172.20.74.6";   
-				$mail->Port       = 25;              
-				$mail->Username   = "scaf"; 
+				$mail->IsSMTP();
+				$mail->SMTPAuth   = true;
+				$mail->Host       = "172.20.74.6";
+				$mail->Port       = 25;
+				$mail->Username   = "scaf";
 				$mail->Password   = "GpoHermesInfra";
 				$mail->From       = "ContratosDeConcesiones@grupohi.mx";
-				$mail->FromName   = utf8_decode("Módulo de Contratos de Concesiones");		
+				$mail->FromName   = utf8_decode("Módulo de Contratos de Concesiones");
 				$mail->Subject    = utf8_decode($datos[0]["clave"])."-".utf8_decode($datos[0]["numero_contrato"])." ".utf8_decode($datos[0]["nombre_actividad"])." REGISTRADA";
-				foreach($correos as $correo):
+				// foreach($correos as $correo):
 					$mail->AddAddress($correo);
-				endforeach;				
+				// endforeach;
+				$mail->AddAddress('mmendiola@grupohi.mx');
 				$mail->AddBCC('lahernandezg@grupohi.mx');
 				$mail->AddBCC('oaguayo@grupohi.mx');
 				$html='
@@ -84,28 +85,28 @@ class Programacion extends MX_Controller
 		<th>Descripci&oacute;n</th>
 		<th>Persona Responsable</th>
 		<th>Fecha Limite</th>
-		<th>Estado</th>		
+		<th>Estado</th>
 	</tr>
 	</thead>
 	<tbody>';
 	foreach($datos as $dato):
 		$html .= '<tr style="background-color:#D8E4B9"><td valign="top" align="center"><a href="http://opc.grupohi.mx/doc/dashboard/index">P-'.$dato["idprogramacion"].'</a></td><td valign="top">'.utf8_decode($dato["nombre_actividad"]).'</td><td valign="top">'.utf8_decode($dato["descripcion_actividad"]).'</td><td valign="top">'.utf8_decode($dato["persona_responsable"]).'</td><td valign="top">'.$dato["fecha"].'</td><td valign="top">'.$dato["estado_actividad"].'</td></tr>';
 	endforeach;
-	$html .= '</tbody></table><br><p style="color:#444444;font-size:12px;"><span>Este correo es informativo, favor de no responder a 
+	$html .= '</tbody></table><br><p style="color:#444444;font-size:12px;"><span>Este correo es informativo, favor de no responder a
 esta direcci&oacute;n de correo, ya que no se encuentra habilitada para recibir mensajes.<br><br></span><i>Mensaje enviado autom&aacute;ticamente desde el M&oacute;dulo de Operaci&oacute;n e Infraestructura.</i></p><img src="http://intranet.grupohi.mx/ghi_mail.png"></div>
 ';
 		$mail->IsHTML(true);
 		$mail->Body = $html;
 		$mail->Send();
-			endif;	
+			endif;
 		else:
 			redirect('login/index', 'refresh');
 		endif;
 	}
-	
+
 	public function categorias()
 	{
-		$this->load->model('categoria_contrato_model');  
+		$this->load->model('categoria_contrato_model');
 		$idcontrato = $this->input->get('idcontrato');
 		$categorias = $this->categoria_contrato_model->desplegar_categorias($idcontrato);
 		$datasource = array();
@@ -113,12 +114,12 @@ esta direcci&oacute;n de correo, ya que no se encuentra habilitada para recibir 
 			//$datasource[]=array_map('utf8_encode', $resultado);
 			$datasource[]=($resultado);
 		endforeach;
-		echo json_encode($datasource);	
+		echo json_encode($datasource);
 	}
-	
+
 	public function subcategorias()
 	{
-		$this->load->model('subcategoria_contrato_model');  
+		$this->load->model('subcategoria_contrato_model');
 		$idcontrato = $this->input->get('idcontrato');
 		$idcategoria = $this->input->get('idcategoria');
 		$subcategorias = $this->subcategoria_contrato_model->desplegar_subcategorias($idcontrato,$idcategoria);
@@ -127,9 +128,9 @@ esta direcci&oacute;n de correo, ya que no se encuentra habilitada para recibir 
 			//$datasource[]=array_map('utf8_encode', $resultado);
 			$datasource[]=($resultado);
 		endforeach;
-		echo json_encode($datasource);	
+		echo json_encode($datasource);
 	}
-	
+
 	public function desplegar()
 	{
 		$this->load->model('actividad_model');
@@ -144,7 +145,7 @@ esta direcci&oacute;n de correo, ya que no se encuentra habilitada para recibir 
 		endforeach;
 		echo json_encode($datasource);
 	}
-	
+
 	public function buscar()
 	{
 		$idactividad = $this->input->get('idactividad');
@@ -156,7 +157,7 @@ esta direcci&oacute;n de correo, ya que no se encuentra habilitada para recibir 
 		endforeach;
 		echo json_encode($datasource);
 	}
-	
+
 	public function editar()
 	{
 		if($this->session->userdata('id')):
@@ -170,17 +171,17 @@ esta direcci&oacute;n de correo, ya que no se encuentra habilitada para recibir 
 			echo '{"msg":'.$result[0]["mensaje"].'}';
 			if($result[0]["mensaje"]>0):
 				$datos = $this->programacion_model->desplegar_programacion_editar($idprogramacion);
-				$correos = $this->programacion_model->correo_notificacion_programacion_editar($datos[0]["idactividad"]);				
+				$correos = $this->programacion_model->correo_notificacion_programacion_editar($datos[0]["idactividad"]);
 				$this->load->library('My_PHPMailer');
 				$mail = new PHPMailer();
-				$mail->IsSMTP(); 
-				$mail->SMTPAuth   = true; 
-				$mail->Host       = "172.20.74.6";   
-				$mail->Port       = 25;              
-				$mail->Username   = "scaf"; 
+				$mail->IsSMTP();
+				$mail->SMTPAuth   = true;
+				$mail->Host       = "172.20.74.6";
+				$mail->Port       = 25;
+				$mail->Username   = "scaf";
 				$mail->Password   = "GpoHermesInfra";
 				$mail->From       = "ContratosDeConcesiones@grupohi.mx";
-				$mail->FromName   = utf8_decode("Módulo de Contratos de Concesiones");		
+				$mail->FromName   = utf8_decode("Módulo de Contratos de Concesiones");
 				$mail->Subject    = utf8_decode($datos[0]["clave"])."-".utf8_decode($datos[0]["numero_contrato"])." ".utf8_decode($datos[0]["nombre_actividad"])." (P-".$datos[0]["idprogramacion"].") MODIFICADA";
 				foreach ($correos as $correo):
 					//$mail->AddAddress($correo["correo_usuario"]);
@@ -200,12 +201,12 @@ esta direcci&oacute;n de correo, ya que no se encuentra habilitada para recibir 
 		<th>Descripci&oacute;n</th>
 		<th>Persona Responsable</th>
 		<th>Fecha Limite</th>
-		<th>Estado</th>		
+		<th>Estado</th>
 	</tr>
 	</thead>
-	<tbody>';	
+	<tbody>';
 		$html .= '<tr style="background-color:#D8E4B9"><td valign="top" align="center">P-'.$datos[0]["idprogramacion"].'</td><td valign="top">'.utf8_decode($datos[0]["nombre_actividad"]).'</td><td valign="top">'.utf8_decode($datos[0]["descripcion_actividad"]).'</td><td valign="top">'.utf8_decode($datos[0]["persona_responsable"]).'</td><td valign="top">'.$datos[0]["fecha"].'</td><td valign="top">'.$datos[0]["estado_actividad"].'</td></tr>';
-	$html .= '</tbody></table><br><p style="color:#444444;font-size:12px;"><span>Este correo es informativo, favor de no responder a 
+	$html .= '</tbody></table><br><p style="color:#444444;font-size:12px;"><span>Este correo es informativo, favor de no responder a
 esta direcci&oacute;n de correo, ya que no se encuentra habilitada para recibir mensajes.<br><br></span><i>Mensaje enviado autom&aacute;ticamente desde el M&oacute;dulo de Operaci&oacute;n e Infraestructura.</i></p><img src="http://intranet.grupohi.mx/ghi_mail.png"></div>
 ';
 		$mail->IsHTML(true);
@@ -216,7 +217,7 @@ esta direcci&oacute;n de correo, ya que no se encuentra habilitada para recibir 
 			redirect('login/index', 'refresh');
 		endif;
 	}
-	
+
 	public function cancelar()
 	{
 		if($this->session->userdata('id')):
@@ -234,18 +235,18 @@ esta direcci&oacute;n de correo, ya que no se encuentra habilitada para recibir 
 			$fecha=$datos[0]["fecha"];
 			$result = $this->programacion_model->cancelar_programacion($idprogramacion);
 			echo '{"msg":'.$result[0]["mensaje"].'}';
-			if($result[0]["mensaje"]>0):				
-				$correos = $this->programacion_model->correo_notificacion_programacion_editar($datos[0]["idactividad"]);				
+			if($result[0]["mensaje"]>0):
+				$correos = $this->programacion_model->correo_notificacion_programacion_editar($datos[0]["idactividad"]);
 				$this->load->library('My_PHPMailer');
 				$mail = new PHPMailer();
-				$mail->IsSMTP(); 
-				$mail->SMTPAuth   = true; 
-				$mail->Host       = "172.20.74.6";   
-				$mail->Port       = 25;              
-				$mail->Username   = "scaf"; 
+				$mail->IsSMTP();
+				$mail->SMTPAuth   = true;
+				$mail->Host       = "172.20.74.6";
+				$mail->Port       = 25;
+				$mail->Username   = "scaf";
 				$mail->Password   = "GpoHermesInfra";
 				$mail->From       = "ContratosDeConcesiones@grupohi.mx";
-				$mail->FromName   = utf8_decode("Módulo de Contratos de Concesiones");		
+				$mail->FromName   = utf8_decode("Módulo de Contratos de Concesiones");
 				$mail->Subject    = utf8_decode($clave)."-".utf8_decode($numero_contrato)." ".utf8_decode($nombre_actividad)." (P-".$idprogramacion.") ELIMINADA";
 				foreach ($correos as $correo):
 					//$mail->AddAddress($correo["correo_usuario"]);
@@ -265,12 +266,12 @@ esta direcci&oacute;n de correo, ya que no se encuentra habilitada para recibir 
 		<th>Descripci&oacute;n</th>
 		<th>Persona Responsable</th>
 		<th>Fecha Limite</th>
-		<th>Estado</th>		
+		<th>Estado</th>
 	</tr>
 	</thead>
-	<tbody>';	
+	<tbody>';
 		$html .= '<tr style="background-color:#D8E4B9"><td valign="top" align="center">P-'.$idprogramacion.'</td><td valign="top">'.utf8_decode($nombre_actividad).'</td><td valign="top">'.utf8_decode($descripcion_actividad).'</td><td valign="top">'.utf8_decode($persona_responsable).'</td><td valign="top">'.$fecha.'</td><td valign="top">ELIMINADA</td></tr>';
-	$html .= '</tbody></table><br><p style="color:#444444;font-size:12px;"><span>Este correo es informativo, favor de no responder a 
+	$html .= '</tbody></table><br><p style="color:#444444;font-size:12px;"><span>Este correo es informativo, favor de no responder a
 esta direcci&oacute;n de correo, ya que no se encuentra habilitada para recibir mensajes.<br><br></span><i>Mensaje enviado autom&aacute;ticamente desde el M&oacute;dulo de Operaci&oacute;n e Infraestructura.</i></p><img src="http://intranet.grupohi.mx/ghi_mail.png"></div>
 ';
 		$mail->IsHTML(true);
@@ -281,7 +282,7 @@ esta direcci&oacute;n de correo, ya que no se encuentra habilitada para recibir 
 			redirect('login/index', 'refresh');
 		endif;
 	}
-	
+
 	public function notificacion()
 	{
 		$idactividad = $this->input->get('idactividad');
@@ -293,7 +294,7 @@ esta direcci&oacute;n de correo, ya que no se encuentra habilitada para recibir 
 		endforeach;
 		echo json_encode($datasource);
 	}
-	
+
 	public function notificacion_usuarios()
 	{
 		$idarea = $this->input->get('idarea');
@@ -305,10 +306,10 @@ esta direcci&oacute;n de correo, ya que no se encuentra habilitada para recibir 
 		endforeach;
 		echo json_encode($datasource);
 	}
-	
-	
-	
-	
+
+
+
+
 }
 /*
 *end modules/login/controllers/index.php

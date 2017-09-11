@@ -19,7 +19,7 @@ class Reportes_ejecutivos extends MX_Controller
 		$session_data = $this->session->userdata();
 
 		// Codigo duro, usuarios con permiso de configurar el reporte
-		$accesoUsuarios = array(58, 100, 130, 134);
+		$accesoUsuarios = array(58, 100, 130, 136);
 		if (!in_array($session_data['id'], $accesoUsuarios))
 			redirect('login/index', 'refresh');
 

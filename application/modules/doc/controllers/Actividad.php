@@ -1,22 +1,23 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-//session_start(); 
+//session_start();
 class Actividad extends MX_Controller
 {
-    
+
     public function __construct()
     {
         parent::__construct();
-        $this->load->library('template');  
-		$this->load->library('menu'); 
-		$this->load->model('actividad_model');  
+        $this->load->library('template');
+		$this->load->library('menu');
+		$this->load->model('actividad_model');
 		$this->load->model('categoria_contrato_model');
 		$this->load->model('subcategoria_contrato_model');
 		$this->load->model('programacion_model');
-		$this->load->model('area_model');     
+		$this->load->model('area_model');
+		$this->load->model('prioridad_model');
     }
-	
-	public function index() 
-    { 
+
+	public function index()
+    {
 		if($this->session->userdata('id')):
      		$session_data = $this->session->userdata();
      		$data['usuario'] = $session_data['username'];
@@ -31,7 +32,7 @@ class Actividad extends MX_Controller
 			$data['js'] .= '<script src="'.base_url('assets/js/modernizr.min.js').'"></script> ';
 			$data['js'] .='<script src="'.base_url('assets/js/infragistics.core.js').'"></script>';
 			$data['js'] .='<script src="'.base_url('assets/js/infragistics.lob.js').'"></script>';
-			
+
 			$data['js'] .= '<script src="'.base_url('assets/js/bootstrap-datetimepicker.min.js').'"></script>';
 			$data['js'] .= '<script src="'.base_url('assets/js/bootstrap-datetimepicker-init.js').'"></script>';
 			$data['js'] .= '<script src="'.base_url('assets/js/doc-act.js').'"></script>';
@@ -40,12 +41,13 @@ class Actividad extends MX_Controller
 			$data["categorias"] = $this->programacion_model->desplegar_categorias_activas($data["iduser"]);
 			$data["subcategorias"] = $this->programacion_model->desplegar_subcategorias_activas($data["iduser"]);
 			$data["areas"] = $this->area_model->desplegar_areas();
+			$data['prioridades'] = $this->prioridad_model->obtener_prioridades();
 			$this->template->load('template','actividad',$data);
 		else:
 			redirect('login/index', 'refresh');
-		endif;  	      
+		endif;
     }
-	
+
 	public function categorias()
 	{
 		$idcontrato = $this->input->get('idcontrato');
@@ -55,9 +57,9 @@ class Actividad extends MX_Controller
 			//$datasource[]=array_map('utf8_encode', $resultado);
 			$datasource[]=($resultado);
 		endforeach;
-		echo json_encode($datasource);	
+		echo json_encode($datasource);
 	}
-	
+
 	public function subcategorias()
 	{
 		$idcontrato = $this->input->get('idcontrato');
@@ -68,9 +70,9 @@ class Actividad extends MX_Controller
 			//$datasource[]=array_map('utf8_encode', $resultado);
 			$datasource[]=($resultado);
 		endforeach;
-		echo json_encode($datasource);	
+		echo json_encode($datasource);
 	}
-	
+
 	public function agregar()
 	{
 		if($this->session->userdata('id')):
@@ -88,19 +90,20 @@ class Actividad extends MX_Controller
 			$empresa = ($this->input->get('area'));
 			$persona = ($this->input->get('persona'));
 			$detalle = ($this->input->get('detalle'));
+			$prioridad = ($this->input->get('prioridad'));
 			$observaciones = ($this->input->get('observaciones'));
 			$areas='';
 			foreach($this->input->get('areas') as $area):
 				$areas = $areas.$area.';';
 			endforeach;
-			$result = $this->actividad_model->agregar_actividad($idcontrato,$idcategoria,$idsubcategoria,$nombre,$descripcion,$documento,$referencia,$empresa,$persona,$detalle,$observaciones,$areas,$data['usuario']);
-			
+			$result = $this->actividad_model->agregar_actividad($idcontrato,$idcategoria,$idsubcategoria,$nombre,$descripcion,$documento,$referencia,$empresa,$persona,$detalle,$observaciones,$areas,$data['usuario'], $prioridad);
+
 			echo '{"msg":'.$result[0]["mensaje"].'}';
 		else:
 			redirect('login/index', 'refresh');
 		endif;
 	}
-	
+
 	public function buscar()
 	{
 		$idactividad = $this->input->get('idactividad');
@@ -112,7 +115,7 @@ class Actividad extends MX_Controller
 		endforeach;
 		echo json_encode($datasource);
 	}
-	
+
 	public function desplegar()
 	{
 		$idcategoria = $this->input->get('idcategoria');
@@ -126,8 +129,8 @@ class Actividad extends MX_Controller
 		endforeach;
 		echo json_encode($datasource);
 	}
-	
-	
+
+
 	public function desplegar_actividad()
 	{
 		$idactividad = $this->input->get('idactividad');
@@ -139,7 +142,7 @@ class Actividad extends MX_Controller
 		endforeach;
 		echo json_encode($datasource);
 	}
-	
+
 	public function agregar_atividad_area()
 	{
 		if($this->session->userdata('id')):
@@ -153,9 +156,9 @@ class Actividad extends MX_Controller
 			echo '{"msg":'.$result[0]["mensaje"].'}';
 		else:
 			redirect('login/index', 'refresh');
-		endif; 
+		endif;
 	}
-	
+
 	public function desplegar_actividad_area()
 	{
 		$idactividad = $this->input->get('idactividad');
@@ -167,7 +170,7 @@ class Actividad extends MX_Controller
 		endforeach;
 		echo json_encode($datasource);
 	}
-	
+
 	public function usuarios_area()
 	{
 		$idarea = $this->input->get('idarea');
@@ -178,8 +181,8 @@ class Actividad extends MX_Controller
 			$datasource[]=($resultado);
 		endforeach;
 		echo json_encode($datasource);
-	}	
-	
+	}
+
 	public function modificar()
 	{
 		if($this->session->userdata('id')):
@@ -198,18 +201,26 @@ class Actividad extends MX_Controller
 			$empresa = $this->input->get('modificar-area');
 			$persona = $this->input->get('modificar-persona');
 			$detalle = $this->input->get('modificar-detalle');
+			$idprioridad = $this->input->get('modificar-prioridad');
 			$observaciones = $this->input->get('modificar-observaciones');
 			$areas='';
 			foreach($this->input->get('areas') as $area):
 				$areas = $areas.$area.';';
 			endforeach;
-			$result = $this->actividad_model->modificar_actividad($idactividad,$idcontrato,$idcategoria,$idsubcategoria,$nombre,$descripcion,$documento,$referencia,$empresa,$persona,$detalle,$observaciones,$areas,$data['usuario']);
+			$result = $this->actividad_model->modificar_actividad($idactividad,$idcontrato,$idcategoria,$idsubcategoria,$nombre,$descripcion,$documento,$referencia,$empresa,$persona,$detalle,$observaciones,$areas,$data['usuario'], $idprioridad);
 			echo '{"msg":'.$result[0]["mensaje"].'}';
 		else:
 			redirect('login/index', 'refresh');
 		endif;
 	}
-	
+
+	public function prioridades()
+	{
+		$data = $this->prioridad_model->obtener_prioridades();
+
+		echo json_encode($data);
+	}
+
 }
 /*
 *end modules/login/controllers/index.php

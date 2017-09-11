@@ -25,30 +25,6 @@ class Reporte_model extends CI_Model
 		return $query ? $query->result_array() : array();
 	}
 
-	public function obtener_max_rango($idproyecto = 0)
-	{
-		$query = $this->db->query("
-SELECT CONVERT (char(10),max(
-case  periodo
-when 3 then DATEADD (month , rango_final , getdate() )
-when 2 then DATEADD (week , rango_final , getdate() )
-when 1 then DATEADD (day , rango_final , getdate() )
-end ), 126) as fecha_fin,
-CONVERT (char(10),min(
-case  periodo
-when 3 then DATEADD (month , -rango_final , getdate() )
-when 2 then DATEADD (week , -rango_final , getdate() )
-when 1 then DATEADD (day , -rango_final , getdate() )
-end ), 126) as fecha_ini
-
-  FROM doc_reportes_ejecutivos
-  where idproyecto = ". $idproyecto ."
-group by tipo
-");
-
-		return $query ? $query->result_array() : array();
-	}
-
 	public function obtener_cantidad_categorias($fecha = '', $idproyecto = 0)
 	{
 		$query = $this->db->query("
@@ -70,7 +46,7 @@ AND pa.idestado_actividad IN (2,3,4,5)
 	{
 		$query = $this->db->query("
 SELECT idactividad, nombre_actividad, descripcion_actividad, documento_contractual, empresa_responsable, persona_responsable, referencia_documental, detalle_referencia,
-		observacion, idprogramacion, fecha, idestado_actividad, idcat_categoria, cat_categoria, idproyecto, idcat_subcategoria, nombre_proyecto, estado_actividad
+		observacion, idprogramacion, fecha, idestado_actividad, idcat_categoria, cat_categoria, idproyecto, idcat_subcategoria, nombre_proyecto, estado_actividad, numero_contrato, idcontrato, prioridad_nombre
 FROM vw_doc_programacion
 WHERE idproyecto = ". $idproyecto ."
 AND idestado_actividad NOT IN(1,6)
@@ -93,10 +69,20 @@ AND ". $string);
 	public function obtener_rango($idreporte_ejecutivo = 0, $tipo = 0)
 	{
 		$query = $this->db->query("
-SELECT fecha_ini, fecha_fin, rango_inicial, rango_final, periodo_raw
-FROM vw_doc_rangos_reportes_ejecutivos
+SELECT rango_inicial, rango_final, periodo AS periodo_raw,
+CONVERT (char(10),(case periodo
+when 1 then DATEADD(day, rango_inicial, GETDATE())
+when 2 then DATEADD(WEEK, rango_inicial, GETDATE())
+when 3 then DATEADD(MONTH, rango_inicial, GETDATE())
+end), 126) as fecha_ini,
+CONVERT (char(10),(case periodo
+when 1 then DATEADD(day, rango_final, GETDATE())
+when 2 then DATEADD(WEEK, rango_final, GETDATE())
+when 3 then DATEADD(MONTH, rango_final, GETDATE())
+end), 126) as fecha_fin
+FROM dbo.doc_reportes_ejecutivos
 WHERE  idreporte_ejecutivo = ". $idreporte_ejecutivo ."
-AND tipo = ". $tipo ."
+AND  tipo = ". $tipo ."
 ");
 
 		return $query ? $query->result_array() : array();
@@ -105,10 +91,44 @@ AND tipo = ". $tipo ."
 	public function obtener_rango_negativo($idreporte_ejecutivo = 0, $tipo = 0)
 	{
 		$query = $this->db->query("
-SELECT fecha_ini, fecha_fin, rango_inicial, rango_final, periodo_raw
-FROM vw_doc_rangos_reportes_ejecutivos_negativos
+SELECT rango_inicial, rango_final, periodo AS periodo_raw,
+CONVERT (char(10),(case periodo
+when 1 then DATEADD(day, -rango_inicial, GETDATE())
+when 2 then DATEADD(WEEK, -rango_inicial, GETDATE())
+when 3 then DATEADD(MONTH, -rango_inicial, GETDATE())
+end), 126) as fecha_ini,
+CONVERT (char(10),(case periodo
+when 1 then DATEADD(day, -rango_final, GETDATE())
+when 2 then DATEADD(WEEK, -rango_final, GETDATE())
+when 3 then DATEADD(MONTH, -rango_final, GETDATE())
+end), 126) as fecha_fin
+FROM dbo.doc_reportes_ejecutivos
 WHERE  idreporte_ejecutivo = ". $idreporte_ejecutivo ."
-AND tipo = ". $tipo ."
+AND  tipo = ". $tipo ."
+");
+
+		return $query ? $query->result_array() : array();
+	}
+
+	public function obtener_max_rango($idproyecto = 0)
+	{
+		$query = $this->db->query("
+SELECT CONVERT (char(10),max(
+case  periodo
+when 3 then DATEADD (month , rango_final , getdate() )
+when 2 then DATEADD (week , rango_final , getdate() )
+when 1 then DATEADD (day , rango_final , getdate() )
+end ), 126) as fecha_fin,
+CONVERT (char(10),min(
+case  periodo
+when 3 then DATEADD (month , -rango_final , getdate() )
+when 2 then DATEADD (week , -rango_final , getdate() )
+when 1 then DATEADD (day , -rango_final , getdate() )
+end ), 126) as fecha_ini
+
+  FROM doc_reportes_ejecutivos
+  where idproyecto = ". $idproyecto ."
+group by tipo
 ");
 
 		return $query ? $query->result_array() : array();
@@ -135,6 +155,16 @@ WHERE co.idproyecto = ". $idproyecto ."
 AND pa.idestado_actividad NOT IN (1,6)
 AND a.idcat_categoria = ". $idcat_categoria ."
 AND pa.fecha ". $string);
+
+		return $query ? $query->result_array() : array();
+	}
+
+	public function obtener_nombre_proyecto($idproyecto)
+	{
+		$query = $this->db->query("
+SELECT nombre_proyecto
+  FROM dbo.grl_proyecto
+  WHERE idproyecto = ". $idproyecto);
 
 		return $query ? $query->result_array() : array();
 	}

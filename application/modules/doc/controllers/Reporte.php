@@ -27,13 +27,13 @@ class Reporte extends MX_Controller
 			$totales = array();
 			$limite = 5; // 5 default
 
-			$proyectosRaw = $this->dashboard_model->desplegar_proyectos($data['iduser']);
+			$proyectosRaw = $this->dashboard_model->desplegar_proyectos(58);
 
 			foreach ($proyectosRaw as $p)
 			{
 				$max_rango = $this->reporte_model->obtener_max_rango($p['idproyecto']);
 
-				$proyectos = $this->dashboard_model->desplegar_proyectos_fecha($data['iduser'], $max_rango[1]['fecha_ini'], $max_rango[0]['fecha_fin']);
+				$proyectos = $this->dashboard_model->desplegar_proyectos_fecha(58, $max_rango[1]['fecha_ini'], $max_rango[0]['fecha_fin']);
 			}
 
 			foreach ($proyectos as $p)
@@ -47,51 +47,99 @@ class Reporte extends MX_Controller
 				$vencidas[$p['idproyecto']] = $this->reporte_model->obtener_datos($p['idproyecto'], "fecha BETWEEN '". $max_rango[0]['fecha_ini'] ."' AND '". $hoy ."'");
 
 				if (empty($totales[$p['idproyecto']]))
-					$totales[$p['idproyecto']] = array(
-						'categorias' => array(),
-					);
+					$totales[$p['idproyecto']] = array();
 			}
 
 			foreach ($vencidas as $k => $a)
 				foreach ($a as $v)
-					$totales[$k]['categorias'][$v['idcat_categoria']]['vencidas'][$v['idprogramacion']] = $v;
+					$totales[$k][$v['idcontrato']][$v['idcat_categoria']]['vencidas'][$v['idprogramacion']] = $v;
 
 			foreach ($vencer as $k => $a)
 				foreach ($a as $v)
-					$totales[$k]['categorias'][$v['idcat_categoria']]['vencer'][$v['idprogramacion']] = $v;
+					$totales[$k][$v['idcontrato']][$v['idcat_categoria']]['vencer'][$v['idprogramacion']] = $v;
 
 			$grafica = $proyectoPag = '';
 			$show = array();
+			$n = array();
 
-			foreach ($totales as $k => $t)
+			foreach ($totales as $k  => $kata)
 			{
-				foreach ($t['categorias'] as $cat_id => $cat)
+				$n[$k] = array();
+				foreach ($kata as $c => $contrato)
 				{
-					$total = count($cat['vencidas']) + count($cat['vencer']);
+					$sup = array();
+					$n[$k][$c] = array();
 
-					foreach ($cat['vencidas'] as $v)
+					foreach ($contrato as $cat => $categoria)
 					{
-						$t['nombre'] = $v['nombre_proyecto'];
-						$cat_categoria[$cat_id] = $v['cat_categoria'];
+						if (!isset($show))
+							$show = array();
+
+						foreach ($categoria as $v => $a)
+						{
+							if (!isset($tVencidas))
+							{
+								$tVencidas[$k] = array();
+								$tVencer[$k] = array();
+							}
+
+							foreach ($a as $id => $act)
+							{
+								if (!isset($tVencer[$k][$cat .'-'. $c]))
+									$tVencer[$k][$cat .'-'. $c] = 0;
+
+								if (!isset($tVencidas[$k][$cat .'-'. $c]))
+									$tVencidas[$k][$cat .'-'. $c] = 0;
+
+								if ($v == 'vencer')
+									$tVencer[$k][$cat .'-'. $c]++;
+
+								if ($v == 'vencidas')
+									$tVencidas[$k][$cat .'-'. $c]++;
+
+								$show[$k][$act['idcat_categoria'] .'-'. $act['idcontrato']] = array(
+									'nombre' => $act['numero_contrato'] .' - '. $act['cat_categoria'],
+									'nombre_contrato' => $act['numero_contrato'],
+									'nombre_categoria' => $act['cat_categoria'],
+									'idproyecto' => $k,
+									'idcat_categoria' => $act['idcat_categoria'],
+									'idcontrato' => $act['idcontrato'],
+								);
+								$nombre_proyecto[$k] = $act['nombre_proyecto'];
+							}
+
+							foreach ($a as $id => $act)
+							{
+								$show[$k][$act['idcat_categoria'] .'-'. $act['idcontrato']] += array(
+									'y' => $tVencidas[$k][$cat .'-'. $c] + $tVencer[$k][$cat .'-'. $c],
+									'customLegend' => 'Actividades vencidas: <strong>'. $tVencidas[$k][$cat .'-'. $c]  . '</strong><br>Actividades por vencer: <strong>'. $tVencer[$k][$cat .'-'. $c] .'</strong>',
+									'customTooltip' => $act['cat_categoria'] .'<br>Número total de actividades: <strong>'. ($tVencidas[$k][$cat .'-'. $c] + $tVencer[$k][$cat .'-'. $c]) .'</strong>',
+								);
+							}
+						}
 					}
 
-					$show[$k][$cat_id] = array(
-						'nombre' => $cat_categoria[$cat_id],
-						'y' => $total,
-						'customLegend' => 'Actividades vencidas: <strong>'. count($cat['vencidas'])  . '</strong><br>Actividades por vencer: <strong>'. count($cat['vencer']) .'</strong>',
-						'customTooltip' => $cat_categoria[$cat_id] .'<br>Número total de actividades: <strong>'. $total .'</strong>',
-						'idproyecto' => $k,
-						'idcat_categoria' => $cat_id,
-					);
+					$sup['actividades'] = $show;
+					$n[$k][$c][] = $sup;
+
 				}
 
+				if (empty($nombre_proyecto[$k]))
+				{
+					$nodata = $this->reporte_model->obtener_nombre_proyecto($k);
+					$nombre_proyecto[$k] = $nodata[0]["nombre_proyecto"];
+				}
+
+				var_dump($nodata);
 				$grafica .= '
-generar_grafica($("#proyecto_'. $k .'"), {useHTML:true, text:"'. $t['nombre'] .'", style:{ "color": "#333333", "fontSize": "20px", "text-decoration": "underline"}}, [], '. json_encode(array_values($show[$k])) .', function(){
+noData = "No hay tareas pendientes ni vencidas en el periodo especificado";
+generar_grafica($("#proyecto_'. $k .'"), {useHTML:true, text:"'. $nombre_proyecto[$k] .'", style:{ "color": "#333333", "fontSize": "20px", "text-decoration": "underline"}}, [], '. json_encode(array_values($show[$k])) .', function(){
 	this.point.options.color = this.point.color;
 	generar_subgraficas(this.point.options);
-});
+}, noData);
 ';
 			}
+
 
 			$items= count($totales);
 			if ($items > $limite)
@@ -159,27 +207,42 @@ $(function() {
 		);
 		$send = $vencidas = $vencer = array();
 		$coloresVencer = array('#789048', '#A8DBA8', '#3B8686', '#0B486B', '#519548', '#79BD9A', '#607848', '#E3EDC4', '#CFF09E', '#88C425', '#0A7B74');
-		$coloresVencidas = array('#DFCCCC', '#FFD3D3', '#FFA4A4', '#D17878', '#965959', '#D83018', '#F07848', '#FDAB64', '#FD9960', '#9B0F2B', '#FE4E76');
+		$coloresVencidas = array('#DFCCCC', '#FD9960', '#FFD3D3', '#D17878', '#965959', '#D83018', '#F07848', '#FDAB64', '#FFA4A4', '#9B0F2B', '#FE4E76');
 
 		// '1' => 'Fecha vencida',
 		// '2' => 'Fecha por vencer'
-		foreach ($parametrosVencidas as $p)
+		end($parametrosVencidas);
+		$lastVencidas = key($parametrosVencidas);
+		$countVencidas = count($parametrosVencidas);
+		foreach ($parametrosVencidas as $k => $p)
 		{
 			$rango_vencidas = $this->reporte_model->obtener_rango_negativo($p["idreporte_ejecutivo"], $p['tipo']);
+
+			// Evita traslapar actividades de un mismo día
+			if ($k != $lastVencidas && $countVencidas > 1)
+				$rango_vencidas[0]['fecha_fin'] = date('Y-m-d', strtotime($rango_vencidas[0]['fecha_fin'] .' + 1 days'));
 
 			$vencidas[$p["idreporte_ejecutivo"]]['actividades']  = $this->reporte_model->obtener_datos($p['idproyecto'], ""
 			. "fecha BETWEEN '". $rango_vencidas[0]['fecha_fin'] ."' AND '". $rango_vencidas[0]['fecha_ini'] ."' AND idcat_categoria = ". $datos['idcat_categoria']);
 
 			$vencidas[$p["idreporte_ejecutivo"]]['rango'] = $rango_vencidas[0];
+			$vencidasContador++;
 		}
 
-		foreach ($parametrosVencer as $p)
+		$countVencer = count($parametrosVencer);
+		$contador = 0;
+		foreach ($parametrosVencer as $k => $p)
 		{
 			$rango_vencer = $this->reporte_model->obtener_rango($p['idreporte_ejecutivo'], $p['tipo']);
+
+			// Evita traslapar actividades de un mismo día
+			if ($contador && $countVencer > 1)
+				$rango_vencer[0]['fecha_ini'] = date('Y-m-d', strtotime($rango_vencer[0]['fecha_ini'] .' + 1 days'));
 
 			$vencer[$p["idreporte_ejecutivo"]]['actividades'] =  $this->reporte_model->obtener_datos($idproyecto, ""
 			. "fecha BETWEEN '". $rango_vencer[0]['fecha_ini'] ."' AND '". $rango_vencer[0]['fecha_fin'] ."' AND idcat_categoria = ". $datos['idcat_categoria']);
 			$vencer[$p["idreporte_ejecutivo"]]['rango'] = $rango_vencer[0];
+			$contador++;
 		}
 
 		foreach ($vencidas as $reporteId => $v)
@@ -197,7 +260,7 @@ $(function() {
 				'y' => $total,
 				'customLegend' => '<strong>'. $total .'</strong> '. $stringActividades .'<br>(de '. ($v['rango']['rango_inicial'] .' a '. $v['rango']['rango_final']) .' '. $periodos[$v['rango']['periodo_raw']] .')',
 				'customTooltip' => $datos['nombre'] ."<br>Vencidas <strong>". $total ."</strong> periodo:<br>". $v['rango']['fecha_fin'] ." al ". $v['rango']['fecha_ini'],
-				'tableHeader' => $datos['nombre'] .' VENCIDAS (DE '. ($v['rango']['rango_inicial'] .' A '. $v['rango']['rango_final']) .' '. $periodos[$v['rango']['periodo_raw']] .') TOTAL DE ACTIVIDADES: '. $total,
+				'tableHeader' => '<strong>'. $datos['nombre'] .'</strong> - VENCIDAS (DE '. ($v['rango']['rango_inicial'] .' A '. $v['rango']['rango_final']) .' '. $periodos[$v['rango']['periodo_raw']] .') TOTAL DE ACTIVIDADES: '. $total,
 				'idproyecto' => $datos['idproyecto'],
 				'idcat_categoria' => $datos['idcat_categoria'],
 				'rango' => array(
@@ -222,7 +285,7 @@ $(function() {
 				'y' => $total,
 				'customLegend' => '<strong>'. $total .'</strong> '. $stringActividades .'<br>(de '. ($v['rango']['rango_inicial'] .' a '. $v['rango']['rango_final']) .' '. $periodos[$v['rango']['periodo_raw']] .')',
 				'customTooltip' => $datos['nombre'] ."<br>Por vencer <strong>". $total ."</strong> periodo:<br>". $v['rango']['fecha_ini'] ." al ". $v['rango']['fecha_fin'],
-				'tableHeader' => $datos['nombre'] .' POR VENCER (DE '. ($v['rango']['rango_inicial'] .' A '. $v['rango']['rango_final']) .' '. $periodos[$v['rango']['periodo_raw']] .') TOTAL DE ACTIVIDADES: '. $total,
+				'tableHeader' => '<strong>'. $datos['nombre'] .'</strong> - POR VENCER (DE '. ($v['rango']['rango_inicial'] .' A '. $v['rango']['rango_final']) .' '. $periodos[$v['rango']['periodo_raw']] .') TOTAL DE ACTIVIDADES: '. $total,
 				'idproyecto' => $datos['idproyecto'],
 				'idcat_categoria' => $datos['idcat_categoria'],
 				'rango' => array(
