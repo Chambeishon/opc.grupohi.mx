@@ -337,7 +337,7 @@ function generar_subgraficas(options)
 		type: "GET",
 		success: function(data) {
 			data = JSON.parse(data),
-			legend = [];console.log(data);
+			legend = [];
 			$.each(data, function(key, item){
 
 				mostrar = (key === "vencidas" ? sub_vencidas : sub_vencer);
@@ -397,6 +397,8 @@ function generar_lista(options)
 			$("html, body").animate({
 				scrollTop: $("#show_proyecto_"+ options.idproyecto).find(".mostrar_vencidas").offset().top
 			}, 1000);
+
+			delete todas;
 		},
 		error: function(xhr) {}
 	});

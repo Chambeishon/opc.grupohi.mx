@@ -57,6 +57,8 @@ class Reporte_Prioridad extends MX_Controller
 
 			if (empty($totales[$p['idproyecto']]))
 				$totales[$p['idproyecto']] = array();
+
+			$nombre_proyecto[$p['idproyecto']] = $p['nombre_proyecto'];
 		}
 
 		foreach ($vencidas as $k => $a)
