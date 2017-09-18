@@ -125,7 +125,7 @@ class Reportes_ejecutivos_prioridad extends MX_Controller
 		<th scope="row">'. $data['rangos']['de'] .' - '. $data['rangos']['a'] .'</th>
 		<td class="text-center">'. $prioridades[$data['idprioridad']]['nombre'] .'</td>
 		<td class="text-center">'. $periodos[$data['periodo']] .'</td>
-		<td class="text-center"><a href="'. base_url('doc/reportes_ejecutivos_prioridad/eliminar/'. $id) .'" class="eliminar_rango">Eliminar</a></td>
+		<td class="text-center"><a href="'. base_url('doc/reportes_ejecutivos_prioridad/eliminar/'. $id) .'" class="btn btn-danger btn-xs eliminar_rango">i class="fa fa-trash-o" aria-hidden="true" title="Eliminar"></i></a></td>
 	</tr>';
 		}
 

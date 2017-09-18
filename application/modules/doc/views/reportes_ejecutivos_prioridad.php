@@ -78,7 +78,9 @@
 									<th scope="row" class="rango"><?= $pa['rango_inicial'] ?> - <?= $pa['rango_final'] ?></th>
 									<td class="text-center"><?= $prioridades[$pa['idprioridad']]['nombre'] ?></td>
 									<td class="text-center"> <?= $periodos[$pa['periodo']] ?></td>
-									<td class="text-center"><a href="<?=base_url('doc/reportes_ejecutivos_prioridad/eliminar/'. $pa['idreporte_prioridad'])?>" class="eliminar_rango">Eliminar</a></td>
+									<td class="text-center">
+										<a href="<?=base_url('doc/reportes_ejecutivos_prioridad/eliminar/'. $pa['idreporte_prioridad'])?>" class="btn btn-danger btn-xs eliminar_rango"><i class="fa fa-trash-o" aria-hidden="true" title="Eliminar"></i></a>
+									</td>
 								</tr>
 							<?php endforeach;?>
 							</tbody>

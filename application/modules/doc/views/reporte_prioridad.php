@@ -1,5 +1,6 @@
 <style>
 	.cerrar_subgraficas { float:right;display:inline-block; text-decoration:underline; cursor: pointer; color:red; }
+	.abrir-programacion {text-decoration:underline; cursor: pointer;}
 </style>
 <div class="page-header">
 	<h4><a class="bom-menu" href="<?=base_url('doc/home/index')?>">
