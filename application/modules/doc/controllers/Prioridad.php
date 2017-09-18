@@ -78,6 +78,7 @@ class Prioridad extends MX_Controller
 			if (!empty($data['idprioridad']))
 			{
 				$idprioridad = $data['idprioridad'];
+				$send['prioridad'] = $data;
 				unset($data['idprioridad']);
 
 				$this->prioridad_model->modificar_prioridad($data, $idprioridad);
@@ -92,8 +93,10 @@ class Prioridad extends MX_Controller
 			$send['data'] = '<tr id="tr_'. $id .'">
 								<th scope="row" class="td_nombre">'. $data['nombre'] .'</th>
 								<td class="td_clave">'. $data['clave'] .'</td>
-								<td><a class="modificar_prioridad">Modificar</a></td>
-								<td><a href="'. base_url('doc/prioridad/eliminar/'. $id) .'" class="eliminar_prioridad">Eliminar</a></td>
+								<td>
+									<a class="btn btn-warning btn-xs modificar_prioridad" data-idprioridad="'. $p['idprioridad'] .'" data-toggle="modal" data-target="#modal-modificar"><i class="fa fa-edit" aria-hidden="true" title="Modificar"></i></a>
+									<a href="'. base_url('doc/prioridad/eliminar/'. $id) .'" class="btn btn-danger btn-xs eliminar_prioridad"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
+								</td>
 							</tr>';
 		}
 

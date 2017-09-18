@@ -27,13 +27,13 @@ class Reporte extends MX_Controller
 			$totales = array();
 			$limite = 5; // 5 default
 
-			$proyectosRaw = $this->dashboard_model->desplegar_proyectos(58);
+			$proyectosRaw = $this->dashboard_model->desplegar_proyectos($data['iduser']);
 
 			foreach ($proyectosRaw as $p)
 			{
 				$max_rango = $this->reporte_model->obtener_max_rango($p['idproyecto']);
 
-				$proyectos = $this->dashboard_model->desplegar_proyectos_fecha(58, $max_rango[1]['fecha_ini'], $max_rango[0]['fecha_fin']);
+				$proyectos = $this->dashboard_model->desplegar_proyectos_fecha($data['iduser'], $max_rango[1]['fecha_ini'], $max_rango[0]['fecha_fin']);
 			}
 
 			foreach ($proyectos as $p)
@@ -130,7 +130,6 @@ class Reporte extends MX_Controller
 					$nombre_proyecto[$k] = $nodata[0]["nombre_proyecto"];
 				}
 
-				var_dump($nodata);
 				$grafica .= '
 noData = "No hay tareas pendientes ni vencidas en el periodo especificado";
 generar_grafica($("#proyecto_'. $k .'"), {useHTML:true, text:"'. $nombre_proyecto[$k] .'", style:{ "color": "#333333", "fontSize": "20px", "text-decoration": "underline"}}, [], '. json_encode(array_values($show[$k])) .', function(){

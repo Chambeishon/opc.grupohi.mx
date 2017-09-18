@@ -5,11 +5,11 @@ $(function() {
 		e.preventDefault();
 
 		$this = $(this);
-		$form = $(".guardar_prioridad");
+		$form = $(".form_modificar_prioridad");
+		$boton = $('.guardar_modificacion');
+		$nombreField = $form.find('.prioridad_nombre');
+		$claveField = $form.find('.prioridad_clave');
 		$titulo = $(".titulo");
-		$nombreField = $(".prioridad_nombre");
-		$claveField = $(".prioridad_clave");
-		$boton = $(".boton_form");
 		idprioridad = $this.data('idprioridad');
 		$view = $(".msg_view");
 		$div = $("<div/>", {
@@ -24,6 +24,7 @@ $(function() {
 				data = JSON.parse(data);
 
 				if (data.error) {
+					$('#modal-modificar').modal('hide');
 					$div.hide().appendTo($view);
 					textClass = "alert-" + (data.error ? "danger" : "success");
 					$div.addClass(textClass);
@@ -34,9 +35,8 @@ $(function() {
 				}
 
 				else{
-					$nombreField.css("border", "1px dotted #336600");
+
 					$nombreField.val(data.data.nombre);
-					$claveField.css("border", "1px dotted #336600");
 					$claveField.val(data.data.clave);
 
 					// Agrega el ID de la prioridad
@@ -44,7 +44,6 @@ $(function() {
 						type: 'hidden',
 						name: 'idprioridad'
 					}).val(idprioridad).appendTo($form);
-					$boton.text("Modificar");
 
 					// Guardar los cambios
 					$boton.on( "click", function() {
@@ -69,30 +68,25 @@ $(function() {
 
 								// Actualiza la tabla
 								if (!data.error)
-								{
+								{console.log(data.prioridad);
 									$tr = $("tr#tr_"+ idprioridad);
-									$tr.css("border-bottom", "1px dotted #336600");
-									$tdNombre = $tr.find(".td_nombre").text($nombreField.val());
-									$tdClave = $tr.find(".td_clave").text($claveField.val());
+									$tr.addClass("success");
+									$tdNombre = $tr.find("td.td_nombre").text(data.prioridad.nombre);
+									$tdClave = $tr.find("td.td_clave").text(data.prioridad.clave);
 								}
 
 								// Revertir todos los cambios realizados
-								$nombreField.css("border", "1px solid #cccccc");
-								$nombreField.val();
-								$claveField.css("border", "1px solid #cccccc");
-								$claveField.val();
-								$boton.text("Agregar");
+								$form.find("input[type=text], textarea").val("");
 
 								setTimeout(function(){
 									$div.fadeOut("slow");
 									$view.empty();
-									$tr.css("border-bottom", "0 solid #fff");
-									$nombreField.val("");
-									$claveField.val("");
+									$tr.removeClass("success");
 								}, 5000);
 
 								// Regresa el botón a la normalidad
 								$thisBoton.prop('disabled', false);
+								$('#modal-modificar').modal('hide');
 
 							},
 							error: function(xhr) {}

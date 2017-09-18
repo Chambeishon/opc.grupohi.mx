@@ -11,8 +11,8 @@
         </a>
     </div>
     <div class="col-md-2">
-        <a href="<?=base_url('doc/prioridad/index');?>" class="bom-menu">
-            <i class="fa fa-gear fa-5x"></i><h6><strong>PRIORIDADES</strong></h6>
+        <a href="<?=base_url('doc/reportes_ejecutivos_prioridad/index');?>" class="bom-menu">
+            <i class="fa fa-gear fa-5x"></i><h6><strong>REPORTES EJECUTIVOS PRIORIDAD</strong></h6>
         </a>
     </div>
     <div class="col-md-2">
@@ -49,6 +49,11 @@
     <div class="col-md-2">
         <a href="<?=base_url('doc/area/index');?>" class="bom-menu">
             <i class="fa fa-gear fa-5x"></i><h6><strong>&Aacute;REAS</strong></h6>
+        </a>
+    </div>
+    <div class="col-md-2">
+        <a href="<?=base_url('doc/prioridad/index');?>" class="bom-menu">
+            <i class="fa fa-gear fa-5x"></i><h6><strong>PRIORIDADES</strong></h6>
         </a>
     </div>
     <div class="col-md-1">
