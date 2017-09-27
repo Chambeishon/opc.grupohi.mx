@@ -158,12 +158,6 @@ $(document).on('click','.paginacion',function(e){
 	lista.find("li.paginacion").removeClass("active");
 	_this.addClass("active");
 
-	$(".paginacion").each(function(i){
-		__this = $(this);
-		if(__this.data("pag") === _this.data("pag"))
-			__this.addClass("active");
-	});
-
 	tbody = lista.find("tbody");
 	next = lista.find("li.next");
 	prev = lista.find("li.previous");
@@ -313,7 +307,19 @@ $(document).on('click','.cerrar_subgraficas',function(e){
 	$div.find('.titulo_subgrafica').fadeOut();
 	$div.find('.mostrar_vencidas').fadeOut();
 	$div.find('.mostrar_vencer').fadeOut();
+	$('#proyecto_lista_'+ idproyecto).fadeOut();
 
+});
+
+$(document).on('click', '.lista_titulo', function(e){
+
+	$lista = $(this).closest('.lista');
+	$icono = $(this).find('i');
+	$panel = $lista.find('.panel-body');
+
+	$panel.toggle('slow', function() {
+		$icono.toggleClass('fa-minus-circle').toggleClass('fa-plus-circle');
+	});
 });
 
 function generar_subgraficas(options)
@@ -337,7 +343,7 @@ function generar_subgraficas(options)
 		type: "GET",
 		success: function(data) {
 			data = JSON.parse(data),
-			legend = [];
+			legend = [];console.log(data);
 			$.each(data, function(key, item){
 
 				mostrar = (key === "vencidas" ? sub_vencidas : sub_vencer);
@@ -352,7 +358,7 @@ function generar_subgraficas(options)
 				$("#show_proyecto_"+ options.idproyecto).find(".titulo_subgrafica").html("PRIORIDAD - " + options.nombre.toUpperCase()).fadeIn();
 				$("#show_proyecto_"+ options.idproyecto).find('.mostrar_vencidas').fadeIn();
 				$("#show_proyecto_"+ options.idproyecto).find('.mostrar_vencer').fadeIn();
-				$("#show_proyecto_"+ options.idproyecto).find(".titulo_subgrafica").append('<span title="cerrar" class="cerrar_subgraficas" data-idproyecto="' + options.idproyecto +'">X</span>');
+				$("#show_proyecto_"+ options.idproyecto).find(".titulo_subgrafica").append('<span title="cerrar" class="btn btn-danger btn-sm cerrar_subgraficas" data-idproyecto="' + options.idproyecto +'">X</span>');
 				generar_grafica(mostrar, {useHTML:false, text: titulo}, false, item, function(){
 					generar_lista(this.point.options);
 				}, noData);
@@ -375,14 +381,39 @@ function generar_lista(options)
 		type: "POST",
 		success: function(data) {
 			data = JSON.parse(data);
-			var limite = 10; // 10 por default
+			var limite = 1; // 5 por default
 			todas = [];
 
 			$.each(data, function(key, tablas){
+
 				todas[key] = tablaMaster.clone();
-				todas[key].find(".panel-heading").html(tablas.header);
-				$.each(tablas.data, function(i, v){
-					todas[key].find("tbody").append('<tr><th scope="row">'+ v.link +'</th><td>'+ v.nombre +'</td><td>'+ v.descripcion +' </td><td>'+ v.fecha +'</td><td>'+ v.estado +'</td></tr>');
+				todas[key].find(".panel-heading").html('<a class="lista_titulo">'+ tablas.header +' <i class="fa fa-plus-circle fa-1x icono_abrir" style="color:#7ac142;"></i></a>');
+				todas[key].find(".panel-body").hide();
+
+				todas[key].data("pag", {options:options, data:tablas.data, limit:limite});
+				todas[key].find("li.previous").addClass("disabled");
+
+				if (tablas.data.length > limite){
+					seccion = tablas.data.slice(0, limite);
+					paginas = Math.ceil(tablas.data.length / limite);
+					for(i = 0; i < paginas; i++){
+						li = $("<li/>", {
+							html: '<a href="#">'+ (i + 1) +'</a>',
+							'class': 'paginacion' + (i === 0 ? " active" : "")
+						});
+						li.data("pag", i);
+						li.insertBefore(todas[key].find("li.next"));
+					}
+				}
+
+				else{
+					todas[key].find("li.next").addClass("disabled hidden");
+					todas[key].find("li.previous").addClass("hidden");
+					seccion = tablas.data;
+				}
+
+				$.each(seccion, function(i, v){
+					todas[key].find("tbody").append('<tr><th scope="row" style="width:10%">'+ v.link +'</th><td style="width:20%">'+ v.nombre +'</td><td style="width:40%">'+ v.descripcion +' </td><td>'+ v.fecha +'</td><td>'+ v.estado +'</td></tr>');
 				});
 				todas[key].removeClass("hidden");
 				divTable.append(todas[key]);
@@ -393,6 +424,7 @@ function generar_lista(options)
 				"border-style": "solid",
 				"border-width": "1px"
 			});
+			divTable.show();
 
 			$("html, body").animate({
 				scrollTop: $("#show_proyecto_"+ options.idproyecto).find(".mostrar_vencidas").offset().top

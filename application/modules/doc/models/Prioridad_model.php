@@ -8,7 +8,7 @@ class Prioridad_model extends CI_Model
 
 	public function obtener_prioridades($idprioridad = 0)
 	{
-		$this->db->select("nombre, clave, idprioridad");
+		$this->db->select("nombre, clave, idprioridad, color");
 		$this->db->from("doc_actividades_prioridad");
 
 		if ($idprioridad)
@@ -43,6 +43,21 @@ class Prioridad_model extends CI_Model
 SELECT idprioridad
 FROM vw_doc_programacion
 WHERE idprioridad = ". $idprioridad);
+		return $query ? $query->result_array() : array();
+	}
+
+	// Boolean, regresa true si la clave está repetida.
+	public function revisarClave($clave = '')
+	{
+		// El campo no puede estar vacio
+		if (empty($clave))
+			return true;
+
+		$query = $this->db->query("
+SELECT idprioridad
+FROM doc_actividades_prioridad
+WHERE clave LIKE '%". $clave ."%'");
+
 		return $query ? $query->result_array() : array();
 	}
 }

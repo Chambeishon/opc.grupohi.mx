@@ -308,7 +308,7 @@ $(function() {
 		$datos = $this->input->post();
 		usort($datos['rango'],"strcmp");
 		$lista = $this->reporte_model->obtener_datos($datos['idproyecto'], ""
-			. "fecha BETWEEN '". $datos['rango'][0] ."' AND '". $datos['rango'][1] ."' AND idcat_categoria = ". $datos['idcat_categoria']);
+			. "fecha BETWEEN '". $datos['rango'][0] ."' AND '". $datos['rango'][1] ."' AND idcat_categoria = ". $datos['idcat_categoria'] ." ORDER BY fecha ASC");
 
 		$json = array();
 

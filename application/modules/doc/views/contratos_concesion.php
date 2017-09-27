@@ -17,12 +17,12 @@
 	</div>
 	<div class="col-md-2">
 		<a href="<?=base_url('doc/reporte/index')?>" class="bom-menu">
-			<i class="fa fa-dashboard fa-5x"></i><h6><strong>REPORTE EJECUTIVO</strong></h6>
+			<i class="fa fa-pie-chart fa-5x"></i><h6><strong>REPORTE EJECUTIVO</strong></h6>
 		</a>
 	</div>
 	<div class="col-md-2">
 		<a href="<?=base_url('doc/reporte_prioridad/index')?>" class="bom-menu">
-			<i class="fa fa-dashboard fa-5x"></i><h6><strong>REPORTE EJECUTIVO (PRIORIDAD)</strong></h6>
+			<i class="fa fa-pie-chart fa-5x"></i><h6><strong>REPORTE EJECUTIVO (PRIORIDAD)</strong></h6>
 		</a>
 	</div>
 	<div class="col-md-2">

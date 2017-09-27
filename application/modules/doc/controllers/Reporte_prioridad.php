@@ -84,6 +84,7 @@ class Reporte_Prioridad extends MX_Controller
 
 				$show[$k][$idprioridad] = array(
 					'nombre' => $prioridades[$idprioridad]['nombre'],
+					'color' => $prioridades[$idprioridad]['color'],
 					'idproyecto' => $k,
 					'y' => $totalVencer + $totalVencidas,
 					'customLegend' => 'Actividades vencidas: <strong>'. $totalVencidas  . '</strong><br>Actividades por vencer: <strong>'. $totalVencer .'</strong>',
@@ -173,21 +174,19 @@ $(function() {
 		end($parametrosVencidas);
 		$lastVencidas = key($parametrosVencidas);
 		$countVencidas = count($parametrosVencidas);
+
 		foreach ($parametrosVencidas as $k => $p)
 		{
 			$rango_vencidas = $this->reporte_prioridad_model->obtener_rango_negativo($p["idreporte_prioridad"], $p['tipo']);
-
-			if ($datos['idprioridad'] != $p['idprioridad'])
-				continue;
 
 			// Evita traslapar actividades de un mismo día
 			if ($k != $lastVencidas && $countVencidas > 1)
 				$rango_vencidas[0]['fecha_fin'] = date('Y-m-d', strtotime($rango_vencidas[0]['fecha_fin'] .' + 1 days'));
 
 			$id = $p['idreporte_prioridad'] .'-'. $p['tipo'];
-			$vencidas[$id]['actividades']  = $this->reporte_prioridad_model->obtener_datos($p['idproyecto'], ""
-			. "fecha BETWEEN '". $rango_vencidas[0]['fecha_fin'] ."' AND '". $rango_vencidas[0]['fecha_ini'] ."' AND idprioridad = ". $datos['idprioridad']);
+			$actividades = $this->reporte_prioridad_model->obtener_datos($p['idproyecto'], "idprioridad = ". $datos['idprioridad'] ." AND fecha BETWEEN '". $rango_vencidas[0]['fecha_fin'] ."' AND '". $rango_vencidas[0]['fecha_ini'] ."'");
 
+			$vencidas[$id]['actividades'] = $actividades;
 			$vencidas[$id]['rango'] = $rango_vencidas[0];
 			$vencidas[$id]['prioridad'] = $p;
 			$vencidasContador++;
@@ -199,16 +198,13 @@ $(function() {
 		{
 			$rango_vencer = $this->reporte_prioridad_model->obtener_rango($p['idreporte_prioridad'], $p['tipo']);
 
-			if ($datos['idprioridad'] != $p['idprioridad'])
-				continue;
-
 			// Evita traslapar actividades de un mismo día
 			if ($contador && $countVencer > 1)
 				$rango_vencer[0]['fecha_ini'] = date('Y-m-d', strtotime($rango_vencer[0]['fecha_ini'] .' + 1 days'));
 
 			$id = $p['idreporte_prioridad'] .'-'. $p['tipo'];
-			$vencer[$id]['actividades'] =  $this->reporte_prioridad_model->obtener_datos($idproyecto, ""
-			. "fecha BETWEEN '". $rango_vencer[0]['fecha_ini'] ."' AND '". $rango_vencer[0]['fecha_fin'] ."' AND idprioridad = ". $datos['idprioridad']);
+			$vencer[$id]['actividades'] =  $this->reporte_prioridad_model->obtener_datos($p['idproyecto'], ""
+			. "idprioridad = ". $datos['idprioridad'] ." AND fecha BETWEEN '". $rango_vencer[0]['fecha_ini'] ."' AND '". $rango_vencer[0]['fecha_fin'] ."'");
 			$vencer[$id]['rango'] = $rango_vencer[0];
 			$vencer[$id]['prioridad'] = $p;
 			$contador++;
@@ -238,9 +234,6 @@ $(function() {
 
 		foreach ($vencer as $reporteId => $v)
 		{
-			if(empty($v['actividades']) || $v['prioridad']['idprioridad'] != $datos['idprioridad'])
-				continue;
-
 			$rando = mt_rand(0, count($coloresVencer) - 1);
 			$total = count($v['actividades']);
 			$stringActividades = $total > 1 ? 'actividades' : 'actividad';
@@ -277,7 +270,7 @@ $(function() {
 		$datos = $this->input->post();
 		usort($datos['rango'],"strcmp");
 		$lista = $this->reporte_prioridad_model->obtener_datos($datos['idproyecto'], ""
-			. "fecha BETWEEN '". $datos['rango'][0] ."' AND '". $datos['rango'][1] ."' AND idprioridad = ". $datos['idprioridad']);
+			. "fecha BETWEEN '". $datos['rango'][0] ."' AND '". $datos['rango'][1] ."' AND idprioridad = ". $datos['idprioridad'] ." ORDER BY fecha ASC");
 
 		$json = array();
 		$total = count($lista);

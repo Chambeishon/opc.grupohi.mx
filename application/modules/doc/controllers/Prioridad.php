@@ -23,6 +23,7 @@ class Prioridad extends MX_Controller
 		$data['css'] .= '<link href="'. base_url('assets/css/infragistics.css') .'" rel="stylesheet" />';
 		$data['js'] = '<script src="'. base_url('assets/js/jquery-ui.min.js') .'"></script> ';
 		$data['js'] .= '<script src="'. base_url('assets/js/doc-prioridades.js') .'"></script> ';
+		$data['js'] .= '<script src="'.base_url('assets/js/jscolor.min.js').'"></script>';
 
 		$data['prioridades'] = $this->prioridad_model->obtener_prioridades();
 
@@ -64,15 +65,32 @@ class Prioridad extends MX_Controller
 		$idprioridad = 0;
 
 		// Revisa si los rangos se encuentran vacios
-		if (empty($data['nombre']) || empty($data['clave']))
+		if (empty($data['nombre']) || empty($data['clave'])  || empty($data['color']))
 		{
 			$send['error'] = true;
 			$send['msg'] = "Los campos no pueden estar vacios.";
 		}
 
+		// La clave no puede ser mayor a 10 caracteres.
+		else if (strlen($data['clave']) > 10)
+		{
+			$send['error'] = true;
+			$send['msg'] = "La clave no puede ser mayor a 10 caracteres.";
+		}
+
+		// La clave no puede estar repetida, solo para nuevos campos
+		else if ($this->prioridad_model->revisarClave($data['clave']) && empty($data['idprioridad']))
+		{
+			$send['error'] = true;
+			$send['msg'] = "Ya existe una clave similar. Las claves no pueden estar repetidas por favor ingresa una clave diferente.";
+		}
+
 		else
 		{
 			$data['idusuario'] = $session_data['id'];
+
+			// Guarda un color por default
+			$data['color'] = '#'. (empty($data['idusuario']) ? '7ac142' : $data['color']);
 
 			// Estamos editando o creando?
 			if (!empty($data['idprioridad']))
@@ -93,7 +111,8 @@ class Prioridad extends MX_Controller
 			$send['data'] = '<tr id="tr_'. $id .'">
 								<th scope="row" class="td_nombre">'. $data['nombre'] .'</th>
 								<td class="td_clave">'. $data['clave'] .'</td>
-								<td>
+								<td class="text-center td_clave" style="background-color: '. $data['color'] .'  !important;">'. $data['color'] .'</td>
+								<td class="text-center">
 									<a class="btn btn-warning btn-xs modificar_prioridad" data-idprioridad="'. $p['idprioridad'] .'" data-toggle="modal" data-target="#modal-modificar"><i class="fa fa-edit" aria-hidden="true" title="Modificar"></i></a>
 									<a href="'. base_url('doc/prioridad/eliminar/'. $id) .'" class="btn btn-danger btn-xs eliminar_prioridad"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
 								</td>

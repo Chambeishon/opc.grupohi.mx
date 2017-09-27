@@ -11,13 +11,17 @@
 		<div class="panel-body">
 			<form class="form-horizontal guardar_prioridad" action="<?=base_url('doc/prioridad/guardar/')?>">
 				<div class="form-group row">
-					<label for="nombre" class="col-md-3 control-label">Nombre</label>
-					<div class="col-md-3">
+					<label for="nombre" class="col-md-1 control-label">Nombre</label>
+					<div class="col-md-2">
 						<input type="text" class="form-control prioridad_nombre" value="" name="nombre">
 					</div>
 					<label for="clave" class="col-md-1 control-label">Clave</label>
 					<div class="col-md-2">
 						<input type="text" class="form-control prioridad_clave" name="clave" value="">
+					</div>
+					<label for="clave" class="col-md-1 control-label">Color</label>
+					<div class="col-md-2">
+						<input type="text" class="form-control prioridad_color jscolor" name="color" value="">
 					</div>
 					<div class="col-md-2">
 						<button type="submit" class="btn btn-default boton_form" >Agregar</button>
@@ -32,14 +36,16 @@
 			<tr>
 				<th>Nombre</th>
 				<th>Clave</th>
+				<th>Color</th>
 				<th>Acción</th>
 			</tr>
 		</thead>
 		<tbody>
 		<?php foreach ($prioridades as $p):?>
 			<tr id="tr_<?= $p['idprioridad'] ?>">
-				<th scope="row" class="td_nombre"><?= $p['nombre'] ?></th>
+				<th scope="row" class="td_nombre"><?= $p['nombre'] . ($p['idprioridad'] == 1 ? " (por defecto)" : "") ?></th>
 				<td class="text-center td_clave"><?= $p['clave'] ?></td>
+				<td class="text-center td_color" style="background-color: <?= $p['color'] ?>  !important;"><?= $p['color'] ?></td>
 				<td class="text-center">
 					<a class="btn btn-warning btn-xs modificar_prioridad" data-idprioridad="<?= $p['idprioridad'] ?>" data-toggle="modal" data-target="#modal-modificar"><i class="fa fa-edit" aria-hidden="true" title="Modificar"></i></a>
 					<a href="<?=base_url('doc/prioridad/eliminar/'. $p['idprioridad'])?>" class="btn btn-danger btn-xs eliminar_prioridad"><i class="fa fa-trash-o" aria-hidden="true" title="Eliminar"></i></a>
@@ -62,13 +68,17 @@
 	      <div class="modal-body">
 	      	<form class="form-horizontal form_modificar_prioridad" action="<?=base_url('doc/prioridad/guardar/')?>">
 				<div class="form-group row">
-					<label for="nombre" class="col-md-3 control-label">Nombre</label>
-					<div class="col-md-3">
+					<label for="nombre" class="col-md-1 control-label">Nombre</label>
+					<div class="col-md-2">
 						<input type="text" class="form-control prioridad_nombre" value="" name="nombre">
 					</div>
 					<label for="clave" class="col-md-1 control-label">Clave</label>
 					<div class="col-md-2">
 						<input type="text" class="form-control prioridad_clave" name="clave" value="">
+					</div>
+					<label for="clave" class="col-md-1 control-label">Color</label>
+					<div class="col-md-2">
+						<input type="text" class="form-control prioridad_color jscolor" name="color" value="">
 					</div>
 				</div>
 			</form>

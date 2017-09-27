@@ -197,7 +197,7 @@ $(document).on('click','.paginacion',function(e){
 	tbody.empty();
 
 	$.each(seccion, function(i, v) {
-		tbody.append('<tr><th scope="row">'+ v.link +'</th><td>'+ v.nombre +'</td><td>'+ v.descripcion +' </td><td>'+ v.fecha +'</td><td>'+ v.estado +'</td></tr>');
+		tbody.append('<tr><th scope="row" style="width:10%">'+ v.link +'</th><td style="width:20%">'+ v.nombre +'</td><td style="width:40%">'+ v.descripcion +' </td><td>'+ v.fecha +'</td><td>'+ v.estado +'</td></tr>');
 	});
 
 	return false;

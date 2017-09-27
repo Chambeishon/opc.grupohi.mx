@@ -9,6 +9,7 @@ $(function() {
 		$boton = $('.guardar_modificacion');
 		$nombreField = $form.find('.prioridad_nombre');
 		$claveField = $form.find('.prioridad_clave');
+		$colorField = $form.find('.prioridad_color');
 		$titulo = $(".titulo");
 		idprioridad = $this.data('idprioridad');
 		$view = $(".msg_view");
@@ -38,6 +39,7 @@ $(function() {
 
 					$nombreField.val(data.data.nombre);
 					$claveField.val(data.data.clave);
+					$colorField.val(data.data.color.replace('#',''));
 
 					// Agrega el ID de la prioridad
 					$idprioridadInput = $('<input>').attr({
@@ -68,11 +70,12 @@ $(function() {
 
 								// Actualiza la tabla
 								if (!data.error)
-								{console.log(data.prioridad);
+								{
 									$tr = $("tr#tr_"+ idprioridad);
 									$tr.addClass("success");
 									$tdNombre = $tr.find("td.td_nombre").text(data.prioridad.nombre);
 									$tdClave = $tr.find("td.td_clave").text(data.prioridad.clave);
+									$tdColor = $tr.find("td.td_color").text(data.prioridad.color);
 								}
 
 								// Revertir todos los cambios realizados
@@ -144,8 +147,8 @@ $(function() {
 	});
 
 	// Guardar prioridad
-	$(".guardar_prioridad").on("submit", function(event) {
-		event.preventDefault();
+	$(".guardar_prioridad").on("submit", function(e) {
+		e.preventDefault();
 		$form = $(this);
 		$form.prop("disabled", true);
 		formValues = $form.serialize();

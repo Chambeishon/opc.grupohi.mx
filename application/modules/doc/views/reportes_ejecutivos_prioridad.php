@@ -36,15 +36,6 @@
 									<?php endforeach;?>
 								</select>
 							</div>
-							<!-- Prioridad -->
-							<div class="form-group">
-								<label for="idprioridad">Prioridad</label>
-								<select class="form-control" name="idprioridad">
-									<?php foreach ($prioridades as $v):?>
-									<option value="<?=$v['idprioridad']?>" ><?=$v['nombre']?></option>
-									<?php endforeach;?>
-								</select>
-							</div>
 							<!-- Campos -->
 							<div class="form-group row">
 								<label for="rangos[de]" class="col-md-1 control-label">De</label>
@@ -67,7 +58,6 @@
 							<thead class="thead-inverse">
 								<tr>
 									<th>Rango</th>
-									<th>Prioridad</th>
 									<th>Periodo</th>
 									<th>Acción</th>
 								</tr>
@@ -76,7 +66,6 @@
 							<?php foreach ($params as $pa):?>
 								<tr>
 									<th scope="row" class="rango"><?= $pa['rango_inicial'] ?> - <?= $pa['rango_final'] ?></th>
-									<td class="text-center"><?= $prioridades[$pa['idprioridad']]['nombre'] ?></td>
 									<td class="text-center"> <?= $periodos[$pa['periodo']] ?></td>
 									<td class="text-center">
 										<a href="<?=base_url('doc/reportes_ejecutivos_prioridad/eliminar/'. $pa['idreporte_prioridad'])?>" class="btn btn-danger btn-xs eliminar_rango"><i class="fa fa-trash-o" aria-hidden="true" title="Eliminar"></i></a>

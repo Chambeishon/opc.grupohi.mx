@@ -1,6 +1,9 @@
 <style>
-	.cerrar_subgraficas { float:right;display:inline-block; text-decoration:underline; cursor: pointer; color:red; }
+	.cerrar_subgraficas { float:right;display:inline-block; cursor: pointer; font-size:x-small;}
 	.abrir-programacion {text-decoration:underline; cursor: pointer;}
+	div.mostrar_lista > div.panel {margin-bottom:0px;}
+	a.lista_titulo {color:#000; cursor: pointer;}
+	div.titulo_subgrafica {background-color: #f5f5f5; border-color: #ddd;}
 </style>
 <div class="page-header">
 	<h4><a class="bom-menu" href="<?=base_url('doc/home/index')?>">
